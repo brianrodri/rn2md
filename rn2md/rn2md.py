@@ -28,7 +28,7 @@ def FormatDay(day, database):
                    EscapeInnerUnderscores())
   header = day.strftime("# %b %d, %Y")
   body_as_lines = (line.rstrip() for line in database[day].split("\n"))
-  return "\n".join(map(rn2md, itertools.chain([header], body_as_lines)))
+  return "\n".join(rn2md(l) for l in itertools.chain([header], body_as_lines))
 
 
 def main():
