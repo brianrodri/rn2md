@@ -8,13 +8,13 @@ Markdown.
 
 Here is a list of the currently supported transformations:
 
-  RedNotebook             Markdown
-  ===========             ========
-  [name ""url""]          [name](url)
-  //text//                _text_
-  --text--                **IRRELEVANT**(text)
-  =Text=                  # Text
-  [""url""]               ![...](url)
+    RedNotebook                       Markdown
+    ===========                       ========
+    [name ""url""]                    [name](url)
+    //text//                          _text_
+    --text--                          ~text~
+    =Text=                            # Text
+    [""url""]                         ![...](url)
 """
 from __future__ import print_function
 

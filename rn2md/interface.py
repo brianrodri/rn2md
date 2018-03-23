@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
+"""TODO(brianrodri): Better module doc string."""
 import datetime
 import isoweek
 import parsedatetime
@@ -33,5 +34,5 @@ def _RoundToWorkday(date):
     return date - datetime.timedelta(days=workday_delta)
 
 
-if __name__ == "__main__":
-    print(ParseDates(" ".join(sys.argv[1:]) or "today"))
+if __name__ == '__main__':
+    print(ParseDates(' '.join(sys.argv[1:]) or 'today'))

@@ -1,5 +1,6 @@
 #!/usr/local/env python3
-"""Loads configuration for nice default behavior."""
+# -*- coding: utf-8 -*-
+"""Builds configuration options with nice default behavior."""
 import configparser
 import os
 import sys
