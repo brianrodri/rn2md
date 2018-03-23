@@ -26,4 +26,5 @@ class ConfigOptions():
 
 
 def BuildConfigOptions():
+    # TODO(brianrodri): Add command-line configuration options.
     return ConfigOptions(), sys.argv[1:]
