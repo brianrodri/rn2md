@@ -1,4 +1,5 @@
-#!/usr/local/bin/python
+#!/usr/local/bin/python3
+# -*- coding: utf-8 -*-
 """Translates text in RedNotebook syntax to Markdown syntax.
 
 Given a sequence of lines from stdin, this script will print out the same
@@ -11,7 +12,7 @@ Here is a list of the currently supported transformations:
   ===========             ========
   [name ""url""]          [name](url)
   //text//                _text_
-  --text--                ~text~
+  --text--                **IRRELEVANT**(text)
   =Text=                  # Text
   [""url""]               ![...](url)
 """
@@ -19,246 +20,243 @@ from __future__ import print_function
 
 import itertools
 import iterutils
+import string
 import re
+import sys
 
 
-URL_PATTERN = re.compile(r"^(?:http|file|ftp)s?://"
-                         r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+"
-                         r"(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"
-                         r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})" r"(?::\d+)?",
+URL_PATTERN = re.compile(r'^(?:http|file|ftp)s?://'
+                         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
+                         r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
+                         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+                         r'(?::\d+)?',
                          re.IGNORECASE)
-LINK_PATTERN = re.compile(r"\[.*?\]\(.*?\)")
-BACKTICK_PATTERN = re.compile(r"`.*?`")
+LINK_PATTERN = re.compile(r'\[.*?\]\(.*?\)')
+BACKTICK_PATTERN = re.compile(r'`.*?`')
 
 
 def IsIntersecting(v, u):
-  return v[1] >= u[0] and u[1] >= v[0]
+    return v[1] >= u[0] and u[1] >= v[0]
 
 
 def Span(string):
-  return (0, len(string))
+    return (0, len(string))
 
 
 def OccursInUrl(match):
-  """Check if regexp `match` occurs in some URL."""
-  occurrences = itertools.chain(URL_PATTERN.finditer(match.string),
+    """Check if regexp `match` occurs in some URL."""
+    occurrences = itertools.chain(URL_PATTERN.finditer(match.string),
                                 LINK_PATTERN.finditer(match.string))
-  return any(IsIntersecting(match.span(), m.span()) for m in occurrences)
+    return any(IsIntersecting(match.span(), m.span()) for m in occurrences)
 
 
 def OccursInBacktick(match):
-  """Check if `match` occurs in backticks."""
-  occurrences = BACKTICK_PATTERN.finditer(match.string)
-  return any(IsIntersecting(match.span(), m.span()) for m in occurrences)
+    """Check if `match` occurs in backticks."""
+    occurrences = BACKTICK_PATTERN.finditer(match.string)
+    return any(IsIntersecting(match.span(), m.span()) for m in occurrences)
 
 
 class Morpher(object):
-  """Applies changes to multiple points of a string."""
+    """Applies changes to multiple points of a string."""
 
-  def __call__(self, string):
-    """Find target substring(s); apply transformation(s); return result.
+    def __call__(self, s):
+        """Find target substring(s), apply transformation, return result.
 
-    Substrings are collected by the `FindRanges` method.  Each one is encoded
-    through the use of a half-open index-range pair:
+        Substrings are collected by the `FindRanges` method. Each one is
+        describes the half-open ranges to transform:
 
-      lo, hi -> string[lo:hi]
+        (lo, hi) -> s[lo:hi]
 
-    Example:
-      class VowelsAs1337(Morpher):
-        TRANSLATOR = string.maketrans("aeiou", "43105")
+        Example:
+        >>> class VowelsAs1337(Morpher):
+        ...     TRANSLATOR = string.maketrans('aeiou', '43105')
+        ...
+        ...     def FindRanges(self, s):
+        ...         return [m.span() for m in re.finditer('[aeiou]', s.lower())]
+        ...
+        ...     def Transform(self, old):
+        ...         return old.lower().translate(TRANSLATOR)
+        ...
+        >>> morpher = VowelsAs1337()
+        >>> print(morpher('I love sour patches!'))
+        1 l0v3 s05r p4tch3s!
 
-        def FindRanges(self, string):
-          return [m.span() for m in re.finditer("[aeiou]", string.lower())]
+        Args:
+            s: The string that is used as transformed according to the rules
+                defined by self's FindRanges and Transform methods.
 
-        def Transform(self, old):
-          return old.lower().translate(TRANSLATOR)
+        Returns:
+            transformed_piece: str. Substrs defined by self.FindRanges(s)
+                are replaced with the result of self.Transform(substr).
+        """
+        ranges = self.FindRanges(s)
+        output = ''
+        bounds = zip(ranges[:-2], ranges[1:-1], ranges[2:])
+        at_first = True
+        for (_, prevhi), (currlo, currhi), (nextlo, _) in bounds:
+            if at_first:
+                output += s[prevhi:currlo]
+                at_first = False
+            output += self.Transform(s[currlo:currhi])
+            output += s[currhi:nextlo]
+        return output or s
 
+    def FindRanges(self, s):  # pylint: disable=unused-argument
+        """Get indicies of substrings that should have Transform applied to them.
 
-      morpher = VowelsAs1337()
-      print(morpher("I love sour patches!"))
-      >> 1 l0v3 s05r p4tch3s!
+        Args:
+            s: string to analyze for transformation ranges.
 
-    Args:
-      string: The string that is used as transformed according to the rules
-      defined by self's FindRanges and Transform methods.
-    Returns:
-      transformed_piece: string, with all substr defined by
-      self.FindRanges(string) replaced with the result of
-      self.Transform(substr).
-    """
-    ranges = [(0, 0)] + self.FindRanges(string) + [(len(string), len(string))]
-    output = ""
-    bounds = zip(ranges[:-2], ranges[1:-1], ranges[2:])
-    is_first = True
-    for (_, prevhi), (currlo, currhi), (nextlo, _) in bounds:
-      if is_first:
-        output += string[prevhi:currlo]
-        is_first = False
-      output += self.Transform(string[currlo:currhi])
-      output += string[currhi:nextlo]
-    return output or string
+        Returns:
+            ranges: A collection of index ranges that identify the substrings in
+                string to be replaced with a transformation.
+        """
+        return []
 
-  def FindRanges(self, string):  # pylint: disable=unused-argument
-    """Get indicies of substrings that should have Transform applied to them.
+    def Transform(self, old):
+        """Transform string-string `old` as desired.
 
-    Args:
-      string: string to analyze for transformation ranges.
-    Returns:
-      ranges: A collection of index ranges that identify the substrings in
-      string to be replaced with a transformation.
-    """
-    return []
+        Args:
+            old: Input string to be transformed.
 
-  def Transform(self, old):
-    """Transform string-string `old` as desired.
-
-    Args:
-      old: Input string to be transformed.
-    Returns:
-      new: The transformed string.
-    """
-    return old
-
-
-class TranslateItalics(Morpher):
-
-  def FindRanges(self, string):
-    matches = (m for m in re.finditer(r"//", string) if
-               not OccursInUrl(m) and not OccursInBacktick(m))
-    return [(lo.start(), hi.end())
-            for lo, hi in iterutils.grouper(2, matches) if all((lo, hi))]
-
-  def Transform(self, old):
-    return "_{}_".format(old[2:-2])
+        Returns:
+            new: The transformed string.
+        """
+        return old
 
 
-class TranslateImages(Morpher):
+class ItalicTransformer(Morpher):
 
-  def Transform(self, old):
-    # `old` is: [""file://url"".ext]
-    return "![]({})".format(old[5:-7] + old[-5:-1])
+    def FindRanges(self, s):
+        matches = (
+            m for m in re.finditer(r'//', s)
+            if not OccursInUrl(m) and not OccursInBacktick(m))
+        return [
+            (lo.start(), hi.end())
+            for lo, hi in iterutils.grouper(2, matches)
+            if all((lo, hi))
+        ]
 
-  def FindRanges(self, string):
-    return [m.span() for m in
-            re.finditer(r'\[""file://.*?""\.(jpg|tif|png|gif)\]', string)]
-
-
-class TranslateLinks(Morpher):
-
-  def Transform(self, old):
-    # `old` is: [name ""url""]
-    url_span = re.search(r'\s""', old).end(), len(old) - 3
-    name_span = 1, re.search(r'\s""', old).start()
-    name = old[name_span[0]:name_span[1]].strip()
-    url = old[url_span[0]:url_span[1]].strip()
-    return "[{}]({})".format(name, url.replace("_", "\\_").replace("*", "\\*"))
-
-  def FindRanges(self, string):
-    return [m.span() for m in re.finditer(r'\[[^"].*?""\]', string)]
+    def Transform(self, old):
+        return '_{}_'.format(old[2:-2])
 
 
-class TranslateStrikethroughs(Morpher):
+class ImageTransformer(Morpher):
 
-  def Transform(self, old):
-    # `old` is: --text--
-    return "~~{}~~".format(old[2:-2])
+    def FindRanges(self, s):
+        return [m.span() for m in
+                re.finditer(r'\[""file://.*?""\.(jpg|tif|png|gif)\]', s)]
 
-  def FindRanges(self, string):
-    matches = (m for m in re.finditer(r"--", string) if
-               not OccursInUrl(m) and not OccursInBacktick(m))
-    return [(lo.start(), hi.end())
-            for lo, hi in iterutils.grouper(2, matches) if all((lo, hi))]
+    def Transform(self, old):
+        # `old` is: [""file://url"".ext]
+        return '![]({})'.format(old[5:-7] + old[-5:-1])
 
 
-class TranslateHeaders(Morpher):
+class LinkTransformer(Morpher):
 
-  def __init__(self, padding=0):
-    self.padding = padding
+    def FindRanges(self, s):
+        return [m.span() for m in re.finditer(r'\[[^"].*?""\]', s)]
 
-  def Transform(self, old):
-    # `old` is: =text= (w/ non-zero number of wrapping ='s)
-    level = re.search(r"^=+", old).end()
-    return "#"*(self.padding + level) + " " + old[level:-level]
-
-  def FindRanges(self, string):
-    affixes = re.search("[^=]", string), re.search("[^=]", string[::-1])
-    if all(a and a.start() for a in affixes):
-      if affixes[0].start() == affixes[1].start():
-        return [Span(string)]
-    return []
+    def Transform(self, old):
+        # `old` is: [name ""url""]
+        url_span = re.search(r'\s""', old).end(), len(old) - 3
+        name_span = 1, re.search(r'\s""', old).start()
+        name = old[name_span[0]:name_span[1]].strip()
+        url = old[url_span[0]:url_span[1]].strip()
+        return '[{}]({})'.format(name, url.replace('_', '\\_').replace('*', '\\*'))
 
 
-class TranslateLists(Morpher):
-  """Enumerates syntactically sequential numbered lists."""
+class StrikethroughTransformer(Morpher):
 
-  def __init__(self):
-    self.history = []
-    self.missed_lines = 0
+    def FindRanges(self, s):
+        matches = (m for m in re.finditer(r'--', s) if
+                not OccursInUrl(m) and not OccursInBacktick(m))
+        return [(lo.start(), hi.end())
+                for lo, hi in iterutils.grouper(2, matches) if all((lo, hi))]
 
-  def Transform(self, old):
-    # `old` is `+`
-    if self.missed_lines >= 2:
-      self.history = [1]
-    self.missed_lines = 0
-    return str(self.history[-1]) + "."
-
-  def FindRanges(self, string):
-    m = re.match(r"\s*(\+|-)\s", string)
-    if not m:
-      self.missed_lines += 1
-      return []  # Do nothing.
-    elif m.group(1) == "+":
-      self._UpdateHistory(m.start(1))
-      return [m.span(1)]
-    elif m.group(1) == "-":
-      return []  # Do nothing.
-    else:
-      self.missed_lines += 1
-      return []  # Do nothing.
-
-  def _UpdateHistory(self, i):
-    self.history = [iterutils.nth(self.history[:i], n, 0) for n in range(i + 1)]
+    def Transform(self, old):
+        # `old` is: --text--
+        return '**IRRELEVANT**({})'.format(old[2:-2].rstrip('.!:'))
 
 
-class FirstLineToHeader(Morpher):
+class HeaderTransformer(Morpher):
+    """'==TEXT==' to '## TEXT'; input.count('=') == output.count('#') * 2."""
 
-  def __init__(self):
-    self.called = False
+    def __init__(self, start_level=0):
+        self.start_level = start_level
 
-  def FindRanges(self, string):
-    return [] if self.called else [Span(string)]
+    def FindRanges(self, s):
+        affixes = re.search('[^=]', s), re.search('[^=]', s[::-1])
+        if all(a and a.start() for a in affixes):
+            if affixes[0].start() == affixes[1].start():
+                return [Span(s)]
+        return []
 
-  def Transform(self, old):
-    self.called = True
-    return "# " + old
-
-
-class EscapeInnerUnderscores(Morpher):
-
-  def FindRanges(self, string):
-    return [m.span() for m in re.finditer(r"(?<=\w)_(?=\w)", string)
-            if not OccursInUrl(m) and not OccursInBacktick(m)]
-
-  def Transform(self, old):
-    return "\\_"
+    def Transform(self, old):
+        level = re.search(r'^=+', old).end()
+        return '#'*(self.start_level + level) + ' ' + old[level:-level]
 
 
-class TranslateBackticks(Morpher):
+class ListTransformer(Morpher):
+    """Enumerates syntactically sequential unordered and ordered lists."""
 
-  def __init__(self):
-    self.line_num = 0
+    def __init__(self):
+        self.history = []
+        self.missed_lines = 0
 
-  def FindRanges(self, string):
-    return [m.span() for m in re.finditer("``.*?``", string)
-            if not OccursInUrl(m)]
+    def FindRanges(self, s):
+        m = re.match(r'^\s*(\+|-)\s', s)
+        if not s.strip():
+            self.missed_lines += 1
+            return []  # Do nothing
+        elif not m:
+            self.history.clear()
+            return []  # Do nothing.
+        elif m.group(1) == '-':
+            self.missed_lines += 1
+            return []  # Do nothing.
+        elif m.group(1) == '+':
+            self._UpdateHistory(m.start(1))
+            return [m.span(1)]
 
-  def Transform(self, old):
-    return old[1:-1]  # Trim off the outermost ticks.
+    def Transform(self, old):
+        # `old` is `+`
+        self.history[-1] += 1
+        return str(self.history[-1]) + '.'
+
+    def _UpdateHistory(self, i):
+        self.history = [iterutils.nth(self.history[:i+1], n, 0) for n in range(i+1)]
+
+
+class InnerUnderscoreEscaper(Morpher):
+
+    def FindRanges(self, s):
+        return [m.span() for m in re.finditer(r'(?<=\w)_(?=\w)', s)
+                if not OccursInUrl(m) and not OccursInBacktick(m)]
+
+    def Transform(self, old):
+        return '\\_'
+
+
+class BacktickTransformer(Morpher):
+
+    def __init__(self):
+        self.line_num = 0
+
+    def FindRanges(self, s):
+        return [m.span() for m in re.finditer('``.*?``', s)
+                if not OccursInUrl(m)]
+
+    def Transform(self, old):
+        return old[1:-1]  # Trim off the outermost ticks.
 
 
 def main():
-  pass
+    for key, val in sys.modules[__name__].__dict__.items():
+        if isinstance(val, type) and issubclass(val, Morpher):
+            print(key)
+            _ = val()  # Make sure it can be initialized.
 
 
-if __name__ == "__main__":
-  main()
+if __name__ == '__main__':
+    main()

@@ -1,41 +1,42 @@
 #!/usr/local/bin/python3
-from __future__ import print_function
-
-import functools
+# -*- coding: utf-8 -*-
+import datetime
 import itertools
-from interface import DatesFromArgv
-from storage import BuildDailyLogDict
-from transformers import EscapeInnerUnderscores
-from transformers import TranslateBackticks
-from transformers import TranslateHeaders
-from transformers import TranslateImages
-from transformers import TranslateItalics
-from transformers import TranslateLinks
-from transformers import TranslateLists
-from transformers import TranslateStrikethroughs
+import sys
+
+import functional
+
+import config
+import interface
+import storage
+import transformers
 
 
-def ComposeL(*iterable):
-  def Compose2(f, g):
-    return lambda x: g(f(x))
-  return functools.reduce(Compose2, iterable, lambda x: x)
-
-
-def FormatDay(day, database):
-  rn2md = ComposeL(TranslateHeaders(padding=1), TranslateBackticks(),
-                   TranslateImages(), TranslateLinks(), TranslateItalics(),
-                   TranslateLists(), TranslateStrikethroughs(),
-                   EscapeInnerUnderscores())
-  header = day.strftime("# %b %d, %Y")
-  body_as_lines = (line.rstrip() for line in database[day].split("\n"))
-  return "\n".join(rn2md(l) for l in itertools.chain([header], body_as_lines))
+def RedNotebookToMarkDown(line):
+    transformer = functional.compose(
+            transformers.HeaderTransformer(start_level=1),
+            transformers.BacktickTransformer(),
+            transformers.ImageTransformer(),
+            transformers.LinkTransformer(),
+            transformers.ItalicTransformer(),
+            transformers.ListTransformer(),
+            transformers.StrikethroughTransformer(),
+            transformers.InnerUnderscoreEscaper())
+    return transformer(line)
 
 
 def main():
-  database = BuildDailyLogDict()
-  prettify = lambda day: FormatDay(day, database)
-  print("\n\n\n".join(prettify(d) for d in DatesFromArgv() if d in database))
+    options, remaining_argv = config.BuildConfigOptions()
+    entries = storage.BuildDailyEntriesDict(options.DataPath())
+    dates = interface.ParseDates(
+            " ".join(remaining_argv), workdays_only=options.WorkdaysOnly())
+    def FormatDate(date):
+        output_lines = [date.strftime("# %a %b %d, %Y")]
+        output_lines.extend(line.rstrip() for line in entries[date].split("\n"))
+        return "\n".join(map(RedNotebookToMarkDown, output_lines))
+
+    print("\n\n\n".join(FormatDate(d) for d in dates if d in entries))
 
 
 if __name__ == "__main__":
-  main()
+    main()

@@ -1,4 +1,5 @@
-#!/usr/local/bin/python
+#!/usr/local/bin/python3
+# -*- coding: utf-8 -*-
 """Translates text in RedNotebook syntax to Markdown syntax.
 
 Given a sequence of lines from stdin, this script will print out the same
@@ -7,63 +8,63 @@ Markdown.
 
 Here is a list of the currently supported transformations:
 
-  RedNotebook             Markdown
-  ===========             ========
-  [name ""url""]          [name](url)
-  //text//                _text_
-  --text--                ~text~
-  =Text=                  # Text
-  [""url""]               ![...](url)
+    RedNotebook                         Markdown
+    ===========                         ========
+    [name ""url""]                    [name](url)
+    //text//                                _text_
+    --text--                                ~text~
+    =Text=                                    # Text
+    [""url""]                             ![...](url)
 """
-from __future__ import print_function
-
 import codecs
+import collections
 from datetime import datetime
 import itertools
 import os
 import yaml
 
-DATA_DIR = os.path.expanduser("~/.rednotebook/data")
 
-
-def BuildMonthPaths():
-  for basename in os.listdir(DATA_DIR):
-    root, _ = os.path.splitext(basename)
+def GetMonthsData(data_path):
     try:
-      yield (os.path.join(DATA_DIR, basename),
-             datetime.strptime(root, "%Y-%m").date())
-    except ValueError:
-      pass
+        for basename in os.listdir(data_path):
+            root, unused_ext = os.path.splitext(basename)
+            try:
+                month_date = datetime.strptime(root, "%Y-%m").date()
+                month_path = os.path.join(data_path, basename)
+                yield (month_date, month_path)
+            except ValueError:
+                continue
+    except FileNotFoundError:
+        pass
 
 
-def LoadDaysFromPath(path_details):
-  path, path_month = path_details
-  days = dict()
-  with codecs.open(path, "rb", encoding="utf-8") as month_file:
-    contents = yaml.load(month_file, Loader=yaml.CLoader)
-    for day_num in contents:
-      day_log = contents[day_num]["text"].rstrip()
-      if day_log:
-        days[path_month.replace(day=day_num)] = day_log
-  return days
+def LoadDailyEntries(month_data):
+    month_data = (month_date, month_path)
+    daily_entries = dict()
+    with codecs.open(month_path, "rb", encoding="utf-8") as month_file:
+        contents = yaml.load(month_file)
+        for day_of_month in contents:
+            day_key = month_date.replace(day=day_of_month)
+            day_entry = contents[day_of_month]["text"].rstrip()
+            if day_entry:
+                daily_entries[day_key] = day_entry
+    return daily_entries
 
 
-def BuildDailyLogDict():
-  collection = dict()
-  for month in (LoadDaysFromPath(p) for p in BuildMonthPaths()):
-    collection.update(month)
-  return collection
-
-
-def PrintDay(day, database):
-  return str(day) + "\n" + database[day]
+def BuildDailyEntriesDict(data_path):
+    all_daily_entries = dict()
+    for daily_entries in map(LoadDailyEntries, GetMonthsData(data_path)):
+        all_daily_entries.update(daily_entries)
+    return all_daily_entries
 
 
 def main():
-  database = BuildDailyLogDict()
-  printer = lambda day: PrintDay(day, database)
-  print("\n\n\n".join(printer(key) for key in itertools.islice(database, 3)))
+    daily_entries = (
+            BuildDailyEntriesDict(os.path.expanduser('~/.rednotebook/data')))
+    def PrintEntry(day):
+        return str(day) + "\n" + daily_entries[day]
+    print("\n\n\n".join(map(PrintEntry, itertools.islice(daily_entries, 3))))
 
 
 if __name__ == "__main__":
-  main()
+    main()
