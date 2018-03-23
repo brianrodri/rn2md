@@ -43,6 +43,10 @@ def Span(string):
     return (0, len(string))
 
 
+def EmptySpan(off=0):
+    return (off, off)
+
+
 def OccursInUrl(match):
     """Check if regexp `match` occurs in some URL."""
     occurrences = itertools.chain(URL_PATTERN.finditer(match.string),
@@ -74,8 +78,8 @@ class Morpher(object):
         ...     def FindRanges(self, s):
         ...         return [m.span() for m in re.finditer('[aeiou]', s.lower())]
         ...
-        ...     def Transform(self, old):
-        ...         return old.lower().translate(TRANSLATOR)
+        ...     def Transform(self, substr):
+        ...         return substr.lower().translate(TRANSLATOR)
         ...
         >>> morpher = VowelsAs1337()
         >>> print(morpher('I love sour patches!'))
@@ -89,7 +93,10 @@ class Morpher(object):
             transformed_piece: str. Substrs defined by self.FindRanges(s)
                 are replaced with the result of self.Transform(substr).
         """
-        ranges = self.FindRanges(s)
+        # Algorithm requires sorted list of ranges with at least 2 elements.
+        # We add two empty ones, and insert remaining ranges from subclasses.
+        ranges = [(0, 0), (len(s), len(s))]
+        ranges[1:1] = self.FindRanges(s)
         output = ''
         bounds = zip(ranges[:-2], ranges[1:-1], ranges[2:])
         at_first = True
@@ -111,18 +118,18 @@ class Morpher(object):
             ranges: A collection of index ranges that identify the substrings in
                 string to be replaced with a transformation.
         """
-        return []
+        raise NotImplementedError
 
-    def Transform(self, old):
-        """Transform string-string `old` as desired.
+    def Transform(self, substr):
+        """Transform string-string `substr` as desired.
 
         Args:
-            old: Input string to be transformed.
+            substr: Input string to be transformed.
 
         Returns:
             new: The transformed string.
         """
-        return old
+        raise NotImplementedError
 
 
 class ItalicTransformer(Morpher):
@@ -137,8 +144,8 @@ class ItalicTransformer(Morpher):
             if all((lo, hi))
         ]
 
-    def Transform(self, old):
-        return '_{}_'.format(old[2:-2])
+    def Transform(self, substr):
+        return '_{}_'.format(substr[2:-2])
 
 
 class ImageTransformer(Morpher):
@@ -147,9 +154,9 @@ class ImageTransformer(Morpher):
         return [m.span() for m in
                 re.finditer(r'\[""file://.*?""\.(jpg|tif|png|gif)\]', s)]
 
-    def Transform(self, old):
-        # `old` is: [""file://url"".ext]
-        return '![]({})'.format(old[5:-7] + old[-5:-1])
+    def Transform(self, substr):
+        # `substr` is: [""file://url"".ext]
+        return '![]({})'.format(substr[5:-7] + substr[-5:-1])
 
 
 class LinkTransformer(Morpher):
@@ -157,12 +164,12 @@ class LinkTransformer(Morpher):
     def FindRanges(self, s):
         return [m.span() for m in re.finditer(r'\[[^"].*?""\]', s)]
 
-    def Transform(self, old):
-        # `old` is: [name ""url""]
-        url_span = re.search(r'\s""', old).end(), len(old) - 3
-        name_span = 1, re.search(r'\s""', old).start()
-        name = old[name_span[0]:name_span[1]].strip()
-        url = old[url_span[0]:url_span[1]].strip()
+    def Transform(self, substr):
+        # `substr` is: [name ""url""]
+        url_span = re.search(r'\s""', substr).end(), len(substr) - 3
+        name_span = 1, re.search(r'\s""', substr).start()
+        name = substr[name_span[0]:name_span[1]].strip()
+        url = substr[url_span[0]:url_span[1]].strip()
         return '[{}]({})'.format(name, url.replace('_', '\\_').replace('*', '\\*'))
 
 
@@ -174,9 +181,9 @@ class StrikethroughTransformer(Morpher):
         return [(lo.start(), hi.end())
                 for lo, hi in iterutils.grouper(2, matches) if all((lo, hi))]
 
-    def Transform(self, old):
-        # `old` is: --text--
-        return '**IRRELEVANT**({})'.format(old[2:-2].rstrip('.!:'))
+    def Transform(self, substr):
+        # `substr` is: --text--
+        return '**IRRELEVANT**({})'.format(substr[2:-2].rstrip('.!:'))
 
 
 class HeaderTransformer(Morpher):
@@ -192,9 +199,9 @@ class HeaderTransformer(Morpher):
                 return [Span(s)]
         return []
 
-    def Transform(self, old):
-        level = re.search(r'^=+', old).end()
-        return '#'*(self.start_level + level) + ' ' + old[level:-level]
+    def Transform(self, substr):
+        level = re.search(r'^=+', substr).end()
+        return '#'*(self.start_level + level) + ' ' + substr[level:-level]
 
 
 class ListTransformer(Morpher):
@@ -219,8 +226,8 @@ class ListTransformer(Morpher):
             self._UpdateHistory(m.start(1))
             return [m.span(1)]
 
-    def Transform(self, old):
-        # `old` is `+`
+    def Transform(self, substr):
+        # `substr` is `+`
         self.history[-1] += 1
         return str(self.history[-1]) + '.'
 
@@ -234,7 +241,7 @@ class InnerUnderscoreEscaper(Morpher):
         return [m.span() for m in re.finditer(r'(?<=\w)_(?=\w)', s)
                 if not OccursInUrl(m) and not OccursInBacktick(m)]
 
-    def Transform(self, old):
+    def Transform(self, substr):
         return '\\_'
 
 
@@ -247,8 +254,8 @@ class BacktickTransformer(Morpher):
         return [m.span() for m in re.finditer('``.*?``', s)
                 if not OccursInUrl(m)]
 
-    def Transform(self, old):
-        return old[1:-1]  # Trim off the outermost ticks.
+    def Transform(self, substr):
+        return substr[1:-1]  # Trim off the outermost ticks.
 
 
 def main():
