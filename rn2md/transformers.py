@@ -131,7 +131,7 @@ def HeaderTransformer(base_level=0):
 def ListTransformer():
     line = None
     empty_line_counter = 0
-    ordered_list_counter = defaultlist(lambda: 0)
+    ordered_list_counter = defaultlist.defaultlist(lambda: 0)
     while True:
         line = yield line
         if not line.strip():
