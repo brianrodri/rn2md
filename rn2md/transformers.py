@@ -16,192 +16,119 @@ Here is a list of the currently supported transformations:
     =Text=                            # Text
     [""url""]                         ![...](url)
 """
-from __future__ import print_function
-
 import itertools
 import iterutils
-import string
+import os
 import re
+import string
 import sys
 
 
-URL_PATTERN = re.compile(r'^(?:http|file|ftp)s?://'
-                         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
-                         r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
-                         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-                         r'(?::\d+)?',
-                         re.IGNORECASE)
+URL_PATTERN = re.compile(
+    r'^(?:http|file|ftp)s?://'
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
+    r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+    r'(?::\d+)?',
+    re.IGNORECASE)
 LINK_PATTERN = re.compile(r'\[.*?\]\(.*?\)')
 BACKTICK_PATTERN = re.compile(r'`.*?`')
 
 
-def IsIntersecting(v, u):
-    return v[1] >= u[0] and u[1] >= v[0]
-
-
-def Span(string):
-    return (0, len(string))
-
-
-def EmptySpan(off=0):
-    return (off, off)
-
-
 def OccursInUrl(match):
     """Check if regexp `match` occurs in some URL."""
-    occurrences = itertools.chain(URL_PATTERN.finditer(match.string),
-                                LINK_PATTERN.finditer(match.string))
-    return any(IsIntersecting(match.span(), m.span()) for m in occurrences)
+    occurrences = itertools.chain(
+        URL_PATTERN.finditer(match.string),
+        LINK_PATTERN.finditer(match.string))
+    return any(SpanOf(match) & SpanOf(m) for m in occurrences)
 
 
 def OccursInBacktick(match):
     """Check if `match` occurs in backticks."""
     occurrences = BACKTICK_PATTERN.finditer(match.string)
-    return any(IsIntersecting(match.span(), m.span()) for m in occurrences)
+    return any(SpanOf(match) & SpanOf(m) for m in occurrences)
 
 
-class Morpher(object):
-    """Applies changes to multiple points of a string."""
-
-    def __call__(self, s):
-        """Find target substring(s), apply transformation, return result.
-
-        Substrings are collected by the `FindRanges` method. Each one is
-        describes the half-open ranges to transform:
-
-        (lo, hi) -> s[lo:hi]
-
-        Example:
-        >>> class VowelsAs1337(Morpher):
-        ...     TRANSLATOR = string.maketrans('aeiou', '43105')
-        ...
-        ...     def FindRanges(self, s):
-        ...         return [m.span() for m in re.finditer('[aeiou]', s.lower())]
-        ...
-        ...     def Transform(self, substr):
-        ...         return substr.lower().translate(TRANSLATOR)
-        ...
-        >>> morpher = VowelsAs1337()
-        >>> print(morpher('I love sour patches!'))
-        1 l0v3 s05r p4tch3s!
-
-        Args:
-            s: The string that is used as transformed according to the rules
-                defined by self's FindRanges and Transform methods.
-
-        Returns:
-            transformed_piece: str. Substrs defined by self.FindRanges(s)
-                are replaced with the result of self.Transform(substr).
-        """
-        # Algorithm requires sorted list of ranges with at least 2 elements.
-        # We add two empty ones, and insert remaining ranges from subclasses.
-        ranges = [(0, 0), (len(s), len(s))]
-        ranges[1:1] = self.FindRanges(s)
-        output = ''
-        bounds = zip(ranges[:-2], ranges[1:-1], ranges[2:])
-        at_first = True
-        for (_, prevhi), (currlo, currhi), (nextlo, _) in bounds:
-            if at_first:
-                output += s[prevhi:currlo]
-                at_first = False
-            output += self.Transform(s[currlo:currhi])
-            output += s[currhi:nextlo]
-        return output or s
-
-    def FindRanges(self, s):  # pylint: disable=unused-argument
-        """Get indicies of substrings that should have Transform applied to them.
-
-        Args:
-            s: string to analyze for transformation ranges.
-
-        Returns:
-            ranges: A collection of index ranges that identify the substrings in
-                string to be replaced with a transformation.
-        """
-        raise NotImplementedError
-
-    def Transform(self, substr):
-        """Transform string-string `substr` as desired.
-
-        Args:
-            substr: Input string to be transformed.
-
-        Returns:
-            new: The transformed string.
-        """
-        raise NotImplementedError
+def FindNonEscapedPattens(pattern, s):
+    matches = re.finditer(pattern, s)
+    matches = filter(lambda m: not OccursInUrl(m), matches)
+    matches = filter(lambda m: not OccursInBacktick(m), matches)
+    return matches
 
 
-class ItalicTransformer(Morpher):
-
-    def FindRanges(self, s):
-        matches = (
-            m for m in re.finditer(r'//', s)
-            if not OccursInUrl(m) and not OccursInBacktick(m))
-        return [
-            (lo.start(), hi.end())
-            for lo, hi in iterutils.grouper(2, matches)
-            if all((lo, hi))
-        ]
-
-    def Transform(self, substr):
-        return '_{}_'.format(substr[2:-2])
-
-
-class ImageTransformer(Morpher):
-
-    def FindRanges(self, s):
-        return [m.span() for m in
-                re.finditer(r'\[""file://.*?""\.(jpg|tif|png|gif)\]', s)]
-
-    def Transform(self, substr):
-        # `substr` is: [""file://url"".ext]
-        return '![]({})'.format(substr[5:-7] + substr[-5:-1])
+def ItalicTransformer():
+    line = None
+    while True:
+        line = yield line
+        matches = FindNonEscapedPattens(r'//', line)
+        for mlo, mhi in reversed(iterutils.grouper(matches, 2)):
+            line = ''.join([
+                line[:mlo.start()],
+                '_',
+                line[mlo.end():mhi.start()],
+                '_',
+                line[mhi.end():]
+            ])
 
 
-class LinkTransformer(Morpher):
-
-    def FindRanges(self, s):
-        return [m.span() for m in re.finditer(r'\[[^"].*?""\]', s)]
-
-    def Transform(self, substr):
-        # `substr` is: [name ""url""]
-        url_span = re.search(r'\s""', substr).end(), len(substr) - 3
-        name_span = 1, re.search(r'\s""', substr).start()
-        name = substr[name_span[0]:name_span[1]].strip()
-        url = substr[url_span[0]:url_span[1]].strip()
-        return '[{}]({})'.format(name, url.replace('_', '\\_').replace('*', '\\*'))
+def LinkTransformer():
+    line = None
+    while True:
+        line = yield line
+        line = re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)')
 
 
-class StrikethroughTransformer(Morpher):
+def StrikethroughTransformer():
+    line = None
+    while True:
+        line = yield line
+        matches = FindNonEscapedPattens(r'--', line)
+        for mlo, mhi in reversed(iterutils.grouper(matches, 2)):
+            line = ''.join([
+                line[:mlo.start()],
+                '**IRRELEVANT**(',
+                line[mlo.end():mhi.start()].rstrip('.!?'),
+                ')',
+                line[mhi.end():]
+            ])
 
-    def FindRanges(self, s):
-        matches = (m for m in re.finditer(r'--', s) if
-                not OccursInUrl(m) and not OccursInBacktick(m))
-        return [(lo.start(), hi.end())
-                for lo, hi in iterutils.grouper(2, matches) if all((lo, hi))]
 
-    def Transform(self, substr):
-        # `substr` is: --text--
-        return '**IRRELEVANT**({})'.format(substr[2:-2].rstrip('.!:'))
+def HeaderTransformer(base_level=0):
+    """Transforms '=TEXT=' into '# TEXT'.
+
+    Always holds that:
+        >>> input.count('=') == (output.count('#') - base_level) * 2
+    """
+    line = None
+    while True:
+        line = yield line
+        if not line.startswith('='):
+            continue
+        affix = os.path.commonprefix([line, line[::-1]])
+        if affix == line:
+            continue
+        m = re.search('[^=]', affix)
+        level = m.start() if m else len(affix)
+        if base_level + level > 0:
+            line = ''.join([
+                '#' * (base_level + level),
+                ' ',
+                line[level:-level].lstrip(),
+            ])
 
 
-class HeaderTransformer(Morpher):
-    """'==TEXT==' to '## TEXT'; input.count('=') == output.count('#') * 2."""
+def ListTransformer():
+    levels = []
+    missed_lines = 0
 
-    def __init__(self, start_level=0):
-        self.start_level = start_level
-
-    def FindRanges(self, s):
-        affixes = re.search('[^=]', s), re.search('[^=]', s[::-1])
-        if all(a and a.start() for a in affixes):
-            if affixes[0].start() == affixes[1].start():
-                return [Span(s)]
-        return []
-
-    def Transform(self, substr):
-        level = re.search(r'^=+', substr).end()
-        return '#'*(self.start_level + level) + ' ' + substr[level:-level]
+    line = None
+    while True:
+        line = yield line
+        if not line.strip():
+            missed_lines += 1
+            continue
+        m = re.match(r'^\s*(\+|-)\s', line)
+        if not m
 
 
 class ListTransformer(Morpher):

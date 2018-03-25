@@ -1,16 +1,17 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
-import datetime
+import datetime as dt
 import isoweek
 import parsedatetime
 import sys
 
 
-def ParseDates(date_str, workdays_only=True):
+def ParseDates(date_str, workdays_only=False):
     """Returns the inferred dates described by the given date str."""
-    struct_time, _ = parsedatetime.Calendar().parse(date_str)
-    parsed_date = datetime.date(*struct_time[:3])
+    cal = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE)
+    struct_time, _ = cal.parse(date_str)
+    parsed_date = dt.date(*struct_time[:3])
     if 'week' in date_str:
         days = _GetWeekDays(parsed_date)
         return days[:5] if workdays_only else days
@@ -25,14 +26,10 @@ def _GetWeekDays(date):
 
 def _RoundToWorkday(date):
     if date.weekday() not in range(5):
-        if date < datetime.date.today():
-            workday_delta = date.weekday() - 4  # round to Friday
+        if dt.date.today() < date:
+            workday_delta = date.weekday() - 7  # round to Monday.
         else:
-            workday_delta = date.weekday() - 7  # round to Monday
+            workday_delta = date.weekday() - 4  # round to Friday.
     else:
         workday_delta = 0
-    return date - datetime.timedelta(days=workday_delta)
-
-
-if __name__ == '__main__':
-    print(ParseDates(' '.join(sys.argv[1:]) or 'today'))
+    return date - dt.timedelta(days=workday_delta)

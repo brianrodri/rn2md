@@ -5,38 +5,42 @@ import datetime
 import itertools
 import sys
 
-import functional
-
 import config
-import interface
+import util
 import storage
 import transformers
 
 
-def RedNotebookToMarkDown(line):
-    transformer = functional.compose(
-            transformers.HeaderTransformer(start_level=1),
-            transformers.BacktickTransformer(),
-            transformers.ImageTransformer(),
-            transformers.LinkTransformer(),
-            transformers.ItalicTransformer(),
-            transformers.ListTransformer(),
-            transformers.StrikethroughTransformer(),
-            transformers.InnerUnderscoreEscaper())
-    return transformer(line)
+def RedNotebookToMarkDown(day_entry_lines):
+    generators = [
+        transformers.HeaderTransformer(start_level=1),
+        transformers.BacktickTransformer(),
+        transformers.ImageTransformer(),
+        transformers.LinkTransformer(),
+        transformers.ItalicTransformer(),
+        transformers.ListTransformer(),
+        transformers.StrikethroughTransformer(),
+        transformers.InnerUnderscoreEscaper(),
+    ]
+    map(next, generators)  # Prepare each generator to receive lines.
+    for line in day_entry_lines:
+        for generator in generators:
+            line = generator.send(line)
+        yield line
 
 
 def main():
     options, remaining_argv = config.BuildConfigOptions()
-    entries = storage.BuildDailyEntriesDict(options.DataPath())
-    dates = interface.ParseDates(
-            ' '.join(remaining_argv), workdays_only=options.WorkdaysOnly())
+    daily_entries = storage.BuildDailyEntriesDict(options.DataPath())
     def FormatDate(date):
-        output_lines = [date.strftime('# %a %b %d, %Y')]
-        output_lines.extend(line.rstrip() for line in entries[date].split('\n'))
-        return '\n'.join(map(RedNotebookToMarkDown, output_lines))
+        day_entry_lines = [date.strftime('# %a %b %d, %Y')]
+        day_entry_lines.extend(
+            l.rstrip() for l in daily_entries[date].split('\n'))
+        return '\n'.join(RedNotebookToMarkDown(day_entry_lines))
 
-    print('\n\n\n'.join(FormatDate(d) for d in dates if d in entries))
+    dates = util.ParseDates(
+        ' '.join(remaining_argv), workdays_only=options.WorkdaysOnly())
+    print('\n\n\n'.join(FormatDate(d) for d in dates if d in daily_entries))
 
 
 if __name__ == '__main__':
