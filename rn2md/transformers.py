@@ -39,15 +39,14 @@ INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 
 
 def _Grouper(iterable, n):
-    "Collect data into fixed-length chunks or blocks"
+    """Collect data into fixed-length chunks or blocks."""
     # _Grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
-    args = [iter(iterable)] * n
-    return list(zip(*args))
+    args = (iter(iterable),) * n
+    return zip(*args)
 
 
 def _SpansIntersect(span1, span2):
     (lo1, hi1), (lo2, hi2) = span1, span2
-    assert lo1 <= hi1; assert lo2 <= hi2
     return hi1 >= lo2 and hi2 >= lo1
 
 
@@ -79,7 +78,7 @@ def ItalicTransformer():
     while True:
         line = yield line
         matches = _FindNonEscapedPattens(r'//', line)
-        for mlo, mhi in reversed(_Grouper(matches, 2)):
+        for mlo, mhi in reversed(list(_Grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
                 '_%s_' % line[mlo.end():mhi.start()],
@@ -101,7 +100,7 @@ def StrikethroughTransformer():
     while True:
         line = yield line
         matches = _FindNonEscapedPattens(r'--', line)
-        for mlo, mhi in reversed(_Grouper(matches, 2)):
+        for mlo, mhi in reversed(list(_Grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
                 '**OBSOLETE**(%s)' % line[mlo.end():mhi.start()].rstrip('.!?'),
