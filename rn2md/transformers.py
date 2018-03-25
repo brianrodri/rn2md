@@ -17,10 +17,10 @@ Here is a list of the currently supported transformations:
     [""url""]                         ![...](url)
 """
 import itertools
-import iterutils
 import os
 import re
 
+import iterutils
 import defaultlist
 
 
