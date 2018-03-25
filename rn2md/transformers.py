@@ -149,7 +149,7 @@ def ListTransformer():
             if list_match.group(1) == '+':
                 ordered_list_counter[index] += 1
                 line = ''.join([
-                    line[:list_match.begin(1)],
+                    line[:list_match.start(1)],
                     '%d.' % ordered_list_counter[index],
                     line[list_match.end(1):]
                 ])
