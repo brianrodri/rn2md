@@ -36,18 +36,29 @@ BACKTICK_PATTERN = re.compile(r'`.*?`')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
 
+def _Grouper(iterable, n):
+    "Collect data into fixed-length chunks or blocks"
+    # _Grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+    args = [iter(iterable)] * n
+    return list(zip(*args))
+
+
+def _SpansIntersect(span1, span2):
+    (lo1, hi1), (lo2, hi2) = span1, span2
+    assert lo1 <= hi1; assert lo2 <= hi2
+    return hi1 >= lo2 and hi2 >= lo1
+
+
 def _OccursInUrl(match):
     """Check if regexp `match` occurs in some URL."""
-    occurrences = itertools.chain(
-        URL_PATTERN.finditer(match.string),
-        LINK_PATTERN.finditer(match.string))
-    return any(SpanOf(match) & SpanOf(m) for m in occurrences)
+    occurrences = URL_PATTERN.finditer(match.string)
+    return any(_SpansIntersect(match.span(), m.span()) for m in occurrences)
 
 
 def _OccursInBacktick(match):
     """Check if `match` occurs in backticks."""
     occurrences = BACKTICK_PATTERN.finditer(match.string)
-    return any(SpanOf(match) & SpanOf(m) for m in occurrences)
+    return any(_SpansIntersect(match.span(), m.span()) for m in occurrences)
 
 
 def _FindNonEscapedPattens(pattern, s):
@@ -62,12 +73,10 @@ def ItalicTransformer():
     while True:
         line = yield line
         matches = _FindNonEscapedPattens(r'//', line)
-        for mlo, mhi in reversed(iterutils.grouper(matches, 2)):
+        for mlo, mhi in reversed(_Grouper(matches, 2)):
             line = ''.join([
                 line[:mlo.start()],
-                '_',
-                line[mlo.end():mhi.start()],
-                '_',
+                '_%s_' % line[mlo.end():mhi.start()],
                 line[mhi.end():]
             ])
 
@@ -84,12 +93,10 @@ def StrikethroughTransformer():
     while True:
         line = yield line
         matches = _FindNonEscapedPattens(r'--', line)
-        for mlo, mhi in reversed(iterutils.grouper(matches, 2)):
+        for mlo, mhi in reversed(_Grouper(2, matches)):
             line = ''.join([
                 line[:mlo.start()],
-                '**IRRELEVANT**(',
-                line[mlo.end():mhi.start()].rstrip('.!?'),
-                ')',
+                '**OBSOLETE**(%s)' % line[mlo.end():mhi.start()].rstrip('.!?'),
                 line[mhi.end():]
             ])
 
