@@ -34,6 +34,7 @@ URL_PATTERN = re.compile(
 LINK_PATTERN = re.compile(r'\[.*?\]\(.*?\)')
 BACKTICK_PATTERN = re.compile(r'`.*?`')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
+HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
 
 
 def _Grouper(iterable, n):
@@ -115,11 +116,13 @@ def HeaderTransformer(base_level=0):
         line = yield line
         if not line.startswith('=') or not line.endswith('='):
             continue
-        prefix_end = re.search('[^=]', line)
-        if (prefix_end is None or
-                prefix_end.start() != re.search('[^=]', line[::-1]).start()):
+        header_token_end = HEADER_TOKEN_END_PATTERN.search(line)
+        if header_token_end is None:
             continue
-        level = prefix_end.start()
+        if (header_token_end.start() !=
+                HEADER_TOKEN_END_PATTERN.search(line[::-1]).start()):
+            continue
+        level = header_token_end.start()
         if base_level + level > 0:
             line = ' '.join(
                 ['#' * (base_level + level), line[level:-level].lstrip()])
@@ -131,26 +134,24 @@ def ListTransformer():
     ordered_list_counter = defaultlist(lambda: 0)
     while True:
         line = yield line
-
         if not line.strip():
             empty_line_counter += 1
             if empty_line_counter >= 2:
                 ordered_list_counter.clear()
             continue
         empty_line_counter = 0
-
-        m = LIST_PATTERN.match(line)
-        if not m:
+        list_match = LIST_PATTERN.match(line)
+        if not list_match:
             del ordered_list_counter[:]
         else:
-            index = m.start(1)
+            index = list_match.start(1)
             del ordered_list_counter[index + 1:]
-            if m.group(1) == '+':
+            if list_match.group(1) == '+':
                 ordered_list_counter[index] += 1
                 line = ''.join([
-                    line[:m.begin(1)],
+                    line[:list_match.begin(1)],
                     '%d.' % ordered_list_counter[index],
-                    line[m.end(1):]
+                    line[list_match.end(1):]
                 ])
 
 
@@ -158,9 +159,8 @@ def InnerUnderscoreEscaper():
     line = None
     while True:
         line = yield line
-        for m in reversed(re.finditer(r'(?<=\w)_(?=\w)', line)):
-            if not _OccursInUrl(m) and not _OccursInBacktick(m):
-                line = ''.join([line[:m.start()], r'\_', line[m.end():]])
+        for m in reversed(_FindNonEscapedPattens(r'(<=\w)_(?=\w)', line)):
+            line = ''.join([line[:m.start()], r'\_', line[m.end():]])
 
 
 def BacktickTransformer():
