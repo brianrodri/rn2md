@@ -121,8 +121,8 @@ def HeaderTransformer(base_level=0):
             continue
         level = prefix_end.start()
         if base_level + level > 0:
-            line = ''.join(
-                ['#' * (base_level + level), ' ', line[level:-level].lstrip()])
+            line = ' '.join(
+                ['#' * (base_level + level), line[level:-level].lstrip()])
 
 
 def ListTransformer():
