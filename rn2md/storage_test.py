@@ -31,7 +31,7 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
             dt.date(1993, 1, 17): '🎂',
             dt.date(2017, 12, 25): '🎅',
             dt.date(2018, 3, 1): 'data',
-            dt.date(2018, 3, 24): 'info'
+            dt.date(2018, 3, 24): 'info',
         })
 
     def testMisnamedFilesAreIgnored(self):
@@ -39,14 +39,14 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
         self.CreateValidMonthFile('2018-MAR.txt', {24: 'from invalid file'})
 
         self.assertDictEqual(storage.LoadDailyEntries('/test'), {
-            dt.date(2018, 1, 17): 'from valid file'
+            dt.date(2018, 1, 17): 'from valid file',
         })
 
     def testEmptyEntriesAreIgnored(self):
         self.CreateValidMonthFile('2018-03.txt', {12: '', 24: 'non-empty'})
 
         self.assertDictEqual(storage.LoadDailyEntries('/test'), {
-            dt.date(2018, 3, 24): 'non-empty'
+            dt.date(2018, 3, 24): 'non-empty',
         })
 
     def testFilesWithNonYamlDataAreIgnored(self):
