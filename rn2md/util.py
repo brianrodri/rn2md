@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
 import datetime as dt
+import sys
+
 import isoweek
 import parsedatetime
-import sys
 
 
 def ParseDates(date_str, workdays_only=False):
