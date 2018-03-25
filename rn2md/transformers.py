@@ -159,7 +159,8 @@ def InnerUnderscoreEscaper():
     line = None
     while True:
         line = yield line
-        for m in reversed(_FindNonEscapedPattens(r'(<=\w)_(?=\w)', line)):
+        ms = list(_FindNonEscapedPattens(r'(?<=\w)_(?=\w)', line))
+        for m in reversed(ms):
             line = ''.join([line[:m.start()], r'\_', line[m.end():]])
 
 
