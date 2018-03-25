@@ -9,6 +9,13 @@ import os
 import yaml
 
 
+def BuildDailyEntriesDict(data_path):
+    all_daily_entries = dict()
+    for daily_entries in map(_LoadDailyEntries, _GetMonthsData(data_path)):
+        all_daily_entries.update(daily_entries)
+    return all_daily_entries
+
+
 def _GetMonthsData(data_path):
     if not os.path.exists(data_path):
         return
@@ -34,22 +41,3 @@ def _LoadDailyEntries(month_data):
             if day_entry:
                 daily_entries[day_key] = day_entry
     return daily_entries
-
-
-def BuildDailyEntriesDict(data_path):
-    all_daily_entries = dict()
-    for daily_entries in map(_LoadDailyEntries, _GetMonthsData(data_path)):
-        all_daily_entries.update(daily_entries)
-    return all_daily_entries
-
-
-def main():
-    daily_entries = (
-        BuildDailyEntriesDict(os.path.expanduser('~/.rednotebook/data')))
-    def PrintEntry(day):
-        return str(day) + '\n' + daily_entries[day]
-    print('\n\n\n'.join(map(PrintEntry, itertools.islice(daily_entries, 3))))
-
-
-if __name__ == '__main__':
-    main()
