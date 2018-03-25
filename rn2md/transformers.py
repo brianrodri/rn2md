@@ -85,7 +85,7 @@ def LinkTransformer():
     line = None
     while True:
         line = yield line
-        line = re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)')
+        line = re.sub(r'\[\[([^\]]*?) ""(.*?)""\]\]', r'[\1](\2)', line)
 
 
 def StrikethroughTransformer():

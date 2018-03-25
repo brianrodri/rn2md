@@ -33,5 +33,17 @@ class ItalicTransformerTest(unittest.TestCase):
             '_italic_, `//escaped italic//`')
 
 
+class LinkTransformer(unittest.TestCase):
+
+    def setUp(self):
+        self.transformer = transformers.LinkTransformer()
+        next(self.transformer)
+
+    def testTransformation(self):
+        self.assertEqual(
+            self.transformer.send('[[sample text ""go/somewhere""]]'),
+            '[sample text](go/somewhere)')
+
+
 if __name__ == '__main__':
     unittest.main()
