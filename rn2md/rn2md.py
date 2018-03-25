@@ -18,7 +18,7 @@ def RedNotebookToMarkDown(day_entry_lines):
         transformers.StrikethroughTransformer(),
         transformers.InnerUnderscoreEscaper(),
     ]
-    map(next, generators)  # Prepare each generator to receive lines.
+    map(next, generators)  # Prepare each generator to begin receiving lines.
     for line in day_entry_lines:
         for generator in generators:
             line = generator.send(line)

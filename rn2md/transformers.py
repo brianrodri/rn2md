@@ -23,6 +23,8 @@ import re
 import string
 import sys
 
+import defaultlist
+
 
 URL_PATTERN = re.compile(
     r'^(?:http|file|ftp)s?://'
@@ -33,9 +35,10 @@ URL_PATTERN = re.compile(
     re.IGNORECASE)
 LINK_PATTERN = re.compile(r'\[.*?\]\(.*?\)')
 BACKTICK_PATTERN = re.compile(r'`.*?`')
+LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
 
-def OccursInUrl(match):
+def _OccursInUrl(match):
     """Check if regexp `match` occurs in some URL."""
     occurrences = itertools.chain(
         URL_PATTERN.finditer(match.string),
@@ -43,16 +46,16 @@ def OccursInUrl(match):
     return any(SpanOf(match) & SpanOf(m) for m in occurrences)
 
 
-def OccursInBacktick(match):
+def _OccursInBacktick(match):
     """Check if `match` occurs in backticks."""
     occurrences = BACKTICK_PATTERN.finditer(match.string)
     return any(SpanOf(match) & SpanOf(m) for m in occurrences)
 
 
-def FindNonEscapedPattens(pattern, s):
+def _FindNonEscapedPattens(pattern, s):
     matches = re.finditer(pattern, s)
-    matches = filter(lambda m: not OccursInUrl(m), matches)
-    matches = filter(lambda m: not OccursInBacktick(m), matches)
+    matches = filter(lambda m: not _OccursInUrl(m), matches)
+    matches = filter(lambda m: not _OccursInBacktick(m), matches)
     return matches
 
 
@@ -60,7 +63,7 @@ def ItalicTransformer():
     line = None
     while True:
         line = yield line
-        matches = FindNonEscapedPattens(r'//', line)
+        matches = _FindNonEscapedPattens(r'//', line)
         for mlo, mhi in reversed(iterutils.grouper(matches, 2)):
             line = ''.join([
                 line[:mlo.start()],
@@ -82,7 +85,7 @@ def StrikethroughTransformer():
     line = None
     while True:
         line = yield line
-        matches = FindNonEscapedPattens(r'--', line)
+        matches = _FindNonEscapedPattens(r'--', line)
         for mlo, mhi in reversed(iterutils.grouper(matches, 2)):
             line = ''.join([
                 line[:mlo.start()],
@@ -110,87 +113,53 @@ def HeaderTransformer(base_level=0):
         m = re.search('[^=]', affix)
         level = m.start() if m else len(affix)
         if base_level + level > 0:
-            line = ''.join([
-                '#' * (base_level + level),
-                ' ',
-                line[level:-level].lstrip(),
-            ])
+            line = ''.join(
+                ['#' * (base_level + level), ' ', line[level:-level].lstrip()])
 
 
 def ListTransformer():
-    levels = []
-    missed_lines = 0
+    line = None
+    empty_line_counter = 0
+    ordered_list_counter = defaultlist(lambda: 0)
+    while True:
+        line = yield line
 
+        if not line.strip():
+            empty_line_counter += 1
+            if empty_line_counter >= 2:
+                ordered_list_counter.clear()
+            continue
+        empty_line_counter = 0
+
+        m = LIST_PATTERN.match(line)
+        if not m:
+            del ordered_list_counter[:]
+        else:
+            index = m.start(1)
+            del ordered_list_counter[index + 1:]
+            if m.group(1) == '+':
+                ordered_list_counter[index] += 1
+                line = ''.join([
+                    line[:m.begin(1)],
+                    '%d.' % ordered_list_counter[index],
+                    line[m.end(1):]
+                ])
+
+
+def InnerUnderscoreEscaper():
     line = None
     while True:
         line = yield line
-        if not line.strip():
-            missed_lines += 1
-            continue
-        m = re.match(r'^\s*(\+|-)\s', line)
-        if not m
+        for m in reversed(re.finditer(r'(?<=\w)_(?=\w)', line)):
+            if not _OccursInUrl(m) and not _OccursInBacktick(m):
+                line = ''.join([line[:m.start()], r'\_', line[m.end():]])
 
 
-class ListTransformer(Morpher):
-    """Enumerates syntactically sequential unordered and ordered lists."""
-
-    def __init__(self):
-        self.history = []
-        self.missed_lines = 0
-
-    def FindRanges(self, s):
-        m = re.match(r'^\s*(\+|-)\s', s)
-        if not s.strip():
-            self.missed_lines += 1
-            return []  # Do nothing
-        elif not m:
-            self.history.clear()
-            return []  # Do nothing.
-        elif m.group(1) == '-':
-            self.missed_lines += 1
-            return []  # Do nothing.
-        elif m.group(1) == '+':
-            self._UpdateHistory(m.start(1))
-            return [m.span(1)]
-
-    def Transform(self, substr):
-        # `substr` is `+`
-        self.history[-1] += 1
-        return str(self.history[-1]) + '.'
-
-    def _UpdateHistory(self, i):
-        self.history = [iterutils.nth(self.history[:i+1], n, 0) for n in range(i+1)]
-
-
-class InnerUnderscoreEscaper(Morpher):
-
-    def FindRanges(self, s):
-        return [m.span() for m in re.finditer(r'(?<=\w)_(?=\w)', s)
-                if not OccursInUrl(m) and not OccursInBacktick(m)]
-
-    def Transform(self, substr):
-        return '\\_'
-
-
-class BacktickTransformer(Morpher):
-
-    def __init__(self):
-        self.line_num = 0
-
-    def FindRanges(self, s):
-        return [m.span() for m in re.finditer('``.*?``', s)
-                if not OccursInUrl(m)]
-
-    def Transform(self, substr):
-        return substr[1:-1]  # Trim off the outermost ticks.
-
-
-def main():
-    for key, val in sys.modules[__name__].__dict__.items():
-        if isinstance(val, type) and issubclass(val, Morpher):
-            print(key)
-            _ = val()  # Make sure it can be initialized.
-
-
-if __name__ == '__main__':
-    main()
+def BacktickTransformer():
+    line = None
+    while True:
+        line = yield line
+        for m in reversed(re.finditer('``.*?``', line)):
+            if not _OccursInUrl(m):
+                line = ''.join(
+                    [line[:m.start()], m.group()[1:-1], line[m.end():]])
