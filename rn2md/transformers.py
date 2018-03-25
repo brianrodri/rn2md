@@ -164,7 +164,7 @@ def InnerUnderscoreEscaper():
             line = ''.join([line[:m.start()], r'\_', line[m.end():]])
 
 
-def BacktickTransformer():
+def CodeBlockTransformer():
     line = None
     while True:
         line = yield line
