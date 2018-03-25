@@ -5,7 +5,7 @@ import unittest
 import dateutil
 import freezegun
 
-from .. import util
+import util
 
 
 def StrToDate(date_str):

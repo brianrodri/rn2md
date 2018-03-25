@@ -7,7 +7,7 @@ import unittest
 from pyfakefs import fake_filesystem_unittest
 import yaml
 
-from .. import storage
+import storage
 
 
 class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
