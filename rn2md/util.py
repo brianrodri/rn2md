@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
 import datetime as dt
-import sys
 
 import isoweek
 import parsedatetime
