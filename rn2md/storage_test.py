@@ -12,8 +12,8 @@ import storage
 
 class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
 
-    def CreateValidMonthFile(self, month_key, day_entries):
-        month_file_path = os.path.join('/test', month_key)
+    def CreateValidMonthFile(self, month_filename, day_entries):
+        month_file_path = os.path.join('/test', month_filename)
         month_file_content = yaml.dump(
             {day: {'text': entry} for day, entry in day_entries.items()})
         self.fs.create_file(
