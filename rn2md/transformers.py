@@ -35,6 +35,7 @@ LINK_PATTERN = re.compile(r'\[.*?\]\(.*?\)')
 BACKTICK_PATTERN = re.compile(r'`.*?`')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
+INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 
 
 def _Grouper(iterable, n):
@@ -63,7 +64,10 @@ def _OccursInBacktick(match):
 
 
 def _FindNonEscapedPattens(pattern, s):
-    matches = re.finditer(pattern, s)
+    try:
+        matches = pattern.finditer(s)
+    except AttributeError:
+        matches = re.finditer(pattern, s)
     matches = filter(lambda m: not _OccursInUrl(m), matches)
     matches = filter(lambda m: not _OccursInBacktick(m), matches)
     return matches
@@ -159,7 +163,7 @@ def InnerUnderscoreEscaper():
     line = None
     while True:
         line = yield line
-        ms = list(_FindNonEscapedPattens(r'(?<=\w)_(?=\w)', line))
+        ms = list(_FindNonEscapedPattens(INNER_UNDERSCORE_PATTERN, line))
         for m in reversed(ms):
             line = ''.join([line[:m.start()], r'\_', line[m.end():]])
 
