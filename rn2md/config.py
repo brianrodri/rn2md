@@ -1,4 +1,4 @@
-#!/usr/local/env python3
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """Builds configuration options with nice default behavior."""
 import configparser
