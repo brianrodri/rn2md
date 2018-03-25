@@ -1,10 +1,6 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
-import datetime
-import itertools
-import sys
-
 import config
 import util
 import storage
