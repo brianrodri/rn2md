@@ -59,21 +59,20 @@ def _OccursInBacktick(match):
 
 
 def _FindNonEscapedPattens(pattern, s):
-    try:
-        matches = pattern.finditer(s)
-    except AttributeError:
-        matches = re.finditer(pattern, s)
+    matches = pattern.finditer(s)
     matches = filter(lambda m: not _OccursInUrl(m), matches)
     matches = filter(lambda m: not _OccursInBacktick(m), matches)
     return matches
 
+
+ITALIC_PATTERN = re.compile(r'//')
 
 def ItalicTransformer():
     """Transforms '//text//' to '_text_'."""
     line = None
     while True:
         line = yield line
-        matches = _FindNonEscapedPattens(r'//', line)
+        matches = _FindNonEscapedPattens(ITALIC_PATTERN, line)
         for mlo, mhi in reversed(list(_Grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
@@ -92,12 +91,14 @@ def LinkTransformer():
         line = LINK_PATTERN.sub(r'[\1](\2)', line)
 
 
+STRIKETHROUGH_PATTERN = re.compile(r'--')
+
 def StrikethroughTransformer():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = None
     while True:
         line = yield line
-        matches = _FindNonEscapedPattens(r'--', line)
+        matches = _FindNonEscapedPattens(STRIKETHROUGH_PATTERN, line)
         for mlo, mhi in reversed(list(_Grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
