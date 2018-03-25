@@ -69,6 +69,7 @@ def _FindNonEscapedPattens(pattern, s):
 
 
 def ItalicTransformer():
+    """Transforms '//text//' to '_text_'."""
     line = None
     while True:
         line = yield line
@@ -82,6 +83,7 @@ def ItalicTransformer():
 
 
 def LinkTransformer():
+    """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = None
     while True:
         line = yield line
@@ -89,11 +91,12 @@ def LinkTransformer():
 
 
 def StrikethroughTransformer():
+    """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = None
     while True:
         line = yield line
         matches = _FindNonEscapedPattens(r'--', line)
-        for mlo, mhi in reversed(_Grouper(2, matches)):
+        for mlo, mhi in reversed(_Grouper(matches, 2)):
             line = ''.join([
                 line[:mlo.start()],
                 '**OBSOLETE**(%s)' % line[mlo.end():mhi.start()].rstrip('.!?'),
