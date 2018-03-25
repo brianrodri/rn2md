@@ -78,7 +78,8 @@ class HeaderTransformerTest(unittest.TestCase):
         self.tfmr = transformers.HeaderTransformer(); next(self.tfmr)
 
     def testTransformation(self):
-        self.assertEqual(self.tfmr.send('=TEXT='), '# TEXT')
+        self.assertEqual(self.tfmr.send('=Level One='), '# Level One')
+        self.assertEqual(self.tfmr.send('===Level Three==='), '### Level Three')
 
     def testBaseLevelIsRespected(self):
         tfmr = transformers.HeaderTransformer(base_level=2); next(tfmr)
