@@ -45,5 +45,35 @@ class LinkTransformer(unittest.TestCase):
             '[sample text](go/somewhere)')
 
 
+class StrikethroughTransformer(unittest.TestCase):
+
+    def setUp(self):
+        self.tfmr = transformers.StrikethroughTransformer()
+        next(self.tfmr)
+
+    def testTransformation(self):
+        self.assertEqual(self.tfmr.send('--text--'), '**OBSOLETE**(text)')
+
+    def testPunctuationGetsStripped(self):
+        self.assertEqual(
+            self.tfmr.send('--a complete sentence.--'),
+            '**OBSOLETE**(a complete sentence)')
+
+    def testIgnoresNonPairedMarkers(self):
+        self.assertEqual(
+            self.tfmr.send('--changed--, --this too--, not here--or here.'),
+            '**OBSOLETE**(changed), **OBSOLETE**(this too), not here--or here.')
+
+    def testIgnoresUrls(self):
+        self.assertEqual(
+            self.tfmr.send('http://do/something--weird'),
+            'http://do/something--weird')
+
+    def testIgnoresBacktickedData(self):
+        self.assertEqual(
+            self.tfmr.send('--hit--, `--not hit--`'),
+            '**OBSOLETE**(hit), `--not hit--`')
+
+
 if __name__ == '__main__':
     unittest.main()
