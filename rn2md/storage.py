@@ -3,41 +3,40 @@
 """TODO(brianrodri): Better module doc string."""
 import codecs
 import collections
-from datetime import datetime
+import datetime as dt
 import itertools
 import os
 import yaml
 
 
-def BuildDailyEntriesDict(data_path):
-    all_daily_entries = dict()
-    for daily_entries in map(_LoadDailyEntries, _GetMonthsData(data_path)):
-        all_daily_entries.update(daily_entries)
+def LoadDailyEntries(data_path):
+    all_daily_entries = {}
+    for month_date, month_path in _LoadMonthPaths(data_path):
+        with open(month_path, 'rb', encoding='utf-8') as month_file:
+            all_daily_entries.update(_LoadDailyEntries(month_date, month_file))
     return all_daily_entries
 
 
-def _GetMonthsData(data_path):
-    if not os.path.exists(data_path):
-        return
+def _LoadMonthPaths(data_path):
     for dir_entry in os.scandir(data_path):
         if dir_entry.is_file():
-            month_root, unused_ext = os.path.splitext(dir_entry)
+            file_root = os.path.splitext(dir_entry.name)[0]
             try:
-                month_date = datetime.strptime(month_root, '%Y-%m').date()
-                month_path = os.path.join(data_path, dir_entry)
-                yield (month_date, month_path)
+                month_date = dt.datetime.strptime(file_root, '%Y-%m').date()
+                yield (month_date, dir_entry.path)
             except ValueError:
                 continue
 
 
-def _LoadDailyEntries(month_data):
-    month_date, month_path = month_data
-    daily_entries = dict()
-    with codecs.open(month_path, 'rb', encoding='utf-8') as month_file:
-        month_contents = yaml.load(month_file)
-        for day_of_month, month_content in month_contents.iteritems():
-            day_key = month_date.replace(day=day_of_month)
-            day_entry = month_content['text'].rstrip()
-            if day_entry:
-                daily_entries[day_key] = day_entry
+def _LoadDailyEntries(month_date, month_file):
+    try:
+        month_file_content = yaml.safe_load(month_file)
+    except yaml.YAMLError:
+        return {}
+    daily_entries = {}
+    for day_of_month, month_content in month_file_content.items():
+        day_key = month_date.replace(day=day_of_month)
+        day_entry = month_content['text'].rstrip()
+        if day_entry:
+            daily_entries[day_key] = day_entry
     return daily_entries
