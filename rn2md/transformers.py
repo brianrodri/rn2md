@@ -24,20 +24,6 @@ import iterutils
 import defaultlist
 
 
-URL_PATTERN = re.compile(
-    r'^(?:http|file|ftp)s?://'
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
-    r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
-    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-    r'(?::\d+)?',
-    re.IGNORECASE)
-LINK_PATTERN = re.compile(r'\[.*?\]\(.*?\)')
-BACKTICK_PATTERN = re.compile(r'`.*?`')
-LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
-HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
-INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
-
-
 def _Grouper(iterable, n):
     """Collect data into fixed-length chunks or blocks."""
     # _Grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
@@ -50,11 +36,21 @@ def _SpansIntersect(span1, span2):
     return hi1 >= lo2 and hi2 >= lo1
 
 
+URL_PATTERN = re.compile(
+    r'^(?:http|file|ftp)s?://'
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
+    r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+    r'(?::\d+)?',
+    re.IGNORECASE)
+
 def _OccursInUrl(match):
     """Check if regexp `match` occurs in some URL."""
     occurrences = URL_PATTERN.finditer(match.string)
     return any(_SpansIntersect(match.span(), m.span()) for m in occurrences)
 
+
+BACKTICK_PATTERN = re.compile(r'`.*?`')
 
 def _OccursInBacktick(match):
     """Check if `match` occurs in backticks."""
@@ -86,12 +82,14 @@ def ItalicTransformer():
             ])
 
 
+LINK_PATTERN = re.compile(r'\[\[([^\]]*?) ""(.*?)""\]\]')
+
 def LinkTransformer():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = None
     while True:
         line = yield line
-        line = re.sub(r'\[\[([^\]]*?) ""(.*?)""\]\]', r'[\1](\2)', line)
+        line = LINK_PATTERN.sub(r'[\1](\2)', line)
 
 
 def StrikethroughTransformer():
@@ -107,6 +105,8 @@ def StrikethroughTransformer():
                 line[mhi.end():]
             ])
 
+
+HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
 
 def HeaderTransformer(base_level=0):
     """Transforms '=TEXT=' into '# TEXT'.
@@ -130,6 +130,8 @@ def HeaderTransformer(base_level=0):
             line = ' '.join(
                 ['#' * (base_level + level), line[level:-level].lstrip()])
 
+
+LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
 def ListTransformer():
     line = None
@@ -157,6 +159,8 @@ def ListTransformer():
                     line[list_match.end(1):]
                 ])
 
+
+INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 
 def InnerUnderscoreEscaper():
     line = None
