@@ -3,5 +3,5 @@ bin/
 .*
 *.py[cod]
 *$py.class
-__py_cache__/
-Icon
+__py_cache__
+Icon
