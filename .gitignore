@@ -1,7 +1,0 @@
-build/
-bin/
-.*
-*.py[cod]
-*$py.class
-__py_cache__
-Icon
