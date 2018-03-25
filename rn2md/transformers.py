@@ -168,7 +168,8 @@ def BacktickTransformer():
     line = None
     while True:
         line = yield line
-        for m in reversed(re.finditer('``.*?``', line)):
+        ms = list(re.finditer('``.*?``', line))
+        for m in reversed(ms):
             if not _OccursInUrl(m):
                 line = ''.join(
                     [line[:m.start()], m.group()[1:-1], line[m.end():]])
