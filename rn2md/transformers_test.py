@@ -9,8 +9,7 @@ import transformers
 class ItalicTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.tfmr = transformers.ItalicTransformer()
-        next(self.tfmr)
+        self.tfmr = transformers.ItalicTransformer(); next(self.tfmr)
 
     def testTransformation(self):
         self.assertEqual(
@@ -33,11 +32,10 @@ class ItalicTransformerTest(unittest.TestCase):
             '_italic_, `//escaped italic//`')
 
 
-class LinkTransformer(unittest.TestCase):
+class LinkTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.tfmr = transformers.LinkTransformer()
-        next(self.tfmr)
+        self.tfmr = transformers.LinkTransformer(); next(self.tfmr)
 
     def testTransformation(self):
         self.assertEqual(
@@ -45,11 +43,10 @@ class LinkTransformer(unittest.TestCase):
             '[sample text](go/somewhere)')
 
 
-class StrikethroughTransformer(unittest.TestCase):
+class StrikethroughTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.tfmr = transformers.StrikethroughTransformer()
-        next(self.tfmr)
+        self.tfmr = transformers.StrikethroughTransformer(); next(self.tfmr)
 
     def testTransformation(self):
         self.assertEqual(self.tfmr.send('--text--'), '**OBSOLETE**(text)')
@@ -73,6 +70,31 @@ class StrikethroughTransformer(unittest.TestCase):
         self.assertEqual(
             self.tfmr.send('--hit--, `--not hit--`'),
             '**OBSOLETE**(hit), `--not hit--`')
+
+
+class HeaderTransformerTest(unittest.TestCase):
+
+    def setUp(self):
+        self.tfmr = transformers.HeaderTransformer(); next(self.tfmr)
+
+    def testTransformation(self):
+        self.assertEqual(self.tfmr.send('=TEXT='), '# TEXT')
+
+    def testBaseLevelIsRespected(self):
+        tfmr = transformers.HeaderTransformer(base_level=2); next(tfmr)
+        self.assertEqual(tfmr.send('===Only 3==='), '##### Only 3')
+
+    def testInnerMarkersAreIgnored(self):
+        self.assertEqual(
+            self.tfmr.send('Not at =start= of text'),
+            'Not at =start= of text')
+
+    def testOnlyMarkersAreIgnored(self):
+        self.assertEqual(self.tfmr.send('=' * 6), '=' * 6)
+        self.assertEqual(self.tfmr.send('=' * 7), '=' * 7)
+
+    def testUnBalancedMarkersAreIgnored(self):
+        self.assertEqual(self.tfmr.send('==Unbalanced==='), '==Unbalanced===')
 
 
 if __name__ == '__main__':
