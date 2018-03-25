@@ -1,10 +1,7 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
-import codecs
-import collections
 import datetime as dt
-import itertools
 import os
 import yaml
 
