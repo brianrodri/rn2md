@@ -113,13 +113,13 @@ def HeaderTransformer(base_level=0):
     line = None
     while True:
         line = yield line
-        if not line.startswith('='):
+        if not line.startswith('=') or not line.endswith('='):
             continue
-        affix = os.path.commonprefix([line, line[::-1]])
-        if affix == line:
+        prefix_end = re.search('[^=]', line)
+        if (prefix_end is None or
+                prefix_end.start() != re.search('[^=]', line[::-1]).start()):
             continue
-        m = re.search('[^=]', affix)
-        level = m.start() if m else len(affix)
+        level = prefix_end.start()
         if base_level + level > 0:
             line = ''.join(
                 ['#' * (base_level + level), ' ', line[level:-level].lstrip()])
