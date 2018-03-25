@@ -10,7 +10,7 @@ import sys
 def ParseDates(date_str, workdays_only=False):
     """Returns the inferred dates described by the given date str."""
     cal = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE)
-    struct_time, _ = cal.parse(date_str)
+    struct_time = cal.parse(date_str)[0]
     parsed_date = dt.date(*struct_time[:3])
     if 'week' in date_str:
         days = _GetWeekDays(parsed_date)
