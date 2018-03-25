@@ -99,5 +99,97 @@ class HeaderTransformerTest(unittest.TestCase):
         self.assertEqual(self.trans.send('==Unbalanced==='), '==Unbalanced===')
 
 
+class ListTransformerTest(unittest.TestCase):
+
+    def setUp(self):
+        self.trans = transformers.ListTransformer(); next(self.trans)
+
+    def testUnorderedList(self):
+        input_lines = [
+            '- A',
+            ' - B',
+            '- A',
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '- A',
+            ' - B',
+            '- A',
+        ])
+
+    def testOrderedList(self):
+        input_lines = [
+            '+ A',
+            ' + B',
+            '+ A',
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '1. A',
+            ' 1. B',
+            '2. A',
+        ])
+
+    def testTwoBlankLinesResetNumbering(self):
+        input_lines = [
+            '+ A',
+            '+ B',
+            '',
+            '',
+            '+ C'
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '1. A',
+            '2. B',
+            '',
+            '',
+            '1. C',
+        ])
+
+    def testContentBetweenOrderedListResetsNumbering(self):
+        input_lines = [
+            '+ A',
+            '+ B',
+            'Content',
+            '+ C',
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '1. A',
+            '2. B',
+            'Content',
+            '1. C',
+        ])
+
+    def testNestedLevelsAreResetOncePassed(self):
+        input_lines = [
+            '+ A',
+            ' + B',
+            ' + C',
+            '  + D',
+            '+ E',
+            ' + F',
+            '  + G',
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '1. A',
+            ' 1. B',
+            ' 2. C',
+            '  1. D',
+            '2. E',
+            ' 1. F',
+            '  1. G',
+        ])
+
+    def testNestedLevelsAreNotInterruptedByUnorderedLists(self):
+        input_lines = [
+            '+ A',
+            ' - B',
+            '+ C',
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '1. A',
+            ' - B',
+            '2. C',
+        ])
+
+
 if __name__ == '__main__':
     unittest.main()
