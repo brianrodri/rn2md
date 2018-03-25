@@ -15,8 +15,8 @@ def StrToDate(date_str):
 class ParseDatesTest(unittest.TestCase):
     """TODO(brianrodri).
 
-    NOTE: 5pm is added to the freeze_time decorators to ensure that
-    parsedateutil interprets the correct date (without 5pm, parsedatetime lags
+    NOTE: Times are added to the freeze_time decorators to ensure that
+    parsedateutil interprets the correct date (without them, parsedatetime lags
     by one day).
     """
 
