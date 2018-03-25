@@ -21,9 +21,10 @@ def _LoadMonthPaths(data_path):
             file_root = os.path.splitext(dir_entry.name)[0]
             try:
                 month_date = dt.datetime.strptime(file_root, '%Y-%m').date()
-                yield (month_date, dir_entry.path)
             except ValueError:
                 continue
+            else:
+                yield (month_date, dir_entry.path)
 
 
 def _LoadDailyEntries(month_date, month_file):
@@ -33,8 +34,8 @@ def _LoadDailyEntries(month_date, month_file):
         return {}
     daily_entries = {}
     for day_of_month, month_content in month_file_content.items():
-        day_key = month_date.replace(day=day_of_month)
+        day_date = month_date.replace(day=day_of_month)
         day_entry = month_content['text'].rstrip()
         if day_entry:
-            daily_entries[day_key] = day_entry
+            daily_entries[day_date] = day_entry
     return daily_entries
