@@ -229,12 +229,12 @@ class CodeBlockTransformer(unittest.TestCase):
     def testOnlyTwoBackticksAreTransformed(self):
         input_lines = [
             '```py',
-            '# Code block',
+            '# Python code',
             '```',
         ]
         self.assertListEqual([self.trans.send(l) for l in input_lines], [
             '```py',
-            '# Code block',
+            '# Python code',
             '```',
         ])
 
