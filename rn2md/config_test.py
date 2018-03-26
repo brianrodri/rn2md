@@ -17,8 +17,8 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         argv = ['config_test.py', 'command', 'line', 'args']
         options, remaining_argv = config.BuildConfigOptions(argv)
         self.assertFalse(options.WorkdaysOnly())
-        self.assertEqual(
-            options.DataPath(), os.path.expanduser('~/.rednotebook/data'))
+        self.assertEqual(options.DataPath(),
+                         os.path.expanduser('~/.rednotebook/data'))
         self.assertListEqual(remaining_argv, ['command', 'line', 'args'])
 
 
