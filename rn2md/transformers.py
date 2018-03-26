@@ -157,13 +157,15 @@ def InnerUnderscoreEscaper():
             line = ''.join([line[:m.start()], r'\_', line[m.end():]])
 
 
-CODE_BLOCK_PATTERN = re.compile(r'\b``.*?``\b')
+CODE_BLOCK_PATTERN = re.compile(r'``')
 def CodeBlockTransformer():
     line = None
     while True:
         line = yield line
-        ms = list(CODE_BLOCK_PATTERN.finditer(line))
-        for m in reversed(ms):
-            if not _OccursInLink(m):
-                line = ''.join(
-                    [line[:m.start()], m.group()[1:-1], line[m.end():]])
+        matches = CODE_BLOCK_PATTERN.finditer(line)
+        for mlo, mhi in reversed(list(_Grouper(matches, 2))):
+            line = ''.join([
+                line[:mlo.start()],
+                '`%s`' % line[mlo.end():mhi.start()].rstrip('.!?'),
+                line[mhi.end():]
+            ])

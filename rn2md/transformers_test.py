@@ -217,5 +217,27 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
             r'gets\_escaped, `no_escape`')
 
 
+class CodeBlockTransformer(unittest.TestCase):
+
+    def setUp(self):
+        self.trans = transformers.CodeBlockTransformer(); next(self.trans)
+
+    def testTransformation(self):
+        self.assertEqual(
+            self.trans.send('``code encoded stuff``'), '`code encoded stuff`')
+
+    def testOnlyTwoBackticksAreTransformed(self):
+        input_lines = [
+            '```py',
+            '# Code block',
+            '```',
+        ]
+        self.assertListEqual([self.trans.send(l) for l in input_lines], [
+            '```py',
+            '# Code block',
+            '```',
+        ])
+
+
 if __name__ == '__main__':
     unittest.main()
