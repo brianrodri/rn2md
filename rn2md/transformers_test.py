@@ -209,7 +209,7 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
     def testIgnoresUrls(self):
         self.assertEqual(
             self.trans.send('[test_thing ""http://github.com/test_thing""]'),
-            '[test\_thing ""http://github.com/test_thing""]')
+            r'[test\_thing ""http://github.com/test_thing""]')
 
     def testIgnoresBacktickedData(self):
         self.assertEqual(
