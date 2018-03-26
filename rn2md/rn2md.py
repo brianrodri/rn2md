@@ -10,7 +10,7 @@ import storage
 import transformers
 
 
-def RedNotebookToMarkDown(day_entry_lines):
+def RednotebookToMarkdown(day_entry_lines):
     line_transformers = [
         transformers.InnerUnderscoreEscaper(),
         transformers.LinkTransformer(),
@@ -35,7 +35,7 @@ def main():
         day_entry_lines = [date.strftime('# %a %b %d, %Y')]
         day_entry_lines.extend(
             l.rstrip() for l in daily_entries[date].split('\n'))
-        return '\n'.join(RedNotebookToMarkDown(day_entry_lines))
+        return '\n'.join(RednotebookToMarkdown(day_entry_lines))
 
     dates = util.ParseDates(
         ' '.join(remaining_argv), workdays_only=options.WorkdaysOnly())
