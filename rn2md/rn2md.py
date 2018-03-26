@@ -21,7 +21,7 @@ def RednotebookToMarkdown(day_entry_lines):
         transformers.ListTransformer(),
     ]
     for trans in line_transformers:
-        next(trans)  # Prepare transformers to accept lines.
+        next(trans)  # Prepare to send lines to the transformers.
     for line in day_entry_lines:
         for trans in line_transformers:
             line = trans.send(line)
