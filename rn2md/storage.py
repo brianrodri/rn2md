@@ -10,7 +10,7 @@ import yaml
 def LoadDailyEntries(data_path):
     all_daily_entries = {}
     for month_date, month_path in _LoadMonthPaths(data_path):
-        with open(month_path, 'rb', encoding='utf-8') as month_file:
+        with open(month_path, encoding='utf-8') as month_file:
             all_daily_entries.update(_LoadDailyEntries(month_date, month_file))
     return all_daily_entries
 
