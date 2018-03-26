@@ -6,11 +6,14 @@ import os
 import sys
 
 
+DEFAULT_DATA_PATH = os.path.expanduser('~/.rednotebook/data')
+
+
 class ConfigOptions():
     """Encapsulates rn2md options; they can be configured through ~/.rn2mdrc."""
 
     DEFAULT_CONFIG_VALUES = {
-        'data path': os.path.expanduser('~/.rednotebook/data'),
+        'data path': DEFAULT_DATA_PATH,
         'workday mode': 'on',
     }
 
