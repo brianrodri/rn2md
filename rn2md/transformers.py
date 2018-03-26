@@ -36,11 +36,11 @@ def _SpansIntersect(span1, span2):
     return hi1 >= lo2 and hi2 >= lo1
 
 
-LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-def _OccursInLink(match):
-    """Check if regexp `match` occurs in some URL."""
-    occurrences = LINK_PATTERN.finditer(match.string)
-    return any(_SpansIntersect(match.span(), m.span(2)) for m in occurrences)
+def _FindNonEscapedPattens(pattern, s):
+    matches = pattern.finditer(s)
+    matches = filter(lambda m: not _OccursInLink(m), matches)
+    matches = filter(lambda m: not _OccursInBacktick(m), matches)
+    return matches
 
 
 BACKTICK_PATTERN = re.compile(r'`.*?`')
@@ -50,11 +50,19 @@ def _OccursInBacktick(match):
     return any(_SpansIntersect(match.span(), m.span()) for m in occurrences)
 
 
-def _FindNonEscapedPattens(pattern, s):
-    matches = pattern.finditer(s)
-    matches = filter(lambda m: not _OccursInLink(m), matches)
-    matches = filter(lambda m: not _OccursInBacktick(m), matches)
-    return matches
+LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
+def _OccursInLink(match):
+    """Check if regexp `match` occurs in some URL."""
+    occurrences = LINK_PATTERN.finditer(match.string)
+    return any(_SpansIntersect(match.span(), m.span(2)) for m in occurrences)
+
+
+def LinkTransformer():
+    """Transforms '[[text ""url""]]' to '[text](url)'."""
+    line = None
+    while True:
+        line = yield line
+        line = LINK_PATTERN.sub(r'[\1](\2)', line)
 
 
 ITALIC_PATTERN = re.compile(r'//')
@@ -70,14 +78,6 @@ def ItalicTransformer():
                 '_%s_' % line[mlo.end():mhi.start()],
                 line[mhi.end():]
             ])
-
-
-def LinkTransformer():
-    """Transforms '[[text ""url""]]' to '[text](url)'."""
-    line = None
-    while True:
-        line = yield line
-        line = LINK_PATTERN.sub(r'[\1](\2)', line)
 
 
 STRIKETHROUGH_PATTERN = re.compile(r'--')
