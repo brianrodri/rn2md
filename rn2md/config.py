@@ -14,7 +14,7 @@ class ConfigOptions():
 
     DEFAULT_CONFIG_VALUES = {
         'data path': DEFAULT_DATA_PATH,
-        'workday mode': 'on',
+        'workday mode': 'off',
     }
 
     def __init__(self, section='DEFAULT'):
