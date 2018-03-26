@@ -9,7 +9,7 @@ import util
 
 
 def StrToDate(date_str):
-    """Interprets a pretty date_str into datetime.date."""
+    """Interprets a pretty date_str into datetime.date"""
     return dateutil.parser.parse(date_str).date()
 
 
