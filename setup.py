@@ -11,7 +11,7 @@ setup(
     license='MIT',
     packages=['rn2md'],
     install_requires=[
-        'dateutil',
+        'python-dateutil',
         'defaultlist',
         'freezegun',
         'isoweek',
