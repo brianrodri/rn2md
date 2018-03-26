@@ -15,15 +15,15 @@ class ConfigOptions():
     }
 
     def __init__(self, section='DEFAULT'):
-        config = configparser.ConfigParser(self.DEFAULT_CONFIG_VALUES)
-        config.read(os.path.expanduser('~/.rn2mdrc'))
-        self._config = config[section]
+        self._config = configparser.ConfigParser(self.DEFAULT_CONFIG_VALUES)
+        self._config.read(os.path.expanduser('~/.rn2mdrc'))
+        self._section = section
 
     def WorkdaysOnly(self):
-        return self._config.getboolean('workday mode')
+        return self._config[self._section].getboolean('workday mode')
 
     def DataPath(self):
-        return self._config.get('data path')
+        return self._config[self._section].get('data path')
 
 
 def BuildConfigOptions(argv):
