@@ -26,6 +26,6 @@ class ConfigOptions():
         return self._config.get('data path')
 
 
-def BuildConfigOptions():
+def BuildConfigOptions(argv):
     # TODO(brianrodri): Add command-line configuration options.
-    return ConfigOptions(), sys.argv[1:]
+    return ConfigOptions(), argv[1:]

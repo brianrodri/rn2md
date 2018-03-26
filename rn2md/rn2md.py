@@ -1,6 +1,8 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
+import sys
+
 import config
 import util
 import storage
@@ -25,7 +27,7 @@ def RedNotebookToMarkDown(day_entry_lines):
 
 
 def main():
-    options, remaining_argv = config.BuildConfigOptions()
+    options, remaining_argv = config.BuildConfigOptions(sys.argv)
     daily_entries = storage.LoadDailyEntries(options.DataPath())
     def FormatDate(date):
         day_entry_lines = [date.strftime('# %a %b %d, %Y')]
