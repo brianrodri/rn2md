@@ -11,7 +11,7 @@ class ConfigOptions():
 
     DEFAULT_CONFIG_VALUES = {
         'data path': os.path.expanduser('~/.rednotebook/data'),
-        'worday mode': 'on',
+        'workday mode': 'on',
     }
 
     def __init__(self, section='DEFAULT'):
