@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
+import collections
 import sys
 
 import config
@@ -10,7 +11,7 @@ import transformers
 
 
 def RedNotebookToMarkDown(day_entry_lines):
-    generators = [
+    line_transformers = [
         transformers.InnerUnderscoreEscaper(),
         transformers.LinkTransformer(),
         transformers.HeaderTransformer(base_level=1),
@@ -19,10 +20,11 @@ def RedNotebookToMarkDown(day_entry_lines):
         transformers.ListTransformer(),
         transformers.StrikethroughTransformer(),
     ]
-    map(next, generators)  # Prepare each generator to begin receiving lines.
+    for trans in line_transformers:
+        next(trans)  # Prepare transformers to accept lines.
     for line in day_entry_lines:
-        for generator in generators:
-            line = generator.send(line)
+        for trans in line_transformers:
+            line = trans.send(line)
         yield line
 
 
