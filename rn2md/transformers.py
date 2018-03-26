@@ -86,6 +86,8 @@ def StrikethroughTransformer():
     line = None
     while True:
         line = yield line
+        if set(line) == {'-'}:
+          continue
         matches = _FindNonEscapedPattens(STRIKETHROUGH_PATTERN, line)
         for mlo, mhi in reversed(list(_Grouper(matches, 2))):
             line = ''.join([
