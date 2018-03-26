@@ -39,7 +39,7 @@ class LinkTransformerTest(unittest.TestCase):
 
     def testTransformation(self):
         self.assertEqual(
-            self.trans.send('[[sample text ""go/somewhere""]]'),
+            self.trans.send('[sample text ""go/somewhere""]'),
             '[sample text](go/somewhere)')
 
 
@@ -189,6 +189,32 @@ class ListTransformerTest(unittest.TestCase):
             ' - B',
             '2. C',
         ])
+
+
+class InnerUnderscoreEscaperTest(unittest.TestCase):
+
+    def setUp(self):
+        self.trans = transformers.InnerUnderscoreEscaper(); next(self.trans)
+
+    def testTransformation(self):
+        self.assertEqual(
+            self.trans.send('underscore_delimited_word'),
+            r'underscore\_delimited\_word')
+
+    def testTrailingUnderscoresIgnored(self):
+        self.assertEqual(
+            self.trans.send('_with_trailing_underscores_'),
+            r'_with\_trailing\_underscores_')
+
+    def testIgnoresUrls(self):
+        self.assertEqual(
+            self.trans.send('[test_thing ""http://github.com/test_thing""]'),
+            '[test\_thing ""http://github.com/test_thing""]')
+
+    def testIgnoresBacktickedData(self):
+        self.assertEqual(
+            self.trans.send('gets_escaped, `no_escape`'),
+            r'gets\_escaped, `no_escape`')
 
 
 if __name__ == '__main__':
