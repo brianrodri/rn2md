@@ -10,7 +10,7 @@ import transformers
 def RedNotebookToMarkDown(day_entry_lines):
     generators = [
         transformers.LinkTransformer(),
-        transformers.HeaderTransformer(start_level=1),
+        transformers.HeaderTransformer(base_level=1),
         transformers.CodeBlockTransformer(),
         transformers.ItalicTransformer(),
         transformers.ListTransformer(),
