@@ -17,8 +17,8 @@ def RednotebookToMarkdown(day_entry_lines):
         transformers.HeaderTransformer(base_level=1),
         transformers.CodeBlockTransformer(),
         transformers.ItalicTransformer(),
-        transformers.ListTransformer(),
         transformers.StrikethroughTransformer(),
+        transformers.ListTransformer(),
     ]
     for trans in line_transformers:
         next(trans)  # Prepare transformers to accept lines.
