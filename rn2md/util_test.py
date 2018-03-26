@@ -51,19 +51,19 @@ class ParseDatesTest(unittest.TestCase):
             StrToDate('Sun Mar 25th, 2018'),
         ])
 
-    @freezegun.freeze_time('Sat Mar 24th, 2018 5pm')
+    @freezegun.freeze_time('Sat Mar 24th, 2018 12pm')
     def testTodayOnSaturdayRoundsToFridayInWorkdaysOnlyMode(self):
         self.assertListEqual(util.ParseDates('today', workdays_only=True), [
             StrToDate('Fri Mar 23rd, 2018'),
         ])
 
-    @freezegun.freeze_time('Sun Mar 25th, 2018 5pm')
+    @freezegun.freeze_time('Sun Mar 25th, 2018 12pm')
     def testTodayOnSundayRoundsToFridayInWorkdaysOnlyMode(self):
         self.assertListEqual(util.ParseDates('today', workdays_only=True), [
             StrToDate('Fri Mar 23rd, 2018'),
         ])
 
-    @freezegun.freeze_time('Sat Mar 24th, 2018 5pm')
+    @freezegun.freeze_time('Sat Mar 24th, 2018 12pm')
     def testWorkWeekReturnedInWorkdayOnlyMode(self):
         self.assertListEqual(util.ParseDates('this week', workdays_only=True), [
             StrToDate('Mon Mar 19th, 2018'),
@@ -73,7 +73,7 @@ class ParseDatesTest(unittest.TestCase):
             StrToDate('Fri Mar 23rd, 2018'),
         ])
 
-    @freezegun.freeze_time('Sun Mar 25th, 2018 5pm')
+    @freezegun.freeze_time('Sun Mar 25th, 2018 12pm')
     def testYesterdayOnSundayReturnsFridayInWorkdaysOnlyMode(self):
         self.assertListEqual(util.ParseDates('yesterday', workdays_only=True), [
             StrToDate('Fri Mar 23rd, 2018'),
@@ -91,7 +91,7 @@ class ParseDatesTest(unittest.TestCase):
             StrToDate('Mon Mar 26th, 2018'),
         ])
 
-    @freezegun.freeze_time('Sat Mar 24th, 2018 5pm')
+    @freezegun.freeze_time('Sat Mar 24th, 2018 12pm')
     def testTomorrowOnSaturdayReturnsMondayInWorkdaysOnlyMode(self):
         self.assertListEqual(util.ParseDates('tomorrow', workdays_only=True), [
             StrToDate('Mon Mar 26th, 2018'),
