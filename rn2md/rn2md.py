@@ -30,6 +30,8 @@ def RednotebookToMarkdown(day_entry_lines):
 
 def main():
     options, remaining_argv = config.BuildConfigOptions(sys.argv)
+    dates = util.ParseDates(
+        ' '.join(remaining_argv), workdays_only=options.WorkdaysOnly())
     daily_entries = storage.LoadDailyEntries(options.DataPath())
     def FormatDate(date):
         day_entry_lines = [date.strftime('# %a %b %d, %Y')]
@@ -37,8 +39,6 @@ def main():
             l.rstrip() for l in daily_entries[date].split('\n'))
         return '\n'.join(RednotebookToMarkdown(day_entry_lines))
 
-    dates = util.ParseDates(
-        ' '.join(remaining_argv), workdays_only=options.WorkdaysOnly())
     print('\n\n\n'.join(FormatDate(d) for d in dates if d in daily_entries))
 
 
