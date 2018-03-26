@@ -9,13 +9,13 @@ import transformers
 
 def RedNotebookToMarkDown(day_entry_lines):
     generators = [
+        transformers.InnerUnderscoreEscaper(),
         transformers.LinkTransformer(),
         transformers.HeaderTransformer(base_level=1),
         transformers.CodeBlockTransformer(),
         transformers.ItalicTransformer(),
         transformers.ListTransformer(),
         transformers.StrikethroughTransformer(),
-        transformers.InnerUnderscoreEscaper(),
     ]
     map(next, generators)  # Prepare each generator to begin receiving lines.
     for line in day_entry_lines:
