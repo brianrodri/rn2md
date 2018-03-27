@@ -33,9 +33,8 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
 
     def testWorkOptions(self):
         self.CreateFakeConfigFile({
-            'WORK': {
+            'DEFAULT': {
                 'workday mode': 'on',
-                'selected': 'true',
             },
         })
         options = config.BuildConfigOptions()[0]
