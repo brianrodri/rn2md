@@ -10,15 +10,10 @@ import config
 
 class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
 
-    def CreateFakeConfigFile(self, options):
+    def CreateFakeConfigFile(self, lines):
         config_path = os.path.expanduser('~/.rn2mdrc')
-        config_lines = []
-        for sect in options:
-            config_lines.append('[%s]\n' % sect)
-            for option in options[sect]:
-                config_lines.append('%s=%s' % (option, options[sect][option]))
-            config_lines.append('')
-        self.fs.create_file(config_path, contents='\n'.join(config_lines))
+        config_content = '\n'.join(lines)
+        self.fs.create_file(config_path, contents=config_content)
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -32,11 +27,10 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         self.assertListEqual(remaining_argv, ['command', 'line', 'args'])
 
     def testWorkOptions(self):
-        self.CreateFakeConfigFile({
-            'DEFAULT': {
-                'workday mode': 'on',
-            },
-        })
+        self.CreateFakeConfigFile([
+            '[DEFAULT]',
+            'workday mode=on',
+        ])
         options = config.BuildConfigOptions()[0]
         self.assertTrue(options.WorkdaysOnly())
 
