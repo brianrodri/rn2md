@@ -21,13 +21,21 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
                          os.path.expanduser('~/.rednotebook/data'))
         self.assertListEqual(remaining_argv, ['command', 'line', 'args'])
 
-    def testWorkOptions(self):
+    def testChangeWorkOptions(self):
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         workday mode=on
         """)
         options = config.BuildConfigOptions()[0]
         self.assertTrue(options.WorkdaysOnly())
+
+    def testChangeDataPath(self):
+        self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
+        [DEFAULT]
+        data path=/test
+        """)
+        options = config.BuildConfigOptions()[0]
+        self.assertEqual(options.DataPath(), '/test')
 
 
 if __name__ == '__main__':
