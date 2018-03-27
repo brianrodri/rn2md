@@ -208,7 +208,7 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
                          r'gets\_escaped, `no_escape`')
 
 
-class CodeBlockTransformer(unittest.TestCase):
+class CodeBlockTransformerTest(unittest.TestCase):
 
     def setUp(self):
         self.trans = transformers.CodeBlockTransformer(); next(self.trans)
