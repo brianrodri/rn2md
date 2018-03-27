@@ -63,6 +63,9 @@ class StrikethroughTransformerTest(unittest.TestCase):
         self.assertEqual(self.trans.send('--hit--, `--not hit--`'),
                          '**OBSOLETE**(hit), `--not hit--`')
 
+    def testIgnoresLinesWithOnlyBackticks(self):
+        self.assertEqual(self.trans.send('-' * 12), '-' * 12)
+
 
 class HeaderTransformerTest(unittest.TestCase):
 
