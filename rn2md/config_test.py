@@ -23,8 +23,8 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
 
     def testWorkOptions(self):
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
-            [DEFAULT]
-            workday mode=on
+        [DEFAULT]
+        workday mode=on
         """)
         options = config.BuildConfigOptions()[0]
         self.assertTrue(options.WorkdaysOnly())
