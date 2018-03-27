@@ -14,10 +14,10 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         config_path = os.path.expanduser('~/.rn2mdrc')
         config_lines = []
         for sect in options:
-            config_content.append('[%s]\n' % sect)
+            config_lines.append('[%s]\n' % sect)
             for option in options[sect]:
                 config_lines.append('%s=%s' % (option, options[sect][option]))
-            config_content.append('')
+            config_lines.append('')
         self.fs.create_file(config_path, contents='\n'.join(config_lines))
 
     def setUp(self):
