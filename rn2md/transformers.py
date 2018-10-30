@@ -20,7 +20,6 @@ import itertools
 import os
 import re
 
-import iterutils
 import defaultlist
 
 

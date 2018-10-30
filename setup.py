@@ -15,7 +15,6 @@ setup(
         'defaultlist',
         'freezegun',
         'isoweek',
-        'iterutils',
         'parsedatetime',
         'pyfakefs',
         'pyyaml',
