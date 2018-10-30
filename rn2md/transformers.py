@@ -135,7 +135,7 @@ def ListTransformer():
         empty_line_counter = 0
         list_match = LIST_PATTERN.match(line)
         if not list_match:
-            del ordered_list_counter[:]
+            ordered_list_counter.clear()
         else:
             index = list_match.start(1)
             del ordered_list_counter[index + 1:]
