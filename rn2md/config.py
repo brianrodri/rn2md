@@ -5,7 +5,6 @@ import configparser
 import os
 import sys
 
-
 DEFAULT_DATA_PATH = os.path.expanduser('~/.rednotebook/data')
 
 
@@ -32,5 +31,5 @@ class ConfigOptions():
 def BuildConfigOptions(argv=None):
     if argv is None:
         argv = []
-    # TODO(brianrodri): Add command-line configuration options.
+    # TODO(brianrodri): Add more command-line configuration options.
     return ConfigOptions(), argv[1:]
