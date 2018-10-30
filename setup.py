@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='RedNotebookToMarkDown',
-    version='0.2dev',
+    version='0.3dev',
     description='Utility to print RedNotebook data in the MarkDown format.',
     long_description=open('README.md').read(),
     url='http://github.com/brianrodri/RednotebookToMarkdown',
@@ -18,6 +18,6 @@ setup(
         'iterutils',
         'parsedatetime',
         'pyfakefs',
-        'yaml',
+        'pyyaml',
     ],
 )
