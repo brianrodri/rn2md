@@ -9,7 +9,8 @@ import unittest
 class ItalicTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.ItalicTransformer(); next(self.trans)
+        self.trans = transformers.ItalicTransformer()
+        next(self.trans)
 
     def testTransformation(self):
         self.assertEqual(self.trans.send('Text with //italicized// content.'),
@@ -31,7 +32,8 @@ class ItalicTransformerTest(unittest.TestCase):
 class LinkTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.LinkTransformer(); next(self.trans)
+        self.trans = transformers.LinkTransformer()
+        next(self.trans)
 
     def testTransformation(self):
         self.assertEqual(self.trans.send('[sample text ""go/somewhere""]'),
@@ -41,7 +43,8 @@ class LinkTransformerTest(unittest.TestCase):
 class StrikethroughTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.StrikethroughTransformer(); next(self.trans)
+        self.trans = transformers.StrikethroughTransformer()
+        next(self.trans)
 
     def testTransformation(self):
         self.assertEqual(self.trans.send('--text--'), '**OBSOLETE**(text)')
@@ -70,7 +73,8 @@ class StrikethroughTransformerTest(unittest.TestCase):
 class HeaderTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.HeaderTransformer(); next(self.trans)
+        self.trans = transformers.HeaderTransformer()
+        next(self.trans)
 
     def testTransformation(self):
         self.assertEqual(self.trans.send('=Level One='), '# Level One')
@@ -78,7 +82,8 @@ class HeaderTransformerTest(unittest.TestCase):
                          '### Level Three')
 
     def testBaseLevelIsRespected(self):
-        trans = transformers.HeaderTransformer(base_level=2); next(trans)
+        trans = transformers.HeaderTransformer(base_level=2)
+        next(trans)
         self.assertEqual(trans.send('===Only 3==='), '##### Only 3')
 
     def testInnerMarkersAreIgnored(self):
@@ -96,7 +101,8 @@ class HeaderTransformerTest(unittest.TestCase):
 class ListTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.ListTransformer(); next(self.trans)
+        self.trans = transformers.ListTransformer()
+        next(self.trans)
 
     def testUnorderedList(self):
         input_lines = [
@@ -188,7 +194,8 @@ class ListTransformerTest(unittest.TestCase):
 class InnerUnderscoreEscaperTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.InnerUnderscoreEscaper(); next(self.trans)
+        self.trans = transformers.InnerUnderscoreEscaper()
+        next(self.trans)
 
     def testTransformation(self):
         self.assertEqual(self.trans.send('underscore_delimited_word'),
@@ -211,7 +218,8 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
 class CodeBlockTransformerTest(unittest.TestCase):
 
     def setUp(self):
-        self.trans = transformers.CodeBlockTransformer(); next(self.trans)
+        self.trans = transformers.CodeBlockTransformer()
+        next(self.trans)
 
     def testTransformation(self):
         self.assertEqual(self.trans.send('``code encoded stuff``'),
