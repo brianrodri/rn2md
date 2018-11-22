@@ -7,14 +7,14 @@ import unittest
 
 
 class TransformerBaseTest(unittest.TestCase):
-    """Provides convienience method to build a transformer_class instance.
+    """Provides convienience method to build a transformer class instance.
 
-    Assumes that derived classes are named after some class in the modules
-    transformers in the format: f'{cls.__name__}Test'
+    Assumes derived classes are named after a class in the transformers module
+    in the format: f'{cls.__name__}Test'
     """
 
     @classmethod
-    def BuildTransformer(cls, *args, **kwargs):
+    def NewTransformer(cls, *args, **kwargs):
         """Convienience method to build the transformer class under-test."""
         transformer_name = cls.__name__[:-4]
         transformer_class = getattr(transformers, transformer_name)
@@ -29,22 +29,22 @@ class TransformerBaseTest(unittest.TestCase):
 class ItalicTransformerTest(TransformerBaseTest):
 
     def testTransformation(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('Text with //italicized// content.'),
                          'Text with _italicized_ content.')
 
     def testIgnoresNonPairedMarkers(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('//italic1//, //italic2//, unused //'),
                          '_italic1_, _italic2_, unused //')
 
     def testIgnoresUrls(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('http://github.com/brianrodri'),
                          'http://github.com/brianrodri')
 
     def testIgnoresBacktickedData(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('//italic//, `//escaped italic//`'),
                          '_italic_, `//escaped italic//`')
 
@@ -52,7 +52,7 @@ class ItalicTransformerTest(TransformerBaseTest):
 class LinkTransformerTest(TransformerBaseTest):
 
     def testTransformation(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('[sample text ""go/somewhere""]'),
                          '[sample text](go/somewhere)')
 
@@ -60,66 +60,66 @@ class LinkTransformerTest(TransformerBaseTest):
 class StrikethroughTransformerTest(TransformerBaseTest):
 
     def testTransformation(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('--text--'), '**OBSOLETE**(text)')
 
     def testPunctuationGetsStripped(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('--a complete sentence.--'),
                          '**OBSOLETE**(a complete sentence)')
 
     def testIgnoresNonPairedMarkers(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(
             t.send('--changed--, --this too--, not here--or here.'),
             '**OBSOLETE**(changed), **OBSOLETE**(this too), not here--or here.')
 
     def testIgnoresUrls(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('http://do/something--weird'),
                          'http://do/something--weird')
 
     def testIgnoresBacktickedData(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('--hit--, `--not hit--`'),
                          '**OBSOLETE**(hit), `--not hit--`')
 
     def testIgnoresLinesWithOnlyBackticks(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('-' * 12), '-' * 12)
 
 
 class HeaderTransformerTest(TransformerBaseTest):
 
     def testTransformation(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('=Level One='), '# Level One')
         self.assertEqual(t.send('===Level Three==='),
                          '### Level Three')
 
     def testBaseLevelIsRespected(self):
-        t = self.BuildTransformer(base_level=2)
+        t = self.NewTransformer(base_level=2)
         self.assertEqual(t.send('===Only 3==='), '##### Only 3')
 
     def testInnerMarkersAreIgnored(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('Not at =start= of text'),
                          'Not at =start= of text')
 
     def testOnlyMarkersAreIgnored(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('=' * 6), '=' * 6)
         self.assertEqual(t.send('=' * 7), '=' * 7)
 
     def testUnBalancedMarkersAreIgnored(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('==Unbalanced==='), '==Unbalanced===')
 
 
 class ListTransformerTest(TransformerBaseTest):
 
     def testUnorderedList(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '- A',
             ' - B',
@@ -132,7 +132,7 @@ class ListTransformerTest(TransformerBaseTest):
         ])
 
     def testOrderedList(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '+ A',
             ' + B',
@@ -145,7 +145,7 @@ class ListTransformerTest(TransformerBaseTest):
         ])
 
     def testTwoBlankLinesResetNumbering(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '+ A',
             '+ B',
@@ -162,7 +162,7 @@ class ListTransformerTest(TransformerBaseTest):
         ])
 
     def testContentBetweenOrderedListResetsNumbering(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '+ A',
             '+ B',
@@ -177,7 +177,7 @@ class ListTransformerTest(TransformerBaseTest):
         ])
 
     def testNestedLevelsAreResetOncePassed(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '+ A',
             ' + B',
@@ -198,7 +198,7 @@ class ListTransformerTest(TransformerBaseTest):
         ])
 
     def testNestedLevelsAreNotInterruptedByUnorderedLists(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '+ A',
             ' - B',
@@ -214,23 +214,23 @@ class ListTransformerTest(TransformerBaseTest):
 class InnerUnderscoreEscaperTest(TransformerBaseTest):
 
     def testTransformation(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('underscore_delimited_word'),
                          r'underscore\_delimited\_word')
 
     def testTrailingUnderscoresIgnored(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('_with_trailing_underscores_'),
                          r'_with\_trailing\_underscores_')
 
     def testIgnoresUrls(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(
             t.send('[test_thing ""http://github.com/test_thing""]'),
             r'[test\_thing ""http://github.com/test_thing""]')
 
     def testIgnoresBacktickedData(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('gets_escaped, `no_escape`'),
                          r'gets\_escaped, `no_escape`')
 
@@ -238,12 +238,12 @@ class InnerUnderscoreEscaperTest(TransformerBaseTest):
 class CodeBlockTransformerTest(TransformerBaseTest):
 
     def testTransformation(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         self.assertEqual(t.send('``code encoded stuff``'),
                          '`code encoded stuff`')
 
     def testOnlyTwoBackticksAreTransformed(self):
-        t = self.BuildTransformer()
+        t = self.NewTransformer()
         input_lines = [
             '```py',
             '# Python code',
