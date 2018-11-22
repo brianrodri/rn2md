@@ -5,7 +5,7 @@ import unittest
 
 from pyfakefs import fake_filesystem_unittest
 
-import config
+from rn2md import config
 
 
 class ConfigOptionsTest(fake_filesystem_unittest.TestCase):

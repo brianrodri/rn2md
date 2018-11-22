@@ -3,7 +3,7 @@
 """Test cases for the transformers module."""
 import unittest
 
-import transformers
+from rn2md import transformers
 
 
 class ItalicTransformerTest(unittest.TestCase):

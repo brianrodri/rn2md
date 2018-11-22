@@ -4,10 +4,10 @@
 import collections
 import sys
 
-import config
-import util
-import storage
-import transformers
+from . import config
+from . import util
+from . import storage
+from . import transformers
 
 
 def RednotebookToMarkdown(day_entry_lines):
