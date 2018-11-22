@@ -23,9 +23,9 @@ import re
 import defaultlist
 
 
-def _Grouper(iterable, n):
+def _grouper(iterable, n):
     """Collect data into fixed-length chunks or blocks."""
-    # _Grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+    # _grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
     args = (iter(iterable),) * n
     return zip(*args)
 
@@ -71,7 +71,7 @@ def ItalicTransformer():
     while True:
         line = yield line
         matches = _FindNonEscapedPattens(ITALIC_PATTERN, line)
-        for mlo, mhi in reversed(list(_Grouper(matches, 2))):
+        for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
                 '_%s_' % line[mlo.end():mhi.start()],
@@ -88,7 +88,7 @@ def StrikethroughTransformer():
         if set(line) == {'-'}:
           continue
         matches = _FindNonEscapedPattens(STRIKETHROUGH_PATTERN, line)
-        for mlo, mhi in reversed(list(_Grouper(matches, 2))):
+        for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
                 '**OBSOLETE**(%s)' % line[mlo.end():mhi.start()].rstrip('.!?'),
@@ -164,7 +164,7 @@ def CodeBlockTransformer():
     while True:
         line = yield line
         matches = CODE_BLOCK_PATTERN.finditer(line)
-        for mlo, mhi in reversed(list(_Grouper(matches, 2))):
+        for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
                 '`%s`' % line[mlo.end():mhi.start()].rstrip('.!?'),
