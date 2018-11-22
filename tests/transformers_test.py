@@ -27,7 +27,6 @@ class TransformerBaseTest(unittest.TestCase):
 
 
 class ItalicTransformerTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.ItalicTransformer
 
     def testTransformation(self):
         t = self.BuildTransformer()
@@ -51,7 +50,6 @@ class ItalicTransformerTest(TransformerBaseTest):
 
 
 class LinkTransformerTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.LinkTransformer
 
     def testTransformation(self):
         t = self.BuildTransformer()
@@ -60,7 +58,6 @@ class LinkTransformerTest(TransformerBaseTest):
 
 
 class StrikethroughTransformerTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.StrikethroughTransformer
 
     def testTransformation(self):
         t = self.BuildTransformer()
@@ -93,7 +90,6 @@ class StrikethroughTransformerTest(TransformerBaseTest):
 
 
 class HeaderTransformerTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.HeaderTransformer
 
     def testTransformation(self):
         t = self.BuildTransformer()
@@ -121,7 +117,6 @@ class HeaderTransformerTest(TransformerBaseTest):
 
 
 class ListTransformerTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.ListTransformer
 
     def testUnorderedList(self):
         t = self.BuildTransformer()
@@ -217,7 +212,6 @@ class ListTransformerTest(TransformerBaseTest):
 
 
 class InnerUnderscoreEscaperTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.InnerUnderscoreEscaper
 
     def testTransformation(self):
         t = self.BuildTransformer()
@@ -242,7 +236,6 @@ class InnerUnderscoreEscaperTest(TransformerBaseTest):
 
 
 class CodeBlockTransformerTest(TransformerBaseTest):
-    TRANSFORMER_CLASS = transformers.CodeBlockTransformer
 
     def testTransformation(self):
         t = self.BuildTransformer()
