@@ -4,7 +4,6 @@
 from typing import List
 
 import datetime as dt
-import time
 
 import isoweek
 import parsedatetime as pdt
