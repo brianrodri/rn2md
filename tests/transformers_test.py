@@ -6,7 +6,7 @@ from rn2md import transformers
 import unittest
 
 
-class TransformerBaseTest(unittest.TestCase):
+class TransformerTestCase(unittest.TestCase):
     """Provides convienience method to build a transformer class instance.
 
     Assumes derived classes are named after a class in the transformers module
@@ -26,7 +26,7 @@ class TransformerBaseTest(unittest.TestCase):
         return t
 
 
-class ItalicTransformerTest(TransformerBaseTest):
+class ItalicTransformerTest(TransformerTestCase):
 
     def testTransformation(self):
         t = self.NewTransformer()
@@ -49,7 +49,7 @@ class ItalicTransformerTest(TransformerBaseTest):
                          '_italic_, `//escaped italic//`')
 
 
-class LinkTransformerTest(TransformerBaseTest):
+class LinkTransformerTest(TransformerTestCase):
 
     def testTransformation(self):
         t = self.NewTransformer()
@@ -57,7 +57,7 @@ class LinkTransformerTest(TransformerBaseTest):
                          '[sample text](go/somewhere)')
 
 
-class StrikethroughTransformerTest(TransformerBaseTest):
+class StrikethroughTransformerTest(TransformerTestCase):
 
     def testTransformation(self):
         t = self.NewTransformer()
@@ -89,7 +89,7 @@ class StrikethroughTransformerTest(TransformerBaseTest):
         self.assertEqual(t.send('-' * 12), '-' * 12)
 
 
-class HeaderTransformerTest(TransformerBaseTest):
+class HeaderTransformerTest(TransformerTestCase):
 
     def testTransformation(self):
         t = self.NewTransformer()
@@ -116,7 +116,7 @@ class HeaderTransformerTest(TransformerBaseTest):
         self.assertEqual(t.send('==Unbalanced==='), '==Unbalanced===')
 
 
-class ListTransformerTest(TransformerBaseTest):
+class ListTransformerTest(TransformerTestCase):
 
     def testUnorderedList(self):
         t = self.NewTransformer()
@@ -211,7 +211,7 @@ class ListTransformerTest(TransformerBaseTest):
         ])
 
 
-class InnerUnderscoreEscaperTest(TransformerBaseTest):
+class InnerUnderscoreEscaperTest(TransformerTestCase):
 
     def testTransformation(self):
         t = self.NewTransformer()
@@ -235,7 +235,7 @@ class InnerUnderscoreEscaperTest(TransformerBaseTest):
                          r'gets\_escaped, `no_escape`')
 
 
-class CodeBlockTransformerTest(TransformerBaseTest):
+class CodeBlockTransformerTest(TransformerTestCase):
 
     def testTransformation(self):
         t = self.NewTransformer()
