@@ -21,8 +21,8 @@ def rn2md(lines):
         transformers.StrikethroughTransformer(),
         transformers.ListTransformer(),
     ]
-    # Transformers are generators, so they need to be prepared with an initial
-    # call to `next`.
+    # Transformers are generators with meanginful state, so they need to be
+    # prepared with an initial call to `next`.
     for t in required_transformer_sequence:
         next(t)
     for line in lines:
