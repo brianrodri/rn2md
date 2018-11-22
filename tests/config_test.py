@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+"""Test cases for the config rn2md.module."""
 # -*- coding: utf-8 -*-
 import os
 import unittest
