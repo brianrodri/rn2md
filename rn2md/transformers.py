@@ -16,8 +16,6 @@ Here is a list of the currently supported transformations:
     =Text=                            # Text
     [""url""]                         ![...](url)
 """
-import itertools
-import os
 import re
 
 import defaultlist
@@ -35,28 +33,28 @@ def _spans_intersect(span1, span2):
     return hi1 >= lo2 and hi2 >= lo1
 
 
-def _FindNonEscapedPattens(pattern, s):
-    matches = pattern.finditer(s)
-    matches = filter(lambda m: not _OccursInLink(m), matches)
-    matches = filter(lambda m: not _OccursInBacktick(m), matches)
+def _find_non_escaped_patterns(pattern, target_str):
+    matches = pattern.finditer(target_str)
+    matches = filter(lambda m: not _occurs_in_link(m), matches)
+    matches = filter(lambda m: not _occurs_in_backtick(m), matches)
     return matches
 
 
 BACKTICK_PATTERN = re.compile(r'`.*?`')
-def _OccursInBacktick(match):
+def _occurs_in_backtick(match):
     """Check if `match` occurs in backticks."""
     occurrences = BACKTICK_PATTERN.finditer(match.string)
     return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
 
 
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-def _OccursInLink(match):
+def _occurs_in_link(match):
     """Check if regexp `match` occurs in some URL."""
     occurrences = LINK_PATTERN.finditer(match.string)
     return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
 
 
-def LinkTransformer():
+def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = None
     while True:
@@ -65,12 +63,12 @@ def LinkTransformer():
 
 
 ITALIC_PATTERN = re.compile(r'//')
-def ItalicTransformer():
+def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
     line = None
     while True:
         line = yield line
-        matches = _FindNonEscapedPattens(ITALIC_PATTERN, line)
+        matches = _find_non_escaped_patterns(ITALIC_PATTERN, line)
         for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
@@ -80,14 +78,14 @@ def ItalicTransformer():
 
 
 STRIKETHROUGH_PATTERN = re.compile(r'--')
-def StrikethroughTransformer():
+def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = None
     while True:
         line = yield line
         if set(line) == {'-'}:
-          continue
-        matches = _FindNonEscapedPattens(STRIKETHROUGH_PATTERN, line)
+            continue
+        matches = _find_non_escaped_patterns(STRIKETHROUGH_PATTERN, line)
         for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
@@ -97,7 +95,7 @@ def StrikethroughTransformer():
 
 
 HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
-def HeaderTransformer(base_level=0):
+def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
     """Transforms '=TEXT=' into '# TEXT'.
 
     Always holds that:
@@ -121,7 +119,8 @@ def HeaderTransformer(base_level=0):
 
 
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
-def ListTransformer():
+def ListTransformer():  # pylint: disable=invalid-name
+    """Transforms unordered and ordered lists into markdown syntax."""
     line = None
     empty_line_counter = 0
     ordered_list_counter = defaultlist.defaultlist(lambda: 0)
@@ -149,17 +148,20 @@ def ListTransformer():
 
 
 INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
-def InnerUnderscoreEscaper():
+def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
+    """Transforms underscores which need to be escaped."""
     line = None
     while True:
         line = yield line
-        ms = list(_FindNonEscapedPattens(INNER_UNDERSCORE_PATTERN, line))
-        for m in reversed(ms):
-            line = ''.join([line[:m.start()], r'\_', line[m.end():]])
+        matches = list(
+            _find_non_escaped_patterns(INNER_UNDERSCORE_PATTERN, line))
+        for match in reversed(matches):
+            line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
 
 CODE_BLOCK_PATTERN = re.compile(r'``')
-def CodeBlockTransformer():
+def CodeBlockTransformer():  # pylint: disable=invalid-name
+    """Transforms codeblocks into markdown syntax."""
     line = None
     while True:
         line = yield line
