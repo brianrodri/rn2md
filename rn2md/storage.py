@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
 import datetime as dt
