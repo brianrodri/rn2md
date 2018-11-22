@@ -1,14 +1,14 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-import unittest
+from rn2md import util
 
 import enum
+import itertools
+import unittest
+
 import datetime as dt
 import dateutil
 import freezegun
-import itertools
-
-from rn2md import util
 
 
 Weekdays = enum.Enum('Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0)
