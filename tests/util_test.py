@@ -11,14 +11,14 @@ import itertools
 from rn2md import util
 
 
-Weekdays = enum.IntEnum('Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0)
+Weekdays = enum.Enum('Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0)
 
 
 def ParseDate(date_str: str) -> dt.date:
     """Parses and validates the given date string.
 
     Args:
-        date_str: Format must be: '%a %b %d, %Y' or '%b %d, %Y'
+        date_str: Format must be: '%a %b %d, %Y' or '%b %d, %Y'.
     Returns:
         The parsed datetime.date instance.
     Raises:
