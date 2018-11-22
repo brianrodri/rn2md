@@ -7,15 +7,17 @@ import os
 import yaml
 
 
-def LoadDailyEntries(data_path):
+def load_daily_entries(data_path):
+    """Extracts the Rednotebook-styled data found in the given path."""
     all_daily_entries = {}
-    for month_date, month_path in _LoadMonthPaths(data_path):
+    for month_date, month_path in _load_month_paths(data_path):
         with open(month_path, encoding='utf-8') as month_file:
-            all_daily_entries.update(_LoadDailyEntries(month_date, month_file))
+            all_daily_entries.update(
+                _load_daily_entries(month_date, month_file))
     return all_daily_entries
 
 
-def _LoadMonthPaths(data_path):
+def _load_month_paths(data_path):
     for dir_entry in os.scandir(data_path):
         if dir_entry.is_file():
             file_root = os.path.splitext(dir_entry.name)[0]
@@ -27,7 +29,7 @@ def _LoadMonthPaths(data_path):
                 yield (month_date, dir_entry.path)
 
 
-def _LoadDailyEntries(month_date, month_file):
+def _load_daily_entries(month_date, month_file):
     try:
         month_file_content = yaml.safe_load(month_file)
     except yaml.YAMLError:
