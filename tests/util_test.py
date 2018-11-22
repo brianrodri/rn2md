@@ -42,8 +42,7 @@ def StrictParseDate(date_str: str) -> dt.date:
                 f'weekday provided in {repr(date_str)} was not the same as the '
                 f'weekday parsed from it ('
                 f'got: {parsed_weekday.name}, want: {date_str_weekday.name})')
-        else:
-            return parsed_date
+        return parsed_date
 
     try:
         parsed_date = dt.datetime.strptime(date_str, '%b %d, %Y').date()
