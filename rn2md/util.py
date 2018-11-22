@@ -16,6 +16,8 @@ def ParseDates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     Args:
         date_str: A string parseable by parsedatetime.
         workdays_only: Whether to return only workdays (Mon-Fri)
+    Returns:
+        The list of datetime.date objects interpreted from the string.
     """
     noon_time_struct = dt.datetime.today().replace(hour=12).timetuple()
     # I use "today at noon" as the source time for `parsedatetime` to avoid
