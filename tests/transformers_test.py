@@ -21,6 +21,8 @@ class TransformerTestCase(unittest.TestCase):
         t = transformer_class(*args, **kwargs)
         # Transformers are generators, so they need an initial call to `.next()`
         # to prepare them.
+        # NOTE: This is the main motivation behind this helper method; all of
+        # the `next(t)` calls would bloat test code.
         next(t)
         return t
 
