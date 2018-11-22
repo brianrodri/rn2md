@@ -1,22 +1,19 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
+
+with open('README.md') as f:
+    readme = f.read()
+
+with open('LICENSE') as f:
+    license = f.read()
 
 setup(
     name='RedNotebookToMarkDown',
     version='0.3dev',
     description='Utility to print RedNotebook data in the MarkDown format.',
     long_description=open('README.md').read(),
-    url='http://github.com/brianrodri/RednotebookToMarkdown',
     author='Brian Rodriguez',
     author_email='brian@brianrodri.com',
-    license='MIT',
-    packages=['rn2md'],
-    install_requires=[
-        'python-dateutil',
-        'defaultlist',
-        'freezegun',
-        'isoweek',
-        'parsedatetime',
-        'pyfakefs',
-        'pyyaml',
-    ],
+    url='http://github.com/brianrodri/RednotebookToMarkdown',
+    license=license,
+    packages=find_packages(exclude=('tests', 'docs')),
 )
