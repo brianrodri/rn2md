@@ -26,7 +26,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         [DEFAULT]
         workday mode=on
         """)
-        options = config.BuildConfigOptions()[0]
+        options, remaining_argv = config.BuildConfigOptions()
         self.assertTrue(options.WorkdaysOnly())
 
     def testChangeDataPath(self):
@@ -34,7 +34,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         [DEFAULT]
         data path=/test
         """)
-        options = config.BuildConfigOptions()[0]
+        options, remaining_argv = config.BuildConfigOptions()
         self.assertEqual(options.DataPath(), '/test')
 
 
