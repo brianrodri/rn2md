@@ -35,13 +35,13 @@ def StrictParseDate(date_str: str) -> dt.date:
     except ValueError:
         pass
     else:
-        date_str_weekday = Weekdays[date_str[:3].capitalize()]
-        parsed_weekday = Weekdays(parsed_date.weekday())
+        date_str_weekday = date_str[:3].capitalize()
+        parsed_weekday = Weekdays(parsed_date.weekday()).name
         if date_str_weekday != parsed_weekday:
             raise ValueError(
                 f'weekday provided in {repr(date_str)} was not the same as the '
                 f'weekday parsed from it ('
-                f'got: {parsed_weekday.name}, want: {date_str_weekday.name})')
+                f'got: {parsed_weekday.name}, want: {date_str_weekday})')
         return parsed_date
 
     try:
