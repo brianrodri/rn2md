@@ -11,6 +11,7 @@ class TransformerBaseTest(unittest.TestCase):
 
     @classmethod
     def BuildTransformer(cls, *args, **kwargs):
+        """Convienience method to build the transformer class under-test."""
         t = cls.TRANSFORMER_CLASS(*args, **kwargs)
         # Transformers are generators, so they need an initial call to `.next()`
         # to prepare them.
