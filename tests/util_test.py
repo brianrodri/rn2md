@@ -14,7 +14,7 @@ def StrToDate(date_str):
 
 
 class ParseDatesTest(unittest.TestCase):
-    """TODO(brianrodri)."""
+    """Tests for the rn2md.util.ParseDates function."""
 
     @freezegun.freeze_time('Mar 24th, 2018')
     def testToday(self):
