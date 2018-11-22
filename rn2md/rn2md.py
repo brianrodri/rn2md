@@ -12,7 +12,7 @@ import transformers
 
 def rn2md(lines):
     """Transform given lines from Markdown syntax to RedNotebook syntax."""
-    mandatory_transformer_sequence = [
+    required_transformer_sequence = [
         transformers.InnerUnderscoreEscaper(),
         transformers.LinkTransformer(),
         transformers.HeaderTransformer(base_level=1),
@@ -23,10 +23,10 @@ def rn2md(lines):
     ]
     # Transformers are generators, so they need to be prepared with an initial
     # call to `next`.
-    for t in mandatory_transformer_sequence:
+    for t in required_transformer_sequence:
         next(t)
     for line in lines:
-        for t in mandatory_transformer_sequence:
+        for t in required_transformer_sequence:
             line = t.send(line)
         yield line
 
