@@ -33,6 +33,7 @@ def main():
     daily_entries = storage.LoadDailyEntries(options.DataPath())
     dates = util.ParseDates(
         ' '.join(remaining_argv), workdays_only=options.WorkdaysOnly())
+
     def FormatDate(date):
         day_entry_lines = [date.strftime('# %a %b %d, %Y')]
         day_entry_lines.extend(
