@@ -7,12 +7,19 @@ import unittest
 
 
 class TransformerBaseTest(unittest.TestCase):
-    """Provides convienience method to build a TRANSFORMER_CLASS instance."""
+    """Provides convienience method to build a transformer_class instance.
+
+    Assumes that derived classes are named after some class in the modules
+    transformers in the format: f'{cls.__name__}Test'
+    """
 
     @classmethod
     def BuildTransformer(cls, *args, **kwargs):
         """Convienience method to build the transformer class under-test."""
-        t = cls.TRANSFORMER_CLASS(*args, **kwargs)
+        transformer_name = cls.__name__[:-4]
+        transformer_class = getattr(transformers, transformer_name)
+        t = transformer_class(*args, **kwargs)
+
         # Transformers are generators, so they need an initial call to `.next()`
         # to prepare them.
         next(t)
