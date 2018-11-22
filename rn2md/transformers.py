@@ -23,14 +23,14 @@ import re
 import defaultlist
 
 
-def _grouper(iterable, n):
+def _grouper(iterable, chunks):
     """Collect data into fixed-length chunks or blocks."""
     # _grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
-    args = (iter(iterable),) * n
+    args = (iter(iterable),) * chunks
     return zip(*args)
 
 
-def _SpansIntersect(span1, span2):
+def _spans_intersect(span1, span2):
     (lo1, hi1), (lo2, hi2) = span1, span2
     return hi1 >= lo2 and hi2 >= lo1
 
@@ -46,14 +46,14 @@ BACKTICK_PATTERN = re.compile(r'`.*?`')
 def _OccursInBacktick(match):
     """Check if `match` occurs in backticks."""
     occurrences = BACKTICK_PATTERN.finditer(match.string)
-    return any(_SpansIntersect(match.span(), m.span()) for m in occurrences)
+    return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
 
 
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 def _OccursInLink(match):
     """Check if regexp `match` occurs in some URL."""
     occurrences = LINK_PATTERN.finditer(match.string)
-    return any(_SpansIntersect(match.span(), m.span(2)) for m in occurrences)
+    return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
 
 
 def LinkTransformer():
