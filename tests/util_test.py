@@ -17,8 +17,8 @@ Weekdays = enum.Enum('Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0)
 def StrictParseDate(date_str: str) -> dt.date:
     """Parses date with strict requirements on the output.
 
-    Asserts that when a weekday ('%a') is provided, the parsed date matches it.
-    Normally, mismatches are ignored by date parsers.
+    Asserts that when a weekday ('%a') is provided, the parsed date's weekday
+    matches it. Normally, mismatches are ignored by date parsers.
 
     Args:
         date_str: Format must be: '%a %b %d, %Y' or '%b %d, %Y'.
@@ -26,30 +26,31 @@ def StrictParseDate(date_str: str) -> dt.date:
         The parsed datetime.date instance.
     Raises:
         ValueError:
+            - none of the formats could parse date_str
             - weekday provided in date_str was not the same as the weekday
               parsed from it
-            - none of the formats could parse date_str
     """
     try:
-        parsed_datetime = dt.datetime.strptime(date_str, '%a %b %d, %Y')
+        parsed_date = dt.datetime.strptime(date_str, '%a %b %d, %Y').date()
     except ValueError:
         pass
     else:
         date_str_weekday = Weekdays[date_str[:3].capitalize()]
-        parsed_weekday = Weekdays(parsed_datetime.weekday())
+        parsed_weekday = Weekdays(parsed_date.weekday())
         if date_str_weekday != parsed_weekday:
             raise ValueError(
                 f'weekday provided in {repr(date_str)} was not the same as the '
                 f'weekday parsed from it ('
                 f'got: {parsed_weekday.name}, want: {date_str_weekday.name})')
-        return parsed_datetime.date()
+        else:
+            return parsed_date
 
     try:
-        parsed_datetime = dt.datetime.strptime(date_str, '%b %d, %Y')
+        parsed_date = dt.datetime.strptime(date_str, '%b %d, %Y').date()
     except ValueError:
         pass
     else:
-        return parsed_datetime.date()
+        return parsed_date
 
     raise ValueError(
         f'{repr(date_str)} did not match any of the expected formats: '
