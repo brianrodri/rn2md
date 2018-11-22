@@ -2,16 +2,23 @@
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
 import datetime as dt
+import time
 
 import isoweek
-import parsedatetime
+import parsedatetime as pdt
 
 
 def ParseDates(date_str, workdays_only=False):
     """Returns the inferred dates described by the given date str."""
-    cal = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE)
-    struct_time = cal.parse(date_str)[0]
-    parsed_date = dt.date(*struct_time[:3])
+    noon_time_struct = dt.datetime.today().replace(hour=12).timetuple()
+    # I use "today at noon" as the source time for `parsedatetime` to avoid
+    # rounding errors in unit tests. Without it, date arithemtic is 1-day off.
+    # This does not effect actual usage because Rednotebook can only be indexed
+    # by DD-MM-YYYY anyway; HH-MM-SS is ignored.
+    time_struct, result = pdt.Calendar().parse(date_str, noon_time_struct)
+    if not result:
+        raise ValueError(f'{date_str} could not be parsed into a date')
+    parsed_date = dt.datetime(*time_struct[:6]).date()
     if 'week' in date_str:
         days = _GetWeekDays(parsed_date)
         return days[:5] if workdays_only else days
