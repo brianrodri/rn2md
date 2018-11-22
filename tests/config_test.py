@@ -1,11 +1,11 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
+from rn2md import config
+
 import os
 import unittest
 
 from pyfakefs import fake_filesystem_unittest
-
-from rn2md import config
 
 
 class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
