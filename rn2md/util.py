@@ -1,6 +1,8 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
+from typing import List
+
 import datetime as dt
 import time
 
@@ -8,8 +10,13 @@ import isoweek
 import parsedatetime as pdt
 
 
-def ParseDates(date_str, workdays_only=False):
-    """Returns the inferred dates described by the given date str."""
+def ParseDates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
+    """Returns the inferred dates described by the given date str.
+
+    Args:
+        date_str: A string parseable by parsedatetime.
+        workdays_only: Whether to return only workdays (Mon-Fri)
+    """
     noon_time_struct = dt.datetime.today().replace(hour=12).timetuple()
     # I use "today at noon" as the source time for `parsedatetime` to avoid
     # rounding errors in unit tests. Without it, date arithemtic is 1-day off.
