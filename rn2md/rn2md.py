@@ -34,7 +34,7 @@ def rn2md(lines):
 if __name__ == '__main__':
     options, remaining_argv = config.BuildConfigOptions(sys.argv)
     daily_entries = storage.LoadDailyEntries(options.DataPath())
-    target_date =' '.join(remaining_argv) or 'today'
+    target_date = ' '.join(remaining_argv) or 'today'
     dates = util.ParseDates(target_date , workdays_only=options.WorkdaysOnly())
 
     def FormatDate(date):
