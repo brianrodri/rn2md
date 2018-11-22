@@ -41,7 +41,7 @@ def StrictParseDate(date_str: str) -> dt.date:
             raise ValueError(
                 f'weekday provided in {repr(date_str)} was not the same as the '
                 f'weekday parsed from it ('
-                f'got: {parsed_weekday.name}, want: {date_str_weekday})')
+                f'got: {parsed_weekday}, want: {date_str_weekday})')
         return parsed_date
 
     try:
