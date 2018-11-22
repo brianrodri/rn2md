@@ -9,7 +9,7 @@ import isoweek
 import parsedatetime as pdt
 
 
-def ParseDates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
+def parse_dates(date_str, workdays_only=False):
     """Returns the dates interpreted from the given string.
 
     Args:
@@ -31,18 +31,17 @@ def ParseDates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
         raise ValueError(f'{date_str} could not be parsed into a date')
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
     if 'week' in date_str:
-        return _GetWeekDays(parsed_date, workdays_only)
-    else:
-        return [_RoundToWorkday(parsed_date) if workdays_only else parsed_date]
+        return _get_week_days(parsed_date, workdays_only)
+    return [_round_to_workday(parsed_date) if workdays_only else parsed_date]
 
 
-def _GetWeekDays(date: dt.date, workdays_only: bool) -> List[dt.date]:
+def _get_week_days(date: dt.date, workdays_only: bool) -> List[dt.date]:
     week_number = date.isocalendar()[1]
     week = isoweek.Week(date.year, week_number).days()
     return week[:5] if workdays_only else week
 
 
-def _RoundToWorkday(date: dt.date) -> dt.date:
+def _round_to_workday(date: dt.date) -> dt.date:
     if date.weekday() in (5, 6):  # Sat, Sun = 5, 6
         if date > dt.date.today():
             workday_delta = 7 - date.weekday()  # round to next Mon
