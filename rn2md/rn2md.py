@@ -33,9 +33,9 @@ def rn2md(lines):
 def main():
     """Business logic for rn2md utility."""
     options, remaining_argv = config.build_config_options(sys.argv)
-    daily_entries = storage.LoadDailyEntries(options.data_path)
+    daily_entries = storage.load_daily_entries(options.data_path)
     target_date = ' '.join(remaining_argv) or 'today'
-    dates = util.ParseDates(target_date, workdays_only=options.workdays_only)
+    dates = util.parse_dates(target_date, workdays_only=options.workdays_only)
 
     def format_day_entry(date):
         entry_lines = [l.rstrip() for l in daily_entries[date].split('\n')]
