@@ -34,5 +34,4 @@ def build_config_options(argv=None):
     """Parses argv for more configuration to the default options"""
     if argv is None:
         argv = []
-    # TODO(brianrodri): Add more command-line configuration options.
     return ConfigOptions(), argv[1:]
