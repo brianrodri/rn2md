@@ -91,3 +91,6 @@ ENV/
 
 # macOS settings
 Icon
+
+# vim settings
+*.swp
