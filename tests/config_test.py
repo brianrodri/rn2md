@@ -1,41 +1,45 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-from rn2md import config
-
 import os
 import unittest
 
 from pyfakefs import fake_filesystem_unittest
 
+from rn2md import config
+
 
 class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
+    """Tests for the ConfigOptions class"""
 
     def setUp(self):
         self.setUpPyfakefs()
 
-    def testDefaultBehavior(self):
+    def test_default_behavior(self):
+        """Tests nothing special happens when arbitrary args are passed."""
         argv = ['config_test.py', 'command', 'line', 'args']
-        options, remaining_argv = config.BuildConfigOptions(argv)
-        self.assertFalse(options.WorkdaysOnly())
-        self.assertEqual(options.DataPath(),
+        options, remaining_argv = config.build_config_options(argv)
+        self.assertFalse(options.workdays_only)
+        self.assertEqual(options.data_path,
                          os.path.expanduser('~/.rednotebook/data'))
         self.assertListEqual(remaining_argv, ['command', 'line', 'args'])
 
-    def testChangeWorkOptions(self):
+    def test_change_work_options(self):
+        """Tests workday changes made in the config file."""
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         workday mode=on
         """)
-        options, remaining_argv = config.BuildConfigOptions()
-        self.assertTrue(options.WorkdaysOnly())
+        options, unused_remaining_argv = config.build_config_options()
+        self.assertTrue(options.workdays_only)
 
-    def testChangeDataPath(self):
+    def test_change_data_path(self):
+        """Test data changes made in the config file."""
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         data path=/test
         """)
-        options, remaining_argv = config.BuildConfigOptions()
-        self.assertEqual(options.DataPath(), '/test')
+        options, unused_remaining_argv = config.build_config_options()
+        self.assertEqual(options.data_path, '/test')
 
 
 if __name__ == '__main__':

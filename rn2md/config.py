@@ -3,7 +3,6 @@
 """Builds configuration options with nice default behavior."""
 import configparser
 import os
-import sys
 
 
 class ConfigOptions():
@@ -20,14 +19,19 @@ class ConfigOptions():
         self._config.read(os.path.expanduser('~/.rn2mdrc'))
         self._section = section
 
-    def WorkdaysOnly(self):
+    @property
+    def workdays_only(self):
+        """Read-only accessor for workday mode"""
         return self._config[self._section].getboolean('workday mode')
 
-    def DataPath(self):
+    @property
+    def data_path(self):
+        """Read-only accessor for data path"""
         return self._config[self._section].get('data path')
 
 
-def BuildConfigOptions(argv=None):
+def build_config_options(argv=None):
+    """Parses argv for more configuration to the default options"""
     if argv is None:
         argv = []
     # TODO(brianrodri): Add more command-line configuration options.
