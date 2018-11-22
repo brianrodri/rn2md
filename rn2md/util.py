@@ -35,13 +35,13 @@ def ParseDates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
         return [_RoundToWorkday(parsed_date) if workdays_only else parsed_date]
 
 
-def _GetWeekDays(date: dt.date, workdays_only: bool):
+def _GetWeekDays(date: dt.date, workdays_only: bool) -> List[dt.date]:
     week_number = date.isocalendar()[1]
     week = isoweek.Week(date.year, week_number).days()
     return week[:5] if workdays_only else week
 
 
-def _RoundToWorkday(date: dt.date):
+def _RoundToWorkday(date: dt.date) -> dt.date:
     if date.weekday() in (5, 6):  # Sat, Sun = 5, 6
         if date > dt.date.today():
             workday_delta = 7 - date.weekday()  # round to next Mon
