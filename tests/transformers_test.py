@@ -7,6 +7,7 @@ import unittest
 
 
 class TransformerBaseTest(unittest.TestCase):
+    """Provides convienience method to build a TRANSFORMER_CLASS instance."""
 
     @classmethod
     def BuildTransformer(cls, *args, **kwargs):
@@ -121,7 +122,7 @@ class ListTransformerTest(TransformerBaseTest):
             ' - B',
             '- A',
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '- A',
             ' - B',
             '- A',
@@ -134,7 +135,7 @@ class ListTransformerTest(TransformerBaseTest):
             ' + B',
             '+ A',
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '1. A',
             ' 1. B',
             '2. A',
@@ -149,7 +150,7 @@ class ListTransformerTest(TransformerBaseTest):
             '',
             '+ C'
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '1. A',
             '2. B',
             '',
@@ -165,7 +166,7 @@ class ListTransformerTest(TransformerBaseTest):
             'Content',
             '+ C',
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '1. A',
             '2. B',
             'Content',
@@ -183,7 +184,7 @@ class ListTransformerTest(TransformerBaseTest):
             ' + F',
             '  + G',
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '1. A',
             ' 1. B',
             ' 2. C',
@@ -200,7 +201,7 @@ class ListTransformerTest(TransformerBaseTest):
             ' - B',
             '+ C',
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '1. A',
             ' - B',
             '2. C',
@@ -247,7 +248,7 @@ class CodeBlockTransformerTest(TransformerBaseTest):
             '# Python code',
             '```',
         ]
-        self.assertListEqual([t.send(l) for l in input_lines], [
+        self.assertEqual([t.send(l) for l in input_lines], [
             '```py',
             '# Python code',
             '```',
