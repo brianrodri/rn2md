@@ -1,9 +1,9 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 """Test cases for the transformers module."""
-import unittest
-
 from rn2md import transformers
+
+import unittest
 
 
 class ItalicTransformerTest(unittest.TestCase):

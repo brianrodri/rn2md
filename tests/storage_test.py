@@ -1,13 +1,13 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
+from rn2md import storage
+
 import datetime as dt
 import os
 import unittest
 
 from pyfakefs import fake_filesystem_unittest
 import yaml
-
-from rn2md import storage
 
 
 class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
