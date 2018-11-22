@@ -10,7 +10,7 @@ class TransformerTestCase(unittest.TestCase):
     """Provides convienience method to build a transformer class instance.
 
     Assumes derived classes are named after a class in the transformers module
-    in the format: f'{cls.__name__}Test'
+    in the format: f'{cls.__name__}Test'.
     """
 
     @classmethod
@@ -19,7 +19,6 @@ class TransformerTestCase(unittest.TestCase):
         transformer_name = cls.__name__[:-4]
         transformer_class = getattr(transformers, transformer_name)
         t = transformer_class(*args, **kwargs)
-
         # Transformers are generators, so they need an initial call to `.next()`
         # to prepare them.
         next(t)
