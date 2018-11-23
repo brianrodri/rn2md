@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Test cases for the transformers module."""
+"""Test cases for the rn2md_transformers module."""
 import unittest
 
-from rn2md import transformers
+from rn2md import rn2md_transformers
 
 
 class TransformerTestCase(unittest.TestCase):
     """Provides convienience method to build a transformer class instance.
 
-    Assumes derived classes are named after a class in the transformers module
-    in the format: f'{cls.__name__}Test'.
+    Assumes derived classes are named after a class in the rn2md_transformers
+    module in the format: f'{cls.__name__}Test'.
     """
 
     @classmethod
     def new_transformer(cls, *args, **kwargs):
         """Convienience method to build the transformer class under-test."""
         transformer_name = cls.__name__[:-4]
-        transformer_generator = getattr(transformers, transformer_name)
+        transformer_generator = getattr(rn2md_transformers, transformer_name)
         transformer = transformer_generator(*args, **kwargs)
-        # Transformers are generators, so they need an initial call to `.next()`
-        # to prepare them.
+        # Generators need an initial call to `.next()` to prepare them.
         # NOTE: This is the main motivation behind this helper method; all of
         # the `next(transformer)` calls would bloat test code.
         next(transformer)
