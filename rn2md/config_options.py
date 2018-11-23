@@ -29,7 +29,7 @@ class ConfigOptions():
 
 
 def build_config_options(argv=None):
-    """Parses argv for more configuration to the default options"""
+    """Parses argv for any extra configuration requested via stdin."""
     if argv is None:
         argv = []
     return ConfigOptions(), argv[1:]
