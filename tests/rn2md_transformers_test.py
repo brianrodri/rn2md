@@ -5,7 +5,7 @@ from rn2md import rn2md_transformers
 
 
 class TransformerRegistry():
-    """Helper to associate test cases to the transformers they exercise."""
+    """Helps explicitly associate test cases to their target transformers."""
     REGISTERY = {}
 
     @classmethod
