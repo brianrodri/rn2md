@@ -26,10 +26,10 @@ class TransformerRegistry():
     @classmethod
     def register(cls, transformer_cls):
         """Decorator for associating calling class to a transformer."""
-        def registration_decorator(cls_to_register):
+        def _registration_decorator(cls_to_register):
             cls.REGISTERY[cls_to_register] = transformer_cls
             return cls_to_register
-        return registration_decorator
+        return _registration_decorator
 
     @classmethod
     def get_transformer(cls, registered_cls):
