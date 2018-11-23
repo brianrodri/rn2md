@@ -1,4 +1,4 @@
-"""Translates text in RedNotebook syntax to Markdown syntax.
+"""Helpers to tranform data in RedNotebook syntax to Markdown syntax.
 
 Here is a summary of the currently implemented transformers:
 
@@ -11,6 +11,7 @@ Here is a summary of the currently implemented transformers:
     [""url""]                         ![...](url)
     + Ordered item                    1. Ordered item
     - Unordered item                  - Unordered item
+    ``asdf``                          `asdf`
 """
 import re
 
@@ -31,6 +32,7 @@ def _spans_intersect(span1, span2):
 
 def _find_non_escaped_patterns(pattern, target_str):
     matches = pattern.finditer(target_str)
+    # Order matters.
     matches = filter(lambda m: not _occurs_in_link(m), matches)
     matches = filter(lambda m: not _occurs_in_backtick(m), matches)
     return matches
@@ -44,18 +46,18 @@ def _occurs_in_backtick(match):
 
 
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-def _occurs_in_link(match):
-    """Check if regexp `match` occurs in some URL."""
-    occurrences = LINK_PATTERN.finditer(match.string)
-    return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
-
-
 def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = None
     while True:
         line = yield line
         line = LINK_PATTERN.sub(r'[\1](\2)', line)
+
+
+def _occurs_in_link(match):
+    """Check if regexp `match` occurs in some URL."""
+    occurrences = LINK_PATTERN.finditer(match.string)
+    return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
 
 
 ITALIC_PATTERN = re.compile(r'//')
