@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Test cases for the rednotebook_storage module."""
 import datetime as dt
 import os

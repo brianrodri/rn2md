@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Test cases for the rn2md_util module."""
 import enum
 import unittest
