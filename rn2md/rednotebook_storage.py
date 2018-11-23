@@ -18,7 +18,7 @@ def _load_month_paths(data_path):
     for dir_entry in os.scandir(data_path):
         if not dir_entry.is_file():
             pass
-        file_root = os.path.splitext(dir_entry.name)[0]
+        file_root, unused_ext = os.path.splitext(dir_entry.name)
         try:
             month_date = dt.datetime.strptime(file_root, '%Y-%m').date()
         except ValueError:
