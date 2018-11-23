@@ -30,7 +30,7 @@ def _spans_intersect(span1, span2):
     return hi1 >= lo2 and hi2 >= lo1
 
 
-def _find_non_escaped_patterns(pattern, target_str):
+def _find_unescaped_patterns(pattern, target_str):
     matches = pattern.finditer(target_str)
     # Order matters.
     matches = filter(lambda m: not _occurs_in_link(m), matches)
@@ -66,7 +66,7 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     line = None
     while True:
         line = yield line
-        matches = _find_non_escaped_patterns(ITALIC_PATTERN, line)
+        matches = _find_unescaped_patterns(ITALIC_PATTERN, line)
         for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
@@ -83,7 +83,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
         line = yield line
         if set(line) == {'-'}:
             continue
-        matches = _find_non_escaped_patterns(STRIKETHROUGH_PATTERN, line)
+        matches = _find_unescaped_patterns(STRIKETHROUGH_PATTERN, line)
         for mlo, mhi in reversed(list(_grouper(matches, 2))):
             line = ''.join([
                 line[:mlo.start()],
@@ -151,8 +151,7 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
     line = None
     while True:
         line = yield line
-        matches = list(
-            _find_non_escaped_patterns(INNER_UNDERSCORE_PATTERN, line))
+        matches = list(_find_unescaped_patterns(INNER_UNDERSCORE_PATTERN, line))
         for match in reversed(matches):
             line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
