@@ -33,9 +33,9 @@ def _load_daily_entries(month_date, month_file):
     except yaml.YAMLError:
         return {}
     daily_entries = {}
-    for day_of_month, month_content in month_file_content.items():
+    for day_of_month, content in month_file_content.items():
         day_date = month_date.replace(day=day_of_month)
-        day_entry = month_content['text'].rstrip()
+        day_entry = content['text'].rstrip()
         if day_entry:
             daily_entries[day_date] = day_entry
     return daily_entries
