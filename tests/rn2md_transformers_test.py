@@ -1,11 +1,10 @@
 """Test cases for the rn2md_transformers module."""
-import functools
 import unittest
 
 from rn2md import rn2md_transformers
 
 
-class TransformerRegistry(object):
+class TransformerRegistry():
     """Helper to associate test cases to the transformers they exercise."""
     REGISTERY = {}
 
