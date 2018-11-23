@@ -1,30 +1,23 @@
 """Test cases for the rn2md_transformers module."""
+import functools
 import unittest
 
 from rn2md import rn2md_transformers
 
 
-class TransformerTestCase(unittest.TestCase):
-    """Provides convienience method to build a transformer class instance.
-
-    Assumes derived classes are named after a class in the rn2md_transformers
-    module in the format: f'{cls.__name__}Test'.
-    """
-
-    @classmethod
-    def new_transformer(cls, *args, **kwargs):
-        """Convienience method to build the transformer class under-test."""
-        transformer_name = cls.__name__[:-4]
-        transformer_generator = getattr(rn2md_transformers, transformer_name)
-        transformer = transformer_generator(*args, **kwargs)
-        # Generators need an initial call to `.next()` to prepare them.
-        # NOTE: This is the main motivation behind this helper method; all of
-        # the `next(transformer)` calls would bloat test code.
-        next(transformer)
-        return transformer
+def transformer_target(transformer):
+    def _make_instance(unused_self, *args, **kwargs):
+        transformer_instance = transformer(*args, **kwargs)
+        next(transformer_instance)
+        return transformer_instance
+    def _attach_new_transformer_method(cls):
+        setattr(cls, 'new_transformer', _make_instance)
+        return cls
+    return _attach_new_transformer_method
 
 
-class ItalicTransformerTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.ItalicTransformer)
+class ItalicTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style italics to markdown-style."""
 
     def test_transformation(self):
@@ -52,7 +45,8 @@ class ItalicTransformerTest(TransformerTestCase):
                          '_italic_, `//escaped italic//`')
 
 
-class LinkTransformerTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.LinkTransformer)
+class LinkTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style links to markdown-style."""
 
     def test_transformation(self):
@@ -62,7 +56,8 @@ class LinkTransformerTest(TransformerTestCase):
                          '[sample text](go/somewhere)')
 
 
-class StrikethroughTransformerTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.StrikethroughTransformer)
+class StrikethroughTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style strikethroughs to markdown-style."""
 
     def test_transformation(self):
@@ -101,7 +96,8 @@ class StrikethroughTransformerTest(TransformerTestCase):
         self.assertEqual(transformer.send('-' * 12), '-' * 12)
 
 
-class HeaderTransformerTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.HeaderTransformer)
+class HeaderTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style header to markdown-style."""
 
     def test_transformation(self):
@@ -134,7 +130,8 @@ class HeaderTransformerTest(TransformerTestCase):
         self.assertEqual(transformer.send('==Unbalanced==='), '==Unbalanced===')
 
 
-class ListTransformerTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.ListTransformer)
+class ListTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style lists to markdown-style."""
 
     def test_unordered_list(self):
@@ -236,7 +233,8 @@ class ListTransformerTest(TransformerTestCase):
         ])
 
 
-class InnerUnderscoreEscaperTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.InnerUnderscoreEscaper)
+class InnerUnderscoreEscaperTest(unittest.TestCase):
     """Test transforming Rednotebook-style underscores to markdown-style."""
 
     def test_transformation(self):
@@ -265,7 +263,8 @@ class InnerUnderscoreEscaperTest(TransformerTestCase):
                          r'gets\_escaped, `no_escape`')
 
 
-class CodeBlockTransformerTest(TransformerTestCase):
+@transformer_target(rn2md_transformers.CodeBlockTransformer)
+class CodeBlockTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style code blocks to markdown-style."""
 
     def test_transformation(self):
