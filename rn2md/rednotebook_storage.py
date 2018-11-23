@@ -16,14 +16,15 @@ def load_daily_entries(data_path):
 
 def _load_month_paths(data_path):
     for dir_entry in os.scandir(data_path):
-        if dir_entry.is_file():
-            file_root = os.path.splitext(dir_entry.name)[0]
-            try:
-                month_date = dt.datetime.strptime(file_root, '%Y-%m').date()
-            except ValueError:
-                continue
-            else:
-                yield (month_date, dir_entry.path)
+        if not dir_entry.is_file():
+            pass
+        file_root = os.path.splitext(dir_entry.name)[0]
+        try:
+            month_date = dt.datetime.strptime(file_root, '%Y-%m').date()
+        except ValueError:
+            continue
+        else:
+            yield (month_date, dir_entry.path)
 
 
 def _load_daily_entries(month_date, month_file):
