@@ -18,13 +18,12 @@ def parse_dates(date_str, workdays_only=False):
     Raises:
         ValueError: date_str could not be parsed.
     """
-    noon_time_struct = dt.datetime.today().replace(hour=12).timetuple()
+    noon_tuple = dt.datetime.today().replace(hour=12).timetuple()
     # I use "today at noon" as the source time for `parsedatetime` to avoid
     # rounding errors in unit tests. Without it, date arithemtic is 1-day off.
     # This does not effect actual usage because Rednotebook can only be indexed
     # by DD-MM-YYYY anyway, HH-MM-SS gets ignored.
-    parsed_time_struct, result_flag = (
-        pdt.Calendar().parse(date_str, noon_time_struct))
+    parsed_time_struct, result_flag = pdt.Calendar().parse(date_str, noon_tuple)
     if not result_flag:
         raise ValueError(f'{date_str} could not be parsed into a date')
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
