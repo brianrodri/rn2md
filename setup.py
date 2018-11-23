@@ -22,7 +22,8 @@ setup(
         'pyyaml',
     ],
     py_modules=['rn2md'],
+    packages=['rn2md'],
     entry_points={
-        'console_scripts': ['rn2md=rn2md:main'],
+        'console_scripts': ['rn2md = rn2md.__main__:main'],
     },
 )
