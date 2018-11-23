@@ -11,16 +11,19 @@ setup(
     url='https://github.com/brianrodri/RednotebookToMarkdown',
     author='Brian N. Rodriguez',
     author_email='brian@brianrodri.com',
-    packages=find_packages(exclude=('docs', 'tests')),
+    packages=find_packages(exclude=('tests',)),
     install_requires=[
-        'python-dateutil',
         'defaultlist',
         'freezegun',
         'isoweek',
         'parsedatetime',
         'pyfakefs',
+        'python-dateutil',
         'pyyaml',
     ],
+    extras_require={
+        dev: ['pylint'],
+    },
     entry_points={
         'console_scripts': [
             'rn2md=rn2md.__main__:main',
