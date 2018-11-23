@@ -1,17 +1,16 @@
-from setuptools import setup
+"""Setup for rn2md package."""
+from setuptools import setup, find_packages
 
-# Where the magic happens:
 setup(
     name='rn2md',
-    version='0.4',
+    version='0.1.0',
+    description='Utility to print RedNotebook data in markdown format',
+    long_description=open('README.md', encoding='utf-8').read(),
+    long_description_content_type='text/markdown',
+    url='https://github.com/brianrodri/RednotebookToMarkdown',
     author='Brian N. Rodriguez',
     author_email='brian@brianrodri.com',
-    url='https://github.com/brianrodri/RednotebookToMarkdown',
-    description='Utility to translate Rednotebook data into MarkDown syntax.',
-    long_description=open('README.md').read(),
-    long_description_content_type='text/markdown',
-    license=open('LICENSE').read(),
-    python_requires='>=3.7.0',
+    packages=find_packages(exclude=('docs', 'tests')),
     install_requires=[
         'python-dateutil',
         'defaultlist',
@@ -21,9 +20,9 @@ setup(
         'pyfakefs',
         'pyyaml',
     ],
-    py_modules=['rn2md'],
-    packages=['rn2md'],
     entry_points={
-        'console_scripts': ['rn2md = rn2md.__main__:main'],
+        'console_scripts': [
+            'rn2md=rn2md.__main__:main',
+        ],
     },
 )

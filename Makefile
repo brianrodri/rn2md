@@ -4,6 +4,9 @@ init:
 test:
 	nosetests tests
 
+install:
+	python3 setup.py install
+
 clean:
 	find . -name '*.pyc' -exec rm --force {} +
 	find . -name '*.pyo' -exec rm --force {} +
