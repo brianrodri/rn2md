@@ -1,15 +1,16 @@
 init:
-	pip install -r requirements.txt
+	pip3 install -r requirements.txt
 
 test:
 	nosetests tests
 
 install:
-	python3 setup.py install
+	pip3 install -e .
 
 clean:
-	find . -name '*.pyc' -exec rm --force {} +
-	find . -name '*.pyo' -exec rm --force {} +
-	rm --force --recursive build/
-	rm --force --recursive dist/
-	rm --force --recursive *.egg-info
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -rf {} +
+	rm -rf build/
+	rm -rf dist/
+	rm -rf *.egg-info

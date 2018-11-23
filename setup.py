@@ -7,6 +7,7 @@ setup(
     description='Utility to print RedNotebook data in markdown format',
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
+    license=open('LICENSE').read(),
     url='https://github.com/brianrodri/RednotebookToMarkdown',
     author='Brian N. Rodriguez',
     author_email='brian@brianrodri.com',
