@@ -4,6 +4,21 @@ import unittest
 from rn2md import rn2md_transformers
 
 
+class TransformerTestCase(unittest.TestCase):
+    """Base class to allow derived classes to retrieve their transformer."""
+
+    def new_transformer(self, *args, **kwargs):
+        """Retrieve the transformer associated to this particular test case."""
+        transformer_cls = TransformerRegistry.get_transformer(self.__class__)
+        transformer = transformer_cls(*args, **kwargs)
+        # NOTE: Transformers are generators, which need to have `next` called on
+        # them after construction to properly prepare them for usage. Hiding the
+        # call to `next` is the main motivation behind the registration logic (I
+        # hate how it bloats the test code).
+        _ = next(transformer, None)
+        return transformer
+
+
 class TransformerRegistry():
     """Helps explicitly associate test cases to their target transformers."""
     REGISTERY = {}
@@ -20,17 +35,6 @@ class TransformerRegistry():
     def get_transformer(cls, registered_cls):
         """Class method for retrieving a class's registered transformer."""
         return cls.REGISTERY[registered_cls]
-
-
-class TransformerTestCase(unittest.TestCase):
-    """Base class to allow derived classes to retrieve their transformer."""
-
-    def new_transformer(self, *args, **kwargs):
-        """Retrieve the transformer associated to this particular test case."""
-        transformer_cls = TransformerRegistry.get_transformer(self.__class__)
-        transformer = transformer_cls(*args, **kwargs)
-        next(transformer)  # Need to call next once on new generators.
-        return transformer
 
 
 @TransformerRegistry.register(rn2md_transformers.ItalicTransformer)
