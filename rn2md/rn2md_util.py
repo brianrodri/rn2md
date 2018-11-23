@@ -1,4 +1,4 @@
-"""Arbitrary utility functions for the tool."""
+"""Arbitrary utility functions for the rn2md tool."""
 from typing import List
 
 import datetime as dt
