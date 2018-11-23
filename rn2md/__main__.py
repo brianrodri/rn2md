@@ -3,10 +3,10 @@
 """TODO(brianrodri): Better module doc string."""
 import sys
 
-from rn2md import config
-from rn2md import util
-from rn2md import storage
-from rn2md import transformers
+from rn2md import config_options
+from rn2md import rn2md_util as util
+from rn2md import rednotebook_storage as storage
+from rn2md import rn2md_transformers as transformers
 
 
 def rn2md(lines):
@@ -32,7 +32,7 @@ def rn2md(lines):
 
 def main():
     """Business-logic."""
-    options, remaining_argv = config.build_config_options(sys.argv)
+    options, remaining_argv = config_options.build_config_options(sys.argv)
     daily_entries = storage.load_daily_entries(options.data_path)
     target_date = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(target_date, workdays_only=options.workdays_only)
