@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Test cases for the util module."""
+"""Test cases for the rn2md_util module."""
 import enum
 import unittest
 
 import datetime as dt
 import freezegun
 
-from rn2md import util
+from rn2md import rn2md_util as util
 
 
 Weekdays = (  # pylint: disable=invalid-name
@@ -57,7 +57,7 @@ def strict_parse_date(date_str):
 
 
 class ParseDatesTest(unittest.TestCase):
-    """Tests for the rn2md.util.parse_dates function."""
+    """Tests for the rn2md.rn2md_util.parse_dates function."""
 
     @freezegun.freeze_time(strict_parse_date('Mar 24, 2018'))
     def test_today(self):
