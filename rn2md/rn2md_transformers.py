@@ -120,16 +120,16 @@ LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 def ListTransformer():  # pylint: disable=invalid-name
     """Transforms unordered and ordered lists into markdown syntax."""
     line = None
-    empty_line_counter = 0
+    sequential_empty_lines = 0
     ordered_list_counter = defaultlist.defaultlist(lambda: 0)
     while True:
         line = yield line
         if not line.strip():
-            empty_line_counter += 1
-            if empty_line_counter >= 2:
+            sequential_empty_lines += 1
+            if sequential_empty_lines >= 2:
                 ordered_list_counter.clear()
             continue
-        empty_line_counter = 0
+        sequential_empty_lines = 0
         list_match = LIST_PATTERN.match(line)
         if not list_match:
             ordered_list_counter.clear()
