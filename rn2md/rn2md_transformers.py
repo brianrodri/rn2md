@@ -1,10 +1,6 @@
 """Translates text in RedNotebook syntax to Markdown syntax.
 
-Given a sequence of lines from stdin, this script will print out the same
-sequence of lines but with any RedNotebook discovered syntax converted to
-Markdown.
-
-Here is a list of the currently supported transformations:
+Here is a summary of the currently implemented transformers:
 
     RedNotebook                       Markdown
     ===========                       ========
@@ -13,6 +9,8 @@ Here is a list of the currently supported transformations:
     --text--                          ~text~
     =Text=                            # Text
     [""url""]                         ![...](url)
+    + Ordered item                    1. Ordered item
+    - Unordered item                  - Unordered item
 """
 import re
 
