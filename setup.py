@@ -21,9 +21,6 @@ setup(
         'python-dateutil',
         'pyyaml',
     ],
-    extras_require={
-        dev: ['pylint'],
-    },
     entry_points={
         'console_scripts': [
             'rn2md=rn2md.__main__:main',
