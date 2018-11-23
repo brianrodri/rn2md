@@ -1,4 +1,4 @@
-"""Builds configuration options with nice default behavior."""
+"""Builds configuration options for rn2md tool with nice default behavior."""
 import configparser
 import os
 
