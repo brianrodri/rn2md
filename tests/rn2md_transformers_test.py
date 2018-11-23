@@ -16,8 +16,13 @@ def transformer_target(transformer):
     return _attach_new_transformer_method
 
 
+class TransformerTestCase(unittest.TestCase):
+    def new_instance(self, *args, **kwargs):
+        """Stub method replaced by decorator `transformer_target`."""
+
+
 @transformer_target(rn2md_transformers.ItalicTransformer)
-class ItalicTransformerTest(unittest.TestCase):
+class ItalicTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style italics to markdown-style."""
 
     def test_transformation(self):
@@ -46,7 +51,7 @@ class ItalicTransformerTest(unittest.TestCase):
 
 
 @transformer_target(rn2md_transformers.LinkTransformer)
-class LinkTransformerTest(unittest.TestCase):
+class LinkTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style links to markdown-style."""
 
     def test_transformation(self):
@@ -57,7 +62,7 @@ class LinkTransformerTest(unittest.TestCase):
 
 
 @transformer_target(rn2md_transformers.StrikethroughTransformer)
-class StrikethroughTransformerTest(unittest.TestCase):
+class StrikethroughTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style strikethroughs to markdown-style."""
 
     def test_transformation(self):
@@ -97,7 +102,7 @@ class StrikethroughTransformerTest(unittest.TestCase):
 
 
 @transformer_target(rn2md_transformers.HeaderTransformer)
-class HeaderTransformerTest(unittest.TestCase):
+class HeaderTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style header to markdown-style."""
 
     def test_transformation(self):
@@ -131,7 +136,7 @@ class HeaderTransformerTest(unittest.TestCase):
 
 
 @transformer_target(rn2md_transformers.ListTransformer)
-class ListTransformerTest(unittest.TestCase):
+class ListTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style lists to markdown-style."""
 
     def test_unordered_list(self):
@@ -234,7 +239,7 @@ class ListTransformerTest(unittest.TestCase):
 
 
 @transformer_target(rn2md_transformers.InnerUnderscoreEscaper)
-class InnerUnderscoreEscaperTest(unittest.TestCase):
+class InnerUnderscoreEscaperTest(TransformerTestCase):
     """Test transforming Rednotebook-style underscores to markdown-style."""
 
     def test_transformation(self):
@@ -264,7 +269,7 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
 
 
 @transformer_target(rn2md_transformers.CodeBlockTransformer)
-class CodeBlockTransformerTest(unittest.TestCase):
+class CodeBlockTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style code blocks to markdown-style."""
 
     def test_transformation(self):
