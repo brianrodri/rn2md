@@ -1,5 +1,4 @@
 """Test cases for the rn2md_transformers module."""
-import functools
 import unittest
 
 from rn2md import rn2md_transformers
