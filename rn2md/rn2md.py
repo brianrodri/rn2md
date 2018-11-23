@@ -3,10 +3,10 @@
 """TODO(brianrodri): Better module doc string."""
 import sys
 
-from rn2md import config_options
-from rn2md import rn2md_util as util
-from rn2md import rednotebook_storage as storage
-from rn2md import rn2md_transformers as transformers
+import config_options
+import rn2md_util as util
+import rednotebook_storage as storage
+import rn2md_transformers as transformers
 
 
 def rn2md(lines):
