@@ -1,4 +1,4 @@
-"""Entry point to rn2md tool."""
+"""Entry point for rn2md tool."""
 import sys
 
 from . import config_options
