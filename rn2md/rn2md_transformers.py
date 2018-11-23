@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Translates text in RedNotebook syntax to Markdown syntax.
 
 Given a sequence of lines from stdin, this script will print out the same

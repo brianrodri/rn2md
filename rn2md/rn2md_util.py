@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """TODO(brianrodri): Better module doc string."""
 from typing import List
 
