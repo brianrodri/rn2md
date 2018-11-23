@@ -1,4 +1,4 @@
-"""TODO(brianrodri): Better module doc string."""
+"""Module for accessing existing RedNotebook data on a local computer."""
 import datetime as dt
 import os
 

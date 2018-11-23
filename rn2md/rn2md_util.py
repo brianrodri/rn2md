@@ -1,4 +1,4 @@
-"""TODO(brianrodri): Better module doc string."""
+"""Arbitrary utility functions for the tool."""
 from typing import List
 
 import datetime as dt

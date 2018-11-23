@@ -1,4 +1,4 @@
-"""TODO(brianrodri): Better module doc string."""
+"""Entry point to rn2md tool."""
 import sys
 
 from . import config_options
