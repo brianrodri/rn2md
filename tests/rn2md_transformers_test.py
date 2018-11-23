@@ -1,26 +1,40 @@
 """Test cases for the rn2md_transformers module."""
+import functools
 import unittest
 
 from rn2md import rn2md_transformers
 
 
-def transformer_target(transformer):
-    def _make_instance(unused_self, *args, **kwargs):
-        transformer_instance = transformer(*args, **kwargs)
-        next(transformer_instance)
-        return transformer_instance
-    def _attach_new_transformer_method(cls):
-        setattr(cls, 'new_transformer', _make_instance)
-        return cls
-    return _attach_new_transformer_method
+class TransformerRegistry(object):
+    """Helper to associate test cases to the transformers they exercise."""
+    REGISTERY = {}
+
+    @classmethod
+    def register(cls, transformer_cls):
+        """Decorator for associating calling class to a transformer."""
+        def registration_decorator(cls_to_register):
+            cls.REGISTERY[cls_to_register] = transformer_cls
+            return cls_to_register
+        return registration_decorator
+
+    @classmethod
+    def get_transformer(cls, registered_cls):
+        """Class method for retrieving a class's registered transformer."""
+        return cls.REGISTERY[registered_cls]
 
 
 class TransformerTestCase(unittest.TestCase):
-    def new_instance(self, *args, **kwargs):
-        """Stub method replaced by decorator `transformer_target`."""
+    """Base class to allow derived classes to retrieve their transformer."""
+
+    def new_transformer(self, *args, **kwargs):
+        """Retrieve the transformer associated to this particular test case."""
+        transformer_cls = TransformerRegistry.get_transformer(self.__class__)
+        transformer = transformer_cls(*args, **kwargs)
+        next(transformer)  # Need to call next once on new generators.
+        return transformer
 
 
-@transformer_target(rn2md_transformers.ItalicTransformer)
+@TransformerRegistry.register(rn2md_transformers.ItalicTransformer)
 class ItalicTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style italics to markdown-style."""
 
@@ -49,7 +63,7 @@ class ItalicTransformerTest(TransformerTestCase):
                          '_italic_, `//escaped italic//`')
 
 
-@transformer_target(rn2md_transformers.LinkTransformer)
+@TransformerRegistry.register(rn2md_transformers.LinkTransformer)
 class LinkTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style links to markdown-style."""
 
@@ -60,7 +74,7 @@ class LinkTransformerTest(TransformerTestCase):
                          '[sample text](go/somewhere)')
 
 
-@transformer_target(rn2md_transformers.StrikethroughTransformer)
+@TransformerRegistry.register(rn2md_transformers.StrikethroughTransformer)
 class StrikethroughTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style strikethroughs to markdown-style."""
 
@@ -100,7 +114,7 @@ class StrikethroughTransformerTest(TransformerTestCase):
         self.assertEqual(transformer.send('-' * 12), '-' * 12)
 
 
-@transformer_target(rn2md_transformers.HeaderTransformer)
+@TransformerRegistry.register(rn2md_transformers.HeaderTransformer)
 class HeaderTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style header to markdown-style."""
 
@@ -134,7 +148,7 @@ class HeaderTransformerTest(TransformerTestCase):
         self.assertEqual(transformer.send('==Unbalanced==='), '==Unbalanced===')
 
 
-@transformer_target(rn2md_transformers.ListTransformer)
+@TransformerRegistry.register(rn2md_transformers.ListTransformer)
 class ListTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style lists to markdown-style."""
 
@@ -237,7 +251,7 @@ class ListTransformerTest(TransformerTestCase):
         ])
 
 
-@transformer_target(rn2md_transformers.InnerUnderscoreEscaper)
+@TransformerRegistry.register(rn2md_transformers.InnerUnderscoreEscaper)
 class InnerUnderscoreEscaperTest(TransformerTestCase):
     """Test transforming Rednotebook-style underscores to markdown-style."""
 
@@ -267,7 +281,7 @@ class InnerUnderscoreEscaperTest(TransformerTestCase):
                          r'gets\_escaped, `no_escape`')
 
 
-@transformer_target(rn2md_transformers.CodeBlockTransformer)
+@TransformerRegistry.register(rn2md_transformers.CodeBlockTransformer)
 class CodeBlockTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style code blocks to markdown-style."""
 
