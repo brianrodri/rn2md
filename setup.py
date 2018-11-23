@@ -12,7 +12,7 @@ setup(
     packages=['rn2md'],
     entry_points={
         'console_scripts': [
-            'rn2md = rn2md.__main__:main'
+            'rn2md = rn2md.rn2md:main'
         ]
     },
 )
