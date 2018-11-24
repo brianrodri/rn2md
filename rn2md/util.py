@@ -23,8 +23,8 @@ def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     # rounding errors in unit tests. Without it, date arithmetic is 1-day off.
     # This does not effect actual usage because RedNotebook can only be indexed
     # by DD-MM-YYYY anyway, HH-MM-SS gets ignored.
-    parsed_time_struct, ok = pdt.Calendar().parse(date_str, noon_tuple)
-    if not ok:
+    parsed_time_struct, result = pdt.Calendar().parse(date_str, noon_tuple)
+    if not result:
         raise ValueError('%s could not be parsed into a date' % date_str)
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
     get_days = (_get_week_days if 'week' in date_str else _get_single_day)
