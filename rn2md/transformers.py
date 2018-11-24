@@ -14,7 +14,6 @@ Here is a summary of the currently implemented transformers:
     ``asdf``                          `asdf`
 """
 import re
-import string
 
 import defaultlist
 
