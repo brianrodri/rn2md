@@ -23,8 +23,8 @@ INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
-HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
 CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
+HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
 ITALIC_DELIM_PATTERN = re.compile(r'//')
 STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
 
