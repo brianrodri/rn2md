@@ -40,9 +40,9 @@ def _get_week_days(date: dt.date, workdays_only: bool) -> List[dt.date]:
 def _get_single_day(date: dt.date, workdays_only: bool) -> List[dt.date]:
     if workdays_only and date.weekday() in (5, 6):  # Sat, Sun = 5, 6
         if date > dt.date.today():
-            workday_delta = 7 - date.weekday()  # round to next Mon
+            daydelta = dt.timedelta(days=7 - date.weekday())  # until next Mon
         else:
-            workday_delta = 4 - date.weekday()  # round to last Fri
+            daydelta = dt.timedelta(days=4 - date.weekday())  # since last Fri
     else:
-        workday_delta = 0
-    return [date + dt.timedelta(days=workday_delta)]
+        daydelta = dt.timedelta()
+    return [date + daydelta]
