@@ -52,15 +52,14 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line
-        header_delim = re.search(r'=+', line)
-        if not header_delim or header_delim.group() == line:
+        start_delim = re.search(r'^=+', line)
+        if not start_delim or start_delim.group() == line:
             continue
-        if header_delim.end() != re.search(r'=+', line[::-1]).end():
+        end_delim = re.search(r'=+$', line)
+        if not end_delim or end_delim.group() != start_delim.group():
             continue
-        line = ' '.join([
-            '#' * (base_level + header_delim.end()),
-            line[header_delim.end():-header_delim.end()].lstrip(),
-        ])
+        lvl = len(start_delim.group())
+        line = ' '.join(['#' * (base_level + lvl), line[lvl:-lvl].lstrip()])
 
 
 def ListTransformer():  # pylint: disable=invalid-name
