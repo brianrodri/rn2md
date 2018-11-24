@@ -1,6 +1,6 @@
 """Entry point for rn2md tool."""
-from typing import Iterable
-if typing.TYPING:
+from typing import Iterable, TYPE_CHECKING
+if TYPE_CHECKING:
     import datetime as dt
 
 import sys
