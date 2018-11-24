@@ -64,21 +64,19 @@ def ListTransformer():  # pylint: disable=invalid-name
     sequential_empty_lines = 0
     while True:
         line = yield line
-        item_match = re.match(r'^\s*([-|\+])\s', line)
-        if item_match:
-            item_index = item_match.start(1)
+        li_match = re.match(r'^\s*([-|\+])\s', line)
+        if li_match:
+            i = li_match.start(1)
             # Always clear sub-items so they restart their numbering.
-            del ordered_list_history[item_index + 1:]
+            del ordered_list_history[i + 1:]
             # Unordered lists do not use a different format in markdown.
-            if line[item_index] == '-':
+            if line[i] == '-':
                 continue
             # Ordered lists should change to their actual number.
             line = ''.join([
-                line[:item_match.start(1)],
-                str(ordered_list_history[item_index]) + '.',
-                line[item_match.end(1):],
+                line[:i], str(ordered_list_history[i]) + '.', line[i + 1:]
             ])
-            ordered_list_history[item_index] += 1
+            ordered_list_history[i] += 1
         elif line.strip():
             sequential_empty_lines = 0
             ordered_list_history.clear()
