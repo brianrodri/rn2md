@@ -24,7 +24,7 @@ LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
 CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
-HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
+HEADER_DELIM_PATTERN = re.compile(r'=+')
 ITALIC_DELIM_PATTERN = re.compile(r'//')
 STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
 
@@ -105,18 +105,15 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line
-        if not line.startswith('=') or not line.endswith('='):
+        header_delim = HEADER_DELIM_PATTERN.search(line)
+        if not header_delim or header_delim.group() == line:
             continue
-        header_token_end = HEADER_TOKEN_END_PATTERN.search(line)
-        if header_token_end is None:
+        if header_delim.end() != HEADER_DELIM_PATTERN.search(line[::-1]).end():
             continue
-        if (header_token_end.start() !=
-                HEADER_TOKEN_END_PATTERN.search(line[::-1]).start()):
-            continue
-        level = header_token_end.start()
-        if base_level + level > 0:
-            line = ' '.join(
-                ['#' * (base_level + level), line[level:-level].lstrip()])
+        line = ' '.join([
+            '#' * (base_level + header_delim.end()),
+            line[header_delim.end():-header_delim.end()].lstrip(),
+        ])
 
 
 def ListTransformer():  # pylint: disable=invalid-name
