@@ -90,12 +90,10 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
-        if set(line) == {'-'}:
-            line = yield line
-        else:
-            line = yield _sub_balanced_delims(
-                             STRIKETHROUGH_PATTERN, ('**OBSOLETE**(', ')'), line,
-                             data_fun=lambda d: d.rstrip(string.punctuation))
+        line = yield line if set(line) == {'-'} else (
+            _sub_balanced_delims(
+                    STRIKETHROUGH_PATTERN, ('**OBSOLETE**(', ')'), line,
+                    data_fun=lambda d: d.rstrip('.?!')))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
