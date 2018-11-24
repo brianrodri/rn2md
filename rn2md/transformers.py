@@ -82,15 +82,15 @@ def ListTransformer():  # pylint: disable=invalid-name
         if list_item_match:
             list_item_depth = list_item_match.start(1)
             list_item_type = list_item_match.group(1)
-            # Future sub-items will restart their numbering from 1.
-            del ordered_list_history[list_item_depth + 1:]
-            if list_item_type == '+':
+            if list_item_type == '+':  # Ordered list
                 line = ''.join([
                     line[:list_item_match.start(1)],
                     str(ordered_list_history[list_item_depth]) + '.',
                     line[list_item_match.end(1):],
                 ])
                 ordered_list_history[list_item_depth] += 1
+            # Future sub-items will restart their numbering from 1.
+            del ordered_list_history[list_item_depth + 1:]
         elif line.strip():
             sequential_empty_lines = 0
             ordered_list_history.clear()
