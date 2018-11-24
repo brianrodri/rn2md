@@ -58,7 +58,7 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
 
 
 def ListTransformer():  # pylint: disable=invalid-name
-    """Transforms unordered and ordered lists into markdown syntax."""
+    """Transforms ordered and unordered lists into markdown syntax."""
     line = ''
     ordered_list_history = defaultlist.defaultlist(lambda: 1)
     sequential_empty_lines = 0
