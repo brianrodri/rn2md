@@ -129,10 +129,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
 def _filter_matches(pattern, string, preds=None):
     if preds is None:
         preds = (_not_in_link, _not_in_backticks)
-    for match in re.finditer(pattern, string):
-        if not all(p(match) for p in preds):
-            continue
-        yield match
+    return (m for m in re.finditer(pattern, string) if all(p(m) for p in preds))
 
 
 def _not_in_link(match):
