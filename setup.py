@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name='rn2md',
     version='0.1.0',
-    description='Utility to print RedNotebook data in markdown format',
+    description='Utility to print RedNotebook data in markdown format.',
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
     license=open('LICENSE').read(),
