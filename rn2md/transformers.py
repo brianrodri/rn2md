@@ -107,7 +107,7 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield _sub_balanced_delims(
-            r'``', '`', line, neg_preds=[_occurs_in_link])
+            r'``', '`', line, preds=[_not_in_link])
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
@@ -128,23 +128,23 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
     return string
 
 
-def _filtered_matches(patt, string, neg_preds=None):
-    if neg_preds is None:
-        neg_preds = (_occurs_in_link, _occurs_in_backtick)
+def _filtered_matches(patt, string, preds=None):
+    if preds is None:
+        preds = (_not_in_link, _not_in_backticks)
     for match in re.finditer(patt, string):
-        if any(p(match) for p in neg_preds):
+        if not all(p(match) for p in preds):
             continue
         yield match
 
 
-def _occurs_in_link(match):
-    occurrences = LINK_PATTERN.finditer(match.string)
-    return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
+def _not_in_link(match):
+    links = LINK_PATTERN.finditer(match.string)
+    return all(not _spans_intersect(match.span(), m.span(2)) for m in links)
 
 
-def _occurs_in_backtick(match):
-    occurrences = re.finditer(r'`.*?`', match.string)
-    return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
+def _not_in_backticks(match):
+    backticks = re.finditer(r'`.*?`', match.string)
+    return all(not _spans_intersect(match.span(), m.span()) for m in backticks)
 
 
 def _spans_intersect(span1, span2):
