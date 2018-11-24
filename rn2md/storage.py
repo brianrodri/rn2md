@@ -1,6 +1,4 @@
 """Module for accessing existing RedNotebook data on a local computer."""
-from typing import Iterable, Mapping, Tuple
-
 import datetime as dt
 import io
 import os
@@ -8,7 +6,7 @@ import os
 import yaml
 
 
-def load_daily_entries(data_path: str) -> Mapping[dt.date, str]:
+def load_daily_entries(data_path):
     """Extracts the Rednotebook-styled data found in the given path."""
     daily_entries = {}
     for month_date, month_path in _load_month_paths(data_path):
@@ -17,7 +15,7 @@ def load_daily_entries(data_path: str) -> Mapping[dt.date, str]:
     return daily_entries
 
 
-def _load_month_paths(data_path: str) -> Iterable[Tuple[dt.date, str]]:
+def _load_month_paths(data_path):
     for dir_entry in os.scandir(data_path):
         if not dir_entry.is_file():
             pass
@@ -30,8 +28,7 @@ def _load_month_paths(data_path: str) -> Iterable[Tuple[dt.date, str]]:
             yield (month_date, dir_entry.path)
 
 
-def _load_daily_entries(month_date: dt.date,
-                        month_file: io.FileIO) -> Mapping[dt.date, str]:
+def _load_daily_entries(month_date, month_file):
     try:
         month_file_content = yaml.safe_load(month_file)
     except yaml.YAMLError:
