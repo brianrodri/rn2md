@@ -23,11 +23,6 @@ INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 LIST_ITEM_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
-CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
-HEADER_DELIM_PATTERN = re.compile(r'=+')
-ITALIC_DELIM_PATTERN = re.compile(r'//')
-STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
-
 
 def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
@@ -40,7 +35,7 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims(ITALIC_DELIM_PATTERN, '_', line)
+        line = yield _sub_balanced_delims(r'//', '_', line)
 
 
 def StrikethroughTransformer():  # pylint: disable=invalid-name
@@ -51,7 +46,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
             line = yield line
         else:
             line = yield _sub_balanced_delims(
-                STRIKETHROUGH_DELIM_PATTERN, ('**OBSOLETE**(', ')'), line,
+                r'--', ('**OBSOLETE**(', ')'), line,
                 data_fun=lambda d: d.rstrip('.?!'))
 
 
@@ -60,10 +55,10 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line
-        header_delim = HEADER_DELIM_PATTERN.search(line)
+        header_delim = re.search(r'=+', line)
         if not header_delim or header_delim.group() == line:
             continue
-        if header_delim.end() != HEADER_DELIM_PATTERN.search(line[::-1]).end():
+        if header_delim.end() != re.search(r'=+', line[::-1]).end():
             continue
         line = ' '.join([
             '#' * (base_level + header_delim.end()),
@@ -115,7 +110,7 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield _sub_balanced_delims(
-            CODE_BLOCK_DELIM_PATTERN, '`', line, neg_preds=[_occurs_in_link])
+            r'``', '`', line, neg_preds=[_occurs_in_link])
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
@@ -139,7 +134,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
 def _filtered_matches(patt, string, neg_preds=None):
     if neg_preds is None:
         neg_preds = (_occurs_in_link, _occurs_in_backtick)
-    for match in patt.finditer(string):
+    for match in re.finditer(patt, string):
         if any(p(match) for p in neg_preds):
             continue
         yield match
