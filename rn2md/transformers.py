@@ -44,7 +44,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
         else:
             line = yield _sub_balanced_delims(
                 r'--', ['**OBSOLETE**(', ')'], line,
-                data_fun=lambda d: d.rstrip('.?!'))
+                data_op=lambda d: d.rstrip('.?!'))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
@@ -110,7 +110,7 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
             r'``', '`', line, preds=[_not_in_link])
 
 
-def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
+def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
     """We don't use a bigger regex because avoiding link urls is messy."""
     try:
         sub_start, sub_end = sub
@@ -124,7 +124,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
         start = string[:start_delim.start()]
         inner = string[start_delim.end():end_delim.start()]
         end = string[end_delim.end():]
-        string = ''.join([start, sub_start, data_fun(inner), sub_end, end])
+        string = ''.join([start, sub_start, data_op(inner), sub_end, end])
     return string
 
 
