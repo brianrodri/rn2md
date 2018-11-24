@@ -30,6 +30,10 @@ STRIKETHROUGH_PATTERN = re.compile(r'--')
 
 def _replace_balanced_delimiters(
         delim_patt, new_delim, s, transform=str, **kwargs):
+    try:
+        delim_start, delim_end = new_delim
+    except ValueError:
+        delim_start = delim_end = new_delim
     delimiters = _filtered_matches(delim_patt, s, **kwargs)
     balanced_delimiters = list(zip(delimiters, delimiters))
     # NOTE: Must always do delimiter replacements in reverse so the indicies
@@ -38,7 +42,7 @@ def _replace_balanced_delimiters(
         s_start = s[:delimiter_start.start()]
         s_data = s[delimiter_start.end():delimiter_end.start()]
         s_end = s[delimiter_end.end():]
-        s = ''.join([s_start, new_delim, transform(s_data), new_delim, s_end])
+        s = ''.join([s_start, delim_start, transform(s_data), delim_end, s_end])
     return s
 
 
@@ -89,14 +93,10 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
         line = yield line
         if set(line) == {'-'}:
             continue
-        matches = _filtered_matches(STRIKETHROUGH_PATTERN, line)
-        match_pairs = list(zip(matches, matches))
-        for mlo, mhi in reversed(match_pairs):
-            line = ''.join([
-                line[:mlo.start()],
-                '**OBSOLETE**(%s)' % line[mlo.end():mhi.start()].rstrip('.!?'),
-                line[mhi.end():]
-            ])
+        line = _replace_balanced_delimiters(STRIKETHROUGH_PATTERN,
+                                            ('**OBSOLETE**(', ')'),
+                                            line,
+                                            transform=lambda c: c.rstrip('.!?'))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
