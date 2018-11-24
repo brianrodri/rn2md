@@ -30,6 +30,7 @@ STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
+    """We don't use a bigger regex because avoiding link urls is messy."""
     try:
         sub_start, sub_end = sub
     except ValueError:
