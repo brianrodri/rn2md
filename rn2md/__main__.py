@@ -1,8 +1,7 @@
 """Entry point for rn2md tool."""
-from typing import Iterable, TYPE_CHECKING
-if TYPE_CHECKING:
-    import datetime as dt
+from typing import Iterable
 
+import datetime as dt
 import sys
 
 from . import config_options
