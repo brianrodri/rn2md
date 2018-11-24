@@ -56,8 +56,7 @@ def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
     while True:
-        line = yield line
-        line = LINK_PATTERN.sub(r'[\1](\2)', line)
+        line = yield LINK_PATTERN.sub(r'[\1](\2)', line)
 
 
 def ItalicTransformer():  # pylint: disable=invalid-name
