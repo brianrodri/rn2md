@@ -97,7 +97,7 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line
-        matches = _filtered_matches(r'(?<=\w)_(?=\w)', line)
+        matches = _filter_matches(r'(?<=\w)_(?=\w)', line)
         for match in reversed(list(matches)):
             line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
@@ -116,7 +116,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
         sub_start, sub_end = sub
     except ValueError:
         sub_start = sub_end = sub
-    delims = _filtered_matches(delim_pattern, string, **kwargs)
+    delims = _filter_matches(delim_pattern, string, **kwargs)
     balanced_delims = list(zip(delims, delims))
     # NOTE: Always do delim substitutions in reverse so the indices found remain
     # valid.
@@ -128,10 +128,10 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
     return string
 
 
-def _filtered_matches(patt, string, preds=None):
+def _filter_matches(pattern, string, preds=None):
     if preds is None:
         preds = (_not_in_link, _not_in_backticks)
-    for match in re.finditer(patt, string):
+    for match in re.finditer(pattern, string):
         if not all(p(match) for p in preds):
             continue
         yield match
