@@ -1,6 +1,4 @@
 """Builds configuration options for rn2md tool with nice default behavior."""
-from typing import List, Optional
-
 import configparser
 import os
 
@@ -30,7 +28,7 @@ class ConfigOptions():
         return self._config[self._section].get('data path')
 
 
-def build_config_options(argv: Optional[List[str]] = None) -> ConfigOptions:
+def build_config_options(argv=None):
     """Parses argv for any extra configuration requested via stdin."""
     if argv is None:
         argv = []
