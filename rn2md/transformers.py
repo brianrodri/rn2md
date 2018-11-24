@@ -97,11 +97,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
-    """Transforms '=TEXT=' into '# TEXT'.
-
-    Always holds that:
-        >>> input.count('=') == (output.count('#') - base_level) * 2
-    """
+    """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
     while True:
         line = yield line
