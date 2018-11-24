@@ -60,7 +60,7 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     while True:
         line = yield line
         matches = _find_unescaped_patterns(ITALIC_PATTERN, line)
-        match_pairs = list(zip(iter(matches), iter(matches)))
+        match_pairs = list(zip(matches, matches))
         for mlo, mhi in reversed(match_pairs):
             line = ''.join([
                 line[:mlo.start()],
@@ -78,7 +78,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
         if set(line) == {'-'}:
             continue
         matches = _find_unescaped_patterns(STRIKETHROUGH_PATTERN, line)
-        match_pairs = list(zip(iter(matches), iter(matches)))
+        match_pairs = list(zip(matches, matches))
         for mlo, mhi in reversed(match_pairs):
             line = ''.join([
                 line[:mlo.start()],
@@ -158,7 +158,7 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     while True:
         line = yield line
         matches = CODE_BLOCK_PATTERN.finditer(line)
-        match_pairs = list(zip(iter(matches), iter(matches)))
+        match_pairs = list(zip(matches, matches))
         for mlo, mhi in reversed(match_pairs):
             line = ''.join([
                 line[:mlo.start()],
