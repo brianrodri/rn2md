@@ -16,6 +16,7 @@ def load_daily_entries(data_path):
 
 
 def _load_month_paths(data_path):
+    """Returns files from the data_path which contain RedNotebook data."""
     for dir_entry in os.scandir(data_path):
         if not dir_entry.is_file():
             pass
@@ -29,6 +30,7 @@ def _load_month_paths(data_path):
 
 
 def _load_daily_entries(month_date, month_file):
+    """Returns mapping of the month file's daily entries as strings."""
     try:
         month_file_content = yaml.safe_load(month_file)
     except yaml.YAMLError:
