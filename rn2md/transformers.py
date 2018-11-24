@@ -19,13 +19,13 @@ import defaultlist
 
 
 BACKTICK_PATTERN = re.compile(r'`.*?`')
-CODE_BLOCK_PATTERN = re.compile(r'``')
+CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
 HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
 INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
-ITALIC_PATTERN = re.compile(r'//')
+ITALIC_DELIM_PATTERN = re.compile(r'//')
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
-STRIKETHROUGH_PATTERN = re.compile(r'--')
+STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
@@ -55,13 +55,11 @@ def _filtered_matches(patt, string, negative_predicates=None):
 
 
 def _occurs_in_link(match):
-    """Check if regexp `match` occurs in some URL."""
     occurrences = LINK_PATTERN.finditer(match.string)
     return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
 
 
 def _occurs_in_backtick(match):
-    """Check if `match` occurs in backticks."""
     occurrences = BACKTICK_PATTERN.finditer(match.string)
     return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
 
@@ -82,16 +80,19 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims(ITALIC_PATTERN, '_', line)
+        line = yield _sub_balanced_delims(ITALIC_DELIM_PATTERN, '_', line)
 
 
 def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
-        line = yield line if set(line) == {'-'} else (
-            _sub_balanced_delims(STRIKETHROUGH_PATTERN, ('**OBSOLETE**(', ')'),
-                                 line, data_fun=lambda d: d.rstrip('.?!')))
+        if set(line) == {'-'}:
+            line = yield line
+        else:
+            line = yield _sub_balanced_delims(
+                STRIKETHROUGH_DELIM_PATTERN, ('**OBSOLETE**(', ')'), line,
+                data_fun=lambda d: d.rstrip('.?!'))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
@@ -159,5 +160,5 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     """Transforms codeblocks into markdown syntax."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims(CODE_BLOCK_PATTERN, '`', line,
+        line = yield _sub_balanced_delims(CODE_BLOCK_DELIM_PATTERN, '`', line,
                                           negative_predicates=[_occurs_in_link])
