@@ -1,5 +1,5 @@
 """Module for accessing existing RedNotebook data on a local computer."""
-from typing import Iterable, List, Mapping, Tuple
+from typing import Iterable, Mapping, Tuple
 
 import datetime as dt
 import io
