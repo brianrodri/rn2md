@@ -21,7 +21,7 @@ import defaultlist
 BACKTICKED_DATA_PATTERN = re.compile(r'`.*?`')
 INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
+LIST_ITEM_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
 CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
 HEADER_DELIM_PATTERN = re.compile(r'=+')
@@ -115,29 +115,30 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
 def ListTransformer():  # pylint: disable=invalid-name
     """Transforms unordered and ordered lists into markdown syntax."""
     line = ''
+    ordered_list_history = defaultlist.defaultlist(lambda: 1)
     sequential_empty_lines = 0
-    ordered_list_counter = defaultlist.defaultlist(lambda: 0)
     while True:
         line = yield line
-        if not line.strip():
+        list_item_match = LIST_ITEM_PATTERN.match(line)
+        if list_item_match:
+            list_item_depth = list_item_match.start(1)
+            list_item_type = list_item_match.group(1)
+            # Future sub-items will restart their numbering from 1.
+            del ordered_list_history[list_item_depth + 1:]
+            if list_item_type == '+':
+                line = ''.join([
+                    line[:list_item_match.start(1)],
+                    str(ordered_list_history[list_item_depth]) + '.',
+                    line[list_item_match.end(1):],
+                ])
+                ordered_list_history[list_item_depth] += 1
+        elif line.strip():
+            sequential_empty_lines = 0
+            ordered_list_history.clear()
+        else:
             sequential_empty_lines += 1
             if sequential_empty_lines >= 2:
-                ordered_list_counter.clear()
-            continue
-        sequential_empty_lines = 0
-        list_match = LIST_PATTERN.match(line)
-        if not list_match:
-            ordered_list_counter.clear()
-        else:
-            index = list_match.start(1)
-            del ordered_list_counter[index + 1:]
-            if list_match.group(1) == '+':
-                ordered_list_counter[index] += 1
-                line = ''.join([
-                    line[:list_match.start(1)],
-                    '%d.' % ordered_list_counter[index],
-                    line[list_match.end(1):]
-                ])
+                ordered_list_history.clear()
 
 
 def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
