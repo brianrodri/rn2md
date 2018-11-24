@@ -96,8 +96,7 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line
-        matches = _filter_matches(r'(?<=\w)_(?=\w)', line)
-        for match in reversed(list(matches)):
+        for match in reversed(list(_filter_matches(r'(?<=\w)_(?=\w)', line))):
             line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
 
