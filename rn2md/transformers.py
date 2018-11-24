@@ -69,9 +69,10 @@ def ListTransformer():  # pylint: disable=invalid-name
             item_index = item_match.start(1)
             # Always clear sub-items so they restart their numbering.
             del ordered_list_history[item_index + 1:]
-
-            if line[item_index] == '-':  # Unordered list
+            # Unordered lists do not use a different format in markdown.
+            if line[item_index] == '-':
                 continue
+            # Ordered lists should change to their actual number.
             line = ''.join([
                 line[:item_match.start(1)],
                 str(ordered_list_history[item_index]) + '.',
