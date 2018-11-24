@@ -19,7 +19,7 @@ def parse_dates(date_str, workdays_only=False):
         ValueError: date_str could not be parsed.
     """
     noon_tuple = dt.datetime.today().replace(hour=12).timetuple()
-    # I use "today at noon" as the source time for `parsedatetime` to avoid
+    # I use "today at noon" as the source-time for `parsedatetime` to avoid
     # rounding errors in unit tests. Without it, date arithemtic is 1-day off.
     # This does not effect actual usage because Rednotebook can only be indexed
     # by DD-MM-YYYY anyway, HH-MM-SS gets ignored.
