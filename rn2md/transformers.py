@@ -39,9 +39,9 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
     # remain valid.
     for start_delim, end_delim in reversed(balanced_delims):
         start = string[:start_delim.start()]
-        data = string[start_delim.end():end_delim.start()]
+        inner_data = string[start_delim.end():end_delim.start()]
         end = string[end_delim.end():]
-        string = ''.join([start, sub_start, data_fun(data), sub_end, end])
+        string = ''.join([start, sub_start, data_fun(inner_data), sub_end, end])
     return string
 
 
