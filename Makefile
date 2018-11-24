@@ -5,7 +5,7 @@ test:
 	nosetests tests
 
 install:
-	pip3 install -e .
+	pip3 install .
 
 clean:
 	find . -name '*.pyc' -exec rm -f {} +
