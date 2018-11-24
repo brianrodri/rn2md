@@ -134,12 +134,12 @@ def _filter_matches(pattern, string, preds=None):
 
 def _not_in_link(match):
     links = LINK_PATTERN.finditer(match.string)
-    return all(not _spans_intersect(match.span(), m.span(2)) for m in links)
+    return not any(_spans_intersect(match.span(), m.span(2)) for m in links)
 
 
 def _not_in_backticks(match):
     backticks = re.finditer(r'`.*?`', match.string)
-    return all(not _spans_intersect(match.span(), m.span()) for m in backticks)
+    return not any(_spans_intersect(match.span(), m.span()) for m in backticks)
 
 
 def _spans_intersect(span1, span2):
