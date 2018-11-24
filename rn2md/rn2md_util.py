@@ -7,7 +7,7 @@ import isoweek
 import parsedatetime as pdt
 
 
-def parse_dates(date_str, workdays_only=False):
+def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     """Returns the dates interpreted from the given string.
 
     Args:
