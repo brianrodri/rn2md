@@ -67,16 +67,17 @@ def ListTransformer():  # pylint: disable=invalid-name
         list_item_match = re.match(r'^\s*([-|\+])\s', line)
         if list_item_match:
             list_item_depth = list_item_match.start(1)
-            list_item_type = list_item_match.group(1)
-            if list_item_type == '+':  # Ordered list
-                line = ''.join([
-                    line[:list_item_match.start(1)],
-                    str(ordered_list_history[list_item_depth]) + '.',
-                    line[list_item_match.end(1):],
-                ])
-                ordered_list_history[list_item_depth] += 1
-            # Future sub-items will restart their numbering from 1.
+            # Clear sub-items so they restart their numbering.
             del ordered_list_history[list_item_depth + 1:]
+            list_item_type = list_item_match.group(1)
+            if list_item_type == '-':  # Unordered list
+                continue
+            line = ''.join([
+                line[:list_item_match.start(1)],
+                str(ordered_list_history[list_item_depth]) + '.',
+                line[list_item_match.end(1):],
+            ])
+            ordered_list_history[list_item_depth] += 1
         elif line.strip():
             sequential_empty_lines = 0
             ordered_list_history.clear()
