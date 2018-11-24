@@ -43,7 +43,11 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
 
 
 def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
-    """Transforms '=TEXT=' into '# TEXT'."""
+    """Transforms '=TEXT=' into '# TEXT'.
+
+    Args:
+        init_level: additional levels to add to all headers.
+    """
     line = ''
     while True:
         line = yield line
