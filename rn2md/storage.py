@@ -39,7 +39,7 @@ def _load_daily_entries(month_date: dt.date,
     daily_entries = {}
     for day_of_month, content in month_file_content.items():
         day_date = month_date.replace(day=day_of_month)
-        day_entry = content['text'].rstrip()
-        if day_entry:
-            daily_entries[day_date] = day_entry
+        entry = content['text'].rstrip()
+        if entry:
+            daily_entries[day_date] = entry
     return daily_entries
