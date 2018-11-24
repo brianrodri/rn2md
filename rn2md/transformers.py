@@ -64,20 +64,20 @@ def ListTransformer():  # pylint: disable=invalid-name
     sequential_empty_lines = 0
     while True:
         line = yield line
-        list_item_match = re.match(r'^\s*([-|\+])\s', line)
-        if list_item_match:
-            list_item_depth = list_item_match.start(1)
-            # Clear sub-items so they restart their numbering.
-            del ordered_list_history[list_item_depth + 1:]
-            list_item_type = list_item_match.group(1)
-            if list_item_type == '-':  # Unordered list
+        item_match = re.match(r'^\s*([-|\+])\s', line)
+        if item_match:
+            item_index = item_match.start(1)
+            # Always clear sub-items so they restart their numbering.
+            del ordered_list_history[item_index + 1:]
+
+            if line[item_index] == '-':  # Unordered list
                 continue
             line = ''.join([
-                line[:list_item_match.start(1)],
-                str(ordered_list_history[list_item_depth]) + '.',
-                line[list_item_match.end(1):],
+                line[:item_match.start(1)],
+                str(ordered_list_history[item_index]) + '.',
+                line[item_match.end(1):],
             ])
-            ordered_list_history[list_item_depth] += 1
+            ordered_list_history[item_index] += 1
         elif line.strip():
             sequential_empty_lines = 0
             ordered_list_history.clear()
