@@ -32,7 +32,7 @@ def rn2md(lines: Iterable[str]) -> Iterable[str]:
 
 
 def main():
-    """Business-logic."""
+    """Prints RedNotebook entries in markdown syntax."""
     options, remaining_argv = config.build_config_options(sys.argv)
     daily_entries = storage.load_daily_entries(options.data_path)
     target_date = ' '.join(remaining_argv) or 'today'
