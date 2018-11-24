@@ -35,8 +35,8 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
         sub_start = sub_end = sub
     delims = _filtered_matches(delim_pattern, string, **kwargs)
     balanced_delims = list(zip(delims, delims))
-    # NOTE: Must always do delimiter replacements in reverse so the indicies
-    # found remain valid.
+    # NOTE: Always do delimiter replacements in reverse so the indicies found
+    # remain valid.
     for start_delim, end_delim in reversed(balanced_delims):
         s_start = string[:start_delim.start()]
         s_data = string[start_delim.end():end_delim.start()]
