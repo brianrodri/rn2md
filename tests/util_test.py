@@ -34,12 +34,12 @@ def strict_parse_date(date_str):
         pass
     else:
         date_str_weekday = date_str[:3].capitalize()
-        parsed_weekday = Weekdays(parsed_date.weekday()).name
-        if date_str_weekday != parsed_weekday:
+        parsed_date_weekday = Weekdays(parsed_date.weekday()).name
+        if date_str_weekday != parsed_date_weekday:
             raise ValueError(
                 'weekday provided in %r was not the same as the weekday parsed '
                 'from it (got: %s, want: %s)' % (
-                    date_str, parsed_weekday, date_str_weekday))
+                    date_str, parsed_date_weekday, date_str_weekday))
         return parsed_date
 
     try:
@@ -50,7 +50,7 @@ def strict_parse_date(date_str):
         return parsed_date
 
     raise ValueError(
-        date_str + 'did not match any of the expected formats: '
+        date_str + ' did not match any of the expected formats: '
         '[\'%b %d, %Y\', \'%a %b %d, %Y\']')
 
 
