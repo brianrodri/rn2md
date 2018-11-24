@@ -27,7 +27,7 @@ def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     if not result:
         raise ValueError('%s could not be parsed into a date' % date_str)
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
-    get_days = (_get_week_days if 'week' in date_str else _get_single_day)
+    get_days = _get_week_days if 'week' in date_str else _get_single_day
     return get_days(parsed_date, workdays_only)
 
 
