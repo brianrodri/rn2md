@@ -90,9 +90,8 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line if set(line) == {'-'} else (
-            _sub_balanced_delims(
-                STRIKETHROUGH_PATTERN, ('**OBSOLETE**(', ')'), line,
-                data_fun=lambda d: d.rstrip('.?!')))
+            _sub_balanced_delims(STRIKETHROUGH_PATTERN, ('**OBSOLETE**(', ')'),
+                                 line, data_fun=lambda d: d.rstrip('.?!')))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
