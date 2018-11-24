@@ -29,48 +29,6 @@ ITALIC_DELIM_PATTERN = re.compile(r'//')
 STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
 
 
-def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
-    """We don't use a bigger regex because avoiding link urls is messy."""
-    try:
-        sub_start, sub_end = sub
-    except ValueError:
-        sub_start = sub_end = sub
-    delims = _filtered_matches(delim_pattern, string, **kwargs)
-    balanced_delims = list(zip(delims, delims))
-    # NOTE: Always do delim substitutions in reverse so the indices found remain
-    # valid.
-    for start_delim, end_delim in reversed(balanced_delims):
-        start = string[:start_delim.start()]
-        inner = string[start_delim.end():end_delim.start()]
-        end = string[end_delim.end():]
-        string = ''.join([start, sub_start, data_fun(inner), sub_end, end])
-    return string
-
-
-def _filtered_matches(patt, string, neg_preds=None):
-    if neg_preds is None:
-        neg_preds = (_occurs_in_link, _occurs_in_backtick)
-    for match in patt.finditer(string):
-        if any(p(match) for p in neg_preds):
-            continue
-        yield match
-
-
-def _occurs_in_link(match):
-    occurrences = LINK_PATTERN.finditer(match.string)
-    return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
-
-
-def _occurs_in_backtick(match):
-    occurrences = BACKTICKED_DATA_PATTERN.finditer(match.string)
-    return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
-
-
-def _spans_intersect(span1, span2):
-    (lo1, hi1), (lo2, hi2) = span1, span2
-    return hi1 >= lo2 and hi2 >= lo1
-
-
 def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
@@ -158,3 +116,45 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     while True:
         line = yield _sub_balanced_delims(
             CODE_BLOCK_DELIM_PATTERN, '`', line, neg_preds=[_occurs_in_link])
+
+
+def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
+    """We don't use a bigger regex because avoiding link urls is messy."""
+    try:
+        sub_start, sub_end = sub
+    except ValueError:
+        sub_start = sub_end = sub
+    delims = _filtered_matches(delim_pattern, string, **kwargs)
+    balanced_delims = list(zip(delims, delims))
+    # NOTE: Always do delim substitutions in reverse so the indices found remain
+    # valid.
+    for start_delim, end_delim in reversed(balanced_delims):
+        start = string[:start_delim.start()]
+        inner = string[start_delim.end():end_delim.start()]
+        end = string[end_delim.end():]
+        string = ''.join([start, sub_start, data_fun(inner), sub_end, end])
+    return string
+
+
+def _filtered_matches(patt, string, neg_preds=None):
+    if neg_preds is None:
+        neg_preds = (_occurs_in_link, _occurs_in_backtick)
+    for match in patt.finditer(string):
+        if any(p(match) for p in neg_preds):
+            continue
+        yield match
+
+
+def _occurs_in_link(match):
+    occurrences = LINK_PATTERN.finditer(match.string)
+    return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
+
+
+def _occurs_in_backtick(match):
+    occurrences = BACKTICKED_DATA_PATTERN.finditer(match.string)
+    return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
+
+
+def _spans_intersect(span1, span2):
+    (lo1, hi1), (lo2, hi2) = span1, span2
+    return hi1 >= lo2 and hi2 >= lo1
