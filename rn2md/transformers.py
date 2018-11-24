@@ -42,7 +42,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
                                  data_op=lambda d: d.rstrip('.?!')))
 
 
-def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
+def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
     """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
     while True:
@@ -54,7 +54,7 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
         if not end_delim or end_delim.group() != start_delim.group():
             continue
         lvl = len(start_delim.group())
-        line = ' '.join(['#' * (base_level + lvl), line[lvl:-lvl].lstrip()])
+        line = ' '.join(['#' * (init_level + lvl), line[lvl:-lvl].lstrip()])
 
 
 def ListTransformer():  # pylint: disable=invalid-name

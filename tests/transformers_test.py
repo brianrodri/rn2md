@@ -129,8 +129,8 @@ class HeaderTransformerTest(TransformerTestCase):
                          '### Level Three')
 
     def test_base_level_is_respected(self):
-        """Tests changes to default base level create different headings."""
-        transformer = self.new_transformer(base_level=2)
+        """Tests changes to init level."""
+        transformer = self.new_transformer(init_level=2)
         self.assertEqual(transformer.send('===Only 3==='), '##### Only 3')
 
     def test_inner_markers_are_ignored(self):

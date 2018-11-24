@@ -15,7 +15,7 @@ def rn2md(lines: Iterable[str]) -> Iterable[str]:
     required_transformer_sequence = [
         transformers.InnerUnderscoreEscaper(),
         transformers.LinkTransformer(),
-        transformers.HeaderTransformer(base_level=1),
+        transformers.HeaderTransformer(init_level=1),
         transformers.CodeBlockTransformer(),
         transformers.ItalicTransformer(),
         transformers.StrikethroughTransformer(),
