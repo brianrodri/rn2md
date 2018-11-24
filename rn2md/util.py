@@ -1,20 +1,20 @@
 """Arbitrary utility functions for the rn2md tool."""
-from typing import List
-
 import datetime as dt
 
 import isoweek
 import parsedatetime as pdt
 
 
-def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
+def parse_dates(date_str, workdays_only=False):
     """Returns the dates interpreted from the given string.
 
     Args:
         date_str: A string parseable by parsedatetime.
         workdays_only: Whether to return only workdays (Mon-Fri)
+
     Returns:
         List of datetime.date objects interpreted from the string.
+
     Raises:
         ValueError: date_str could not be parsed.
     """
@@ -31,13 +31,13 @@ def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     return get_days(parsed_date, workdays_only)
 
 
-def _get_week_days(date: dt.date, workdays_only: bool) -> List[dt.date]:
+def _get_week_days(date, workdays_only):
     week_number = date.isocalendar()[1]
     week = isoweek.Week(date.year, week_number).days()
     return week[:5] if workdays_only else week
 
 
-def _get_single_day(date: dt.date, workdays_only: bool) -> List[dt.date]:
+def _get_single_day(date, workdays_only):
     if workdays_only and date.weekday() in (5, 6):  # Sat, Sun = 5, 6
         if date > dt.date.today():
             daydelta = dt.timedelta(days=7 - date.weekday())  # until next Mon
