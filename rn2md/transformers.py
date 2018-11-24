@@ -38,10 +38,10 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
     # NOTE: Always do delimiter replacements in reverse so the indicies found
     # remain valid.
     for start_delim, end_delim in reversed(balanced_delims):
-        s_start = string[:start_delim.start()]
-        s_data = string[start_delim.end():end_delim.start()]
-        s_end = string[end_delim.end():]
-        string = ''.join([s_start, sub_start, data_fun(s_data), sub_end, s_end])
+        start = string[:start_delim.start()]
+        data = string[start_delim.end():end_delim.start()]
+        end = string[end_delim.end():]
+        string = ''.join([start, sub_start, data_fun(data), sub_end, end])
     return string
 
 
