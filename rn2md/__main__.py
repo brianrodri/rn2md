@@ -24,7 +24,7 @@ def rn2md(lines: Iterable[str]) -> Iterable[str]:
     # Transformers are generators with meanginful state, so they need to be
     # prepared with an initial call to `next`.
     for transformer in required_transformer_sequence:
-        next(transformer, None)
+        _ = next(transformer, None)
     for line in lines:
         for transformer in required_transformer_sequence:
             line = transformer.send(line)
