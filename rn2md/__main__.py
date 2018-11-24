@@ -4,10 +4,10 @@ from typing import Iterable
 import datetime as dt
 import sys
 
-from . import config_options
-from . import rn2md_util as util
-from . import rednotebook_storage as storage
-from . import rn2md_transformers as transformers
+from . import config
+from . import util
+from . import storage
+from . import transformers
 
 
 def rn2md(lines: Iterable[str]) -> Iterable[str]:
@@ -33,7 +33,7 @@ def rn2md(lines: Iterable[str]) -> Iterable[str]:
 
 def main():
     """Business-logic."""
-    options, remaining_argv = config_options.build_config_options(sys.argv)
+    options, remaining_argv = config.build_config_options(sys.argv)
     daily_entries = storage.load_daily_entries(options.data_path)
     target_date = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(target_date, workdays_only=options.workdays_only)

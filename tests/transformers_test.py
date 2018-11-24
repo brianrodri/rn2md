@@ -1,7 +1,7 @@
-"""Test cases for the rn2md_transformers module."""
+"""Test cases for the transformers module."""
 import unittest
 
-from rn2md import rn2md_transformers
+from rn2md import transformers
 
 
 class TransformerTestCase(unittest.TestCase):
@@ -37,7 +37,7 @@ class TransformerRegistry():
         return cls.REGISTERY[registered_cls]
 
 
-@TransformerRegistry.register(rn2md_transformers.ItalicTransformer)
+@TransformerRegistry.register(transformers.ItalicTransformer)
 class ItalicTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style italics to markdown-style."""
 
@@ -66,7 +66,7 @@ class ItalicTransformerTest(TransformerTestCase):
                          '_italic_, `//escaped italic//`')
 
 
-@TransformerRegistry.register(rn2md_transformers.LinkTransformer)
+@TransformerRegistry.register(transformers.LinkTransformer)
 class LinkTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style links to markdown-style."""
 
@@ -77,7 +77,7 @@ class LinkTransformerTest(TransformerTestCase):
                          '[sample text](go/somewhere)')
 
 
-@TransformerRegistry.register(rn2md_transformers.StrikethroughTransformer)
+@TransformerRegistry.register(transformers.StrikethroughTransformer)
 class StrikethroughTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style strikethroughs to markdown-style."""
 
@@ -117,7 +117,7 @@ class StrikethroughTransformerTest(TransformerTestCase):
         self.assertEqual(transformer.send('-' * 12), '-' * 12)
 
 
-@TransformerRegistry.register(rn2md_transformers.HeaderTransformer)
+@TransformerRegistry.register(transformers.HeaderTransformer)
 class HeaderTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style header to markdown-style."""
 
@@ -151,7 +151,7 @@ class HeaderTransformerTest(TransformerTestCase):
         self.assertEqual(transformer.send('==Unbalanced==='), '==Unbalanced===')
 
 
-@TransformerRegistry.register(rn2md_transformers.ListTransformer)
+@TransformerRegistry.register(transformers.ListTransformer)
 class ListTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style lists to markdown-style."""
 
@@ -254,7 +254,7 @@ class ListTransformerTest(TransformerTestCase):
         ])
 
 
-@TransformerRegistry.register(rn2md_transformers.InnerUnderscoreEscaper)
+@TransformerRegistry.register(transformers.InnerUnderscoreEscaper)
 class InnerUnderscoreEscaperTest(TransformerTestCase):
     """Test transforming Rednotebook-style underscores to markdown-style."""
 
@@ -284,7 +284,7 @@ class InnerUnderscoreEscaperTest(TransformerTestCase):
                          r'gets\_escaped, `no_escape`')
 
 
-@TransformerRegistry.register(rn2md_transformers.CodeBlockTransformer)
+@TransformerRegistry.register(transformers.CodeBlockTransformer)
 class CodeBlockTransformerTest(TransformerTestCase):
     """Test transforming Rednotebook-style code blocks to markdown-style."""
 

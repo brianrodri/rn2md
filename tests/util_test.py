@@ -5,7 +5,7 @@ import unittest
 import datetime as dt
 import freezegun
 
-from rn2md import rn2md_util as util
+from rn2md import util
 
 
 Weekdays = (  # pylint: disable=invalid-name
