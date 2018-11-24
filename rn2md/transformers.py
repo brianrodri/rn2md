@@ -18,33 +18,26 @@ import re
 import defaultlist
 
 
+BACKTICK_PATTERN = re.compile(r'`.*?`')
+CODE_BLOCK_PATTERN = re.compile(r'``')
+HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
+INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
+ITALIC_PATTERN = re.compile(r'//')
+LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
+LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
+STRIKETHROUGH_PATTERN = re.compile(r'--')
+
+
 def _spans_intersect(span1, span2):
     (lo1, hi1), (lo2, hi2) = span1, span2
     return hi1 >= lo2 and hi2 >= lo1
 
 
 def _find_unescaped_patterns(pattern, target_str):
-    matches = pattern.finditer(target_str)
-    # Order matters.
-    matches = filter(lambda m: not _occurs_in_link(m), matches)
-    matches = filter(lambda m: not _occurs_in_backtick(m), matches)
-    return matches
-
-
-BACKTICK_PATTERN = re.compile(r'`.*?`')
-def _occurs_in_backtick(match):
-    """Check if `match` occurs in backticks."""
-    occurrences = BACKTICK_PATTERN.finditer(match.string)
-    return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
-
-
-LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-def LinkTransformer():  # pylint: disable=invalid-name
-    """Transforms '[[text ""url""]]' to '[text](url)'."""
-    line = ''
-    while True:
-        line = yield line
-        line = LINK_PATTERN.sub(r'[\1](\2)', line)
+    for match in pattern.finditer(target_str):
+        if _occurs_in_link(match) or _occurs_in_backtick(match):
+            continue
+        yield match
 
 
 def _occurs_in_link(match):
@@ -53,7 +46,20 @@ def _occurs_in_link(match):
     return any(_spans_intersect(match.span(), m.span(2)) for m in occurrences)
 
 
-ITALIC_PATTERN = re.compile(r'//')
+def _occurs_in_backtick(match):
+    """Check if `match` occurs in backticks."""
+    occurrences = BACKTICK_PATTERN.finditer(match.string)
+    return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
+
+
+def LinkTransformer():  # pylint: disable=invalid-name
+    """Transforms '[[text ""url""]]' to '[text](url)'."""
+    line = ''
+    while True:
+        line = yield line
+        line = LINK_PATTERN.sub(r'[\1](\2)', line)
+
+
 def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
     line = ''
@@ -69,7 +75,6 @@ def ItalicTransformer():  # pylint: disable=invalid-name
             ])
 
 
-STRIKETHROUGH_PATTERN = re.compile(r'--')
 def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
@@ -87,7 +92,6 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
             ])
 
 
-HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
     """Transforms '=TEXT=' into '# TEXT'.
 
@@ -111,7 +115,6 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
                 ['#' * (base_level + level), line[level:-level].lstrip()])
 
 
-LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 def ListTransformer():  # pylint: disable=invalid-name
     """Transforms unordered and ordered lists into markdown syntax."""
     line = ''
@@ -140,18 +143,16 @@ def ListTransformer():  # pylint: disable=invalid-name
                 ])
 
 
-INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
     """Transforms underscores which need to be escaped."""
     line = ''
     while True:
         line = yield line
-        matches = list(_find_unescaped_patterns(INNER_UNDERSCORE_PATTERN, line))
-        for match in reversed(matches):
+        matches = _find_unescaped_patterns(INNER_UNDERSCORE_PATTERN, line)
+        for match in reversed(list(matches)):
             line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
 
-CODE_BLOCK_PATTERN = re.compile(r'``')
 def CodeBlockTransformer():  # pylint: disable=invalid-name
     """Transforms codeblocks into markdown syntax."""
     line = ''
