@@ -18,13 +18,14 @@ import re
 import defaultlist
 
 
-BACKTICK_PATTERN = re.compile(r'`.*?`')
-CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
-HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
+BACKTICKED_DATA_PATTERN = re.compile(r'`.*?`')
 INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
-ITALIC_DELIM_PATTERN = re.compile(r'//')
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
+
+HEADER_TOKEN_END_PATTERN = re.compile(r'[^=]')
+CODE_BLOCK_DELIM_PATTERN = re.compile(r'``')
+ITALIC_DELIM_PATTERN = re.compile(r'//')
 STRIKETHROUGH_DELIM_PATTERN = re.compile(r'--')
 
 
@@ -60,7 +61,7 @@ def _occurs_in_link(match):
 
 
 def _occurs_in_backtick(match):
-    occurrences = BACKTICK_PATTERN.finditer(match.string)
+    occurrences = BACKTICKED_DATA_PATTERN.finditer(match.string)
     return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
 
 
