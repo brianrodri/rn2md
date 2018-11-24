@@ -12,15 +12,7 @@ setup(
     author='Brian N. Rodriguez',
     author_email='brian@brianrodri.com',
     packages=find_packages(exclude=('tests',)),
-    install_requires=[
-        'defaultlist',
-        'freezegun',
-        'isoweek',
-        'parsedatetime',
-        'pyfakefs',
-        'python-dateutil',
-        'pyyaml',
-    ],
+    install_requires=open('requirements.txt').readlines(),
     entry_points={
         'console_scripts': [
             'rn2md=rn2md.__main__:main',
