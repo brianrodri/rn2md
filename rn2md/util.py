@@ -20,8 +20,8 @@ def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     """
     noon_tuple = dt.datetime.today().replace(hour=12).timetuple()
     # I use "today at noon" as the source-time for `parsedatetime` to avoid
-    # rounding errors in unit tests. Without it, date arithemtic is 1-day off.
-    # This does not effect actual usage because Rednotebook can only be indexed
+    # rounding errors in unit tests. Without it, date arithmetic is 1-day off.
+    # This does not effect actual usage because RedNotebook can only be indexed
     # by DD-MM-YYYY anyway, HH-MM-SS gets ignored.
     parsed_time_struct, result_flag = pdt.Calendar().parse(date_str, noon_tuple)
     if not result_flag:
