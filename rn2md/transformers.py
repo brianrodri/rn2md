@@ -18,13 +18,6 @@ import re
 import defaultlist
 
 
-def _grouper(iterable, chunks):
-    """Collect data into fixed-length chunks or blocks."""
-    # _grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
-    args = (iter(iterable),) * chunks
-    return zip(*args)
-
-
 def _spans_intersect(span1, span2):
     (lo1, hi1), (lo2, hi2) = span1, span2
     return hi1 >= lo2 and hi2 >= lo1
@@ -67,7 +60,8 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     while True:
         line = yield line
         matches = _find_unescaped_patterns(ITALIC_PATTERN, line)
-        for mlo, mhi in reversed(list(_grouper(matches, 2))):
+        match_pairs = list(zip(iter(matches), iter(matches)))
+        for mlo, mhi in reversed(match_pairs):
             line = ''.join([
                 line[:mlo.start()],
                 '_%s_' % line[mlo.end():mhi.start()],
@@ -84,7 +78,8 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
         if set(line) == {'-'}:
             continue
         matches = _find_unescaped_patterns(STRIKETHROUGH_PATTERN, line)
-        for mlo, mhi in reversed(list(_grouper(matches, 2))):
+        match_pairs = list(zip(iter(matches), iter(matches)))
+        for mlo, mhi in reversed(match_pairs):
             line = ''.join([
                 line[:mlo.start()],
                 '**OBSOLETE**(%s)' % line[mlo.end():mhi.start()].rstrip('.!?'),
@@ -163,7 +158,8 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     while True:
         line = yield line
         matches = CODE_BLOCK_PATTERN.finditer(line)
-        for mlo, mhi in reversed(list(_grouper(matches, 2))):
+        match_pairs = list(zip(iter(matches), iter(matches)))
+        for mlo, mhi in reversed(match_pairs):
             line = ''.join([
                 line[:mlo.start()],
                 '`%s`' % line[mlo.end():mhi.start()].rstrip('.!?'),
