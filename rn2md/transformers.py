@@ -43,7 +43,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
             line = yield line
         else:
             line = yield _sub_balanced_delims(
-                r'--', ('**OBSOLETE**(', ')'), line,
+                r'--', ['**OBSOLETE**(', ')'], line,
                 data_fun=lambda d: d.rstrip('.?!'))
 
 
