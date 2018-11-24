@@ -47,6 +47,15 @@ def _get_week_days(date, workdays_only):
 
 
 def _get_single_day(date, workdays_only):
+    """Wrap given date in a list.
+
+    Args:
+        date: the date to wrap in a list.
+        workdays_only: whether to round the date to the nearest workday.
+
+    Returns:
+        list with the single given date, optionally rounded to a workday.
+    """
     if workdays_only and date.weekday() in (5, 6):  # Sat, Sun = 5, 6
         if date > dt.date.today():
             daydelta = dt.timedelta(days=7 - date.weekday())  # until next Mon
