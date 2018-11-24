@@ -12,6 +12,7 @@ setup(
     author='Brian N. Rodriguez',
     author_email='brian@brianrodri.com',
     packages=find_packages(exclude=('tests',)),
+    python_requires=">=3.5",
     install_requires=open('requirements.txt').readlines(),
     entry_points={
         'console_scripts': [
