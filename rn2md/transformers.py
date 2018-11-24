@@ -41,7 +41,7 @@ def _occurs_in_backtick(match):
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
 def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
-    line = None
+    line = ''
     while True:
         line = yield line
         line = LINK_PATTERN.sub(r'[\1](\2)', line)
@@ -56,7 +56,7 @@ def _occurs_in_link(match):
 ITALIC_PATTERN = re.compile(r'//')
 def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
-    line = None
+    line = ''
     while True:
         line = yield line
         matches = _find_unescaped_patterns(ITALIC_PATTERN, line)
@@ -72,7 +72,7 @@ def ItalicTransformer():  # pylint: disable=invalid-name
 STRIKETHROUGH_PATTERN = re.compile(r'--')
 def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
-    line = None
+    line = ''
     while True:
         line = yield line
         if set(line) == {'-'}:
@@ -94,7 +94,7 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
     Always holds that:
         >>> input.count('=') == (output.count('#') - base_level) * 2
     """
-    line = None
+    line = ''
     while True:
         line = yield line
         if not line.startswith('=') or not line.endswith('='):
@@ -114,7 +114,7 @@ def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
 LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 def ListTransformer():  # pylint: disable=invalid-name
     """Transforms unordered and ordered lists into markdown syntax."""
-    line = None
+    line = ''
     sequential_empty_lines = 0
     ordered_list_counter = defaultlist.defaultlist(lambda: 0)
     while True:
@@ -143,7 +143,7 @@ def ListTransformer():  # pylint: disable=invalid-name
 INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
     """Transforms underscores which need to be escaped."""
-    line = None
+    line = ''
     while True:
         line = yield line
         matches = list(_find_unescaped_patterns(INNER_UNDERSCORE_PATTERN, line))
@@ -154,7 +154,7 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
 CODE_BLOCK_PATTERN = re.compile(r'``')
 def CodeBlockTransformer():  # pylint: disable=invalid-name
     """Transforms codeblocks into markdown syntax."""
-    line = None
+    line = ''
     while True:
         line = yield line
         matches = CODE_BLOCK_PATTERN.finditer(line)
