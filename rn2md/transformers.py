@@ -29,19 +29,17 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims(r'//', '_', line)
+        line = yield _sub_balanced_delims('//', '_', line)
 
 
 def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
-        if set(line) == {'-'}:
-            line = yield line
-        else:
-            line = yield _sub_balanced_delims(
-                r'--', ['**OBSOLETE**(', ')'], line,
-                data_op=lambda d: d.rstrip('.?!'))
+        line = yield (
+            line if set(line) == {'-'} else
+            _sub_balanced_delims('--', ['**OBSOLETE**(', ')'], line,
+                                 data_op=lambda d: d.rstrip('.?!')))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
@@ -101,8 +99,7 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     """Transforms codeblocks into markdown syntax."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims(
-            r'``', '`', line, preds=[_not_in_link])
+        line = yield _sub_balanced_delims('``', '`', line, preds=[_not_in_link])
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
