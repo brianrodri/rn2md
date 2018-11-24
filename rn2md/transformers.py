@@ -14,6 +14,7 @@ Here is a summary of the currently implemented transformers:
     ``asdf``                          `asdf`
 """
 import re
+import string
 
 import defaultlist
 
@@ -28,28 +29,27 @@ LIST_PATTERN = re.compile(r'^\s*([-|\+])\s')
 STRIKETHROUGH_PATTERN = re.compile(r'--')
 
 
-def _replace_balanced_delimiters(
-        delim_patt, new_delim, s, transform=str, **kwargs):
+def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
     try:
-        delim_start, delim_end = new_delim
+        sub_start, sub_end = sub
     except ValueError:
-        delim_start = delim_end = new_delim
-    delimiters = _filtered_matches(delim_patt, s, **kwargs)
-    balanced_delimiters = list(zip(delimiters, delimiters))
+        sub_start = sub_end = sub
+    delims = _filtered_matches(delim_pattern, string, **kwargs)
+    balanced_delims = list(zip(delims, delims))
     # NOTE: Must always do delimiter replacements in reverse so the indicies
     # found remain valid.
-    for delimiter_start, delimiter_end in reversed(balanced_delimiters):
-        s_start = s[:delimiter_start.start()]
-        s_data = s[delimiter_start.end():delimiter_end.start()]
-        s_end = s[delimiter_end.end():]
-        s = ''.join([s_start, delim_start, transform(s_data), delim_end, s_end])
-    return s
+    for start_delim, end_delim in reversed(balanced_delims):
+        s_start = string[:start_delim.start()]
+        s_data = string[start_delim.end():end_delim.start()]
+        s_end = string[end_delim.end():]
+        string = ''.join([s_start, sub_start, data_fun(s_data), sub_end, s_end])
+    return string
 
 
-def _filtered_matches(patt, s, negative_predicates=None):
+def _filtered_matches(patt, string, negative_predicates=None):
     if negative_predicates is None:
         negative_predicates = (_occurs_in_link, _occurs_in_backtick)
-    for match in patt.finditer(s):
+    for match in patt.finditer(string):
         if any(p(match) for p in negative_predicates):
             continue
         yield match
@@ -83,20 +83,19 @@ def ItalicTransformer():  # pylint: disable=invalid-name
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
-        line = yield _replace_balanced_delimiters(ITALIC_PATTERN, '_', line)
+        line = yield _sub_balanced_delims(ITALIC_PATTERN, '_', line)
 
 
 def StrikethroughTransformer():  # pylint: disable=invalid-name
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
-        line = yield line
         if set(line) == {'-'}:
-            continue
-        line = _replace_balanced_delimiters(STRIKETHROUGH_PATTERN,
-                                            ('**OBSOLETE**(', ')'),
-                                            line,
-                                            transform=lambda c: c.rstrip('.!?'))
+            line = yield line
+        else:
+            line = yield _sub_balanced_delims(
+                             STRIKETHROUGH_PATTERN, ('**OBSOLETE**(', ')'), line,
+                             data_fun=lambda d: d.rstrip(string.punctuation))
 
 
 def HeaderTransformer(base_level=0):  # pylint: disable=invalid-name
@@ -164,5 +163,5 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     """Transforms codeblocks into markdown syntax."""
     line = ''
     while True:
-        line = yield _replace_balanced_delimiters(
-                CODE_BLOCK_PATTERN, '`', line, negative_predicates=[_occurs_in_link])
+        line = yield _sub_balanced_delims(CODE_BLOCK_PATTERN, '`', line,
+                                          negative_predicates=[_occurs_in_link])
