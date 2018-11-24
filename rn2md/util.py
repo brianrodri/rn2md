@@ -32,6 +32,15 @@ def parse_dates(date_str, workdays_only=False):
 
 
 def _get_week_days(date, workdays_only):
+    """Expand date to the surrounding days in that week.
+
+    Args:
+        date: the date which will be expanded into a week.
+        workdays_only: whether to only return workdays (Mon - Fri).
+
+    Returns:
+        list of date objects that fall in the week of given date.
+    """
     week_number = date.isocalendar()[1]
     week = isoweek.Week(date.year, week_number).days()
     return week[:5] if workdays_only else week
