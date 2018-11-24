@@ -50,8 +50,8 @@ def strict_parse_date(date_str):
         return parsed_date
 
     raise ValueError(
-        '%r did not match any of the expected formats: '
-        '[\'%b %d, %Y\', \'%a %b %d, %Y\']' % date_str)
+        date_str + 'did not match any of the expected formats: '
+        '[\'%b %d, %Y\', \'%a %b %d, %Y\']')
 
 
 class ParseDatesTest(unittest.TestCase):
