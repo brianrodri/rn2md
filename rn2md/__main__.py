@@ -1,4 +1,8 @@
 """Entry point for rn2md tool."""
+from typing import Iterable
+if typing.TYPING:
+    import datetime as dt
+
 import sys
 
 from . import config_options
@@ -7,7 +11,7 @@ from . import rednotebook_storage as storage
 from . import rn2md_transformers as transformers
 
 
-def rn2md(lines):
+def rn2md(lines: Iterable[str]) -> Iterable[str]:
     """Transform given lines from Markdown syntax to RedNotebook syntax."""
     required_transformer_sequence = [
         transformers.InnerUnderscoreEscaper(),
@@ -35,7 +39,7 @@ def main():
     target_date = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(target_date, workdays_only=options.workdays_only)
 
-    def _format_day_entry(date):
+    def _format_day_entry(date: dt.date) -> str:
         entry_lines = [l.rstrip() for l in daily_entries[date].split('\n')]
         # Add header for date.
         entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))
