@@ -25,7 +25,7 @@ def parse_dates(date_str: str, workdays_only: bool = False) -> List[dt.date]:
     # by DD-MM-YYYY anyway, HH-MM-SS gets ignored.
     parsed_time_struct, result_flag = pdt.Calendar().parse(date_str, noon_tuple)
     if not result_flag:
-        raise ValueError(f'{date_str} could not be parsed into a date')
+        raise ValueError('%s could not be parsed into a date' % date_str)
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
     getter = (_get_week_days if 'week' in date_str else _get_single_day)
     return getter(parsed_date, workdays_only)

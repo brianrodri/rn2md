@@ -37,9 +37,9 @@ def strict_parse_date(date_str):
         parsed_weekday = Weekdays(parsed_date.weekday()).name
         if date_str_weekday != parsed_weekday:
             raise ValueError(
-                f'weekday provided in {repr(date_str)} was not the same as the '
-                f'weekday parsed from it ('
-                f'got: {parsed_weekday}, want: {date_str_weekday})')
+                'weekday provided in %r was not the same as the weekday parsed '
+                'from it (got: %s, want: %s)' % (
+                    date_str, parsed_weekday, date_str_weekday))
         return parsed_date
 
     try:
@@ -50,8 +50,8 @@ def strict_parse_date(date_str):
         return parsed_date
 
     raise ValueError(
-        f'{repr(date_str)} did not match any of the expected formats: '
-        f'[\'%b %d, %Y\', \'%a %b %d, %Y\']')
+        '%r did not match any of the expected formats: '
+        '[\'%b %d, %Y\', \'%a %b %d, %Y\']' % date_str)
 
 
 class ParseDatesTest(unittest.TestCase):
