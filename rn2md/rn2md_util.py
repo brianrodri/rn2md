@@ -27,9 +27,8 @@ def parse_dates(date_str, workdays_only=False):
     if not result_flag:
         raise ValueError(f'{date_str} could not be parsed into a date')
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
-    if 'week' in date_str:
-        return _get_week_days(parsed_date, workdays_only)
-    return [_round_to_workday(parsed_date) if workdays_only else parsed_date]
+    getter = (_get_week_days if 'week' in date_str else _get_single_day)
+    return getter(parsed_date, workdays_only)
 
 
 def _get_week_days(date: dt.date, workdays_only: bool) -> List[dt.date]:
@@ -38,12 +37,12 @@ def _get_week_days(date: dt.date, workdays_only: bool) -> List[dt.date]:
     return week[:5] if workdays_only else week
 
 
-def _round_to_workday(date: dt.date) -> dt.date:
-    if date.weekday() in (5, 6):  # Sat, Sun = 5, 6
+def _get_single_day(date: dt.date, workdays_only: bool) -> List[dt.date]:
+    if workdays_only and date.weekday() in (5, 6):  # Sat, Sun = 5, 6
         if date > dt.date.today():
             workday_delta = 7 - date.weekday()  # round to next Mon
         else:
             workday_delta = 4 - date.weekday()  # round to last Fri
     else:
         workday_delta = 0
-    return date + dt.timedelta(days=workday_delta)
+    return [date + dt.timedelta(days=workday_delta)]
