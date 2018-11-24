@@ -46,11 +46,11 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_fun=str, **kwargs):
     return string
 
 
-def _filtered_matches(patt, string, negative_predicates=None):
-    if negative_predicates is None:
-        negative_predicates = (_occurs_in_link, _occurs_in_backtick)
+def _filtered_matches(patt, string, neg_preds=None):
+    if neg_preds is None:
+        neg_preds = (_occurs_in_link, _occurs_in_backtick)
     for match in patt.finditer(string):
-        if any(p(match) for p in negative_predicates):
+        if any(p(match) for p in neg_preds):
             continue
         yield match
 
@@ -155,5 +155,5 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     """Transforms codeblocks into markdown syntax."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims(CODE_BLOCK_DELIM_PATTERN, '`', line,
-                                          negative_predicates=[_occurs_in_link])
+        line = yield _sub_balanced_delims(
+            CODE_BLOCK_DELIM_PATTERN, '`', line, neg_preds=[_occurs_in_link])
