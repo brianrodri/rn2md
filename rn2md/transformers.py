@@ -18,10 +18,7 @@ import re
 import defaultlist
 
 
-BACKTICKED_DATA_PATTERN = re.compile(r'`.*?`')
-INNER_UNDERSCORE_PATTERN = re.compile(r'(?<=\w)_(?=\w)')
 LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-LIST_ITEM_PATTERN = re.compile(r'^\s*([-|\+])\s')
 
 
 def LinkTransformer():  # pylint: disable=invalid-name
@@ -73,7 +70,7 @@ def ListTransformer():  # pylint: disable=invalid-name
     sequential_empty_lines = 0
     while True:
         line = yield line
-        list_item_match = LIST_ITEM_PATTERN.match(line)
+        list_item_match = re.match(r'^\s*([-|\+])\s', line)
         if list_item_match:
             list_item_depth = list_item_match.start(1)
             list_item_type = list_item_match.group(1)
@@ -100,7 +97,7 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
     line = ''
     while True:
         line = yield line
-        matches = _filtered_matches(INNER_UNDERSCORE_PATTERN, line)
+        matches = _filtered_matches(r'(?<=\w)_(?=\w)', line)
         for match in reversed(list(matches)):
             line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
@@ -146,7 +143,7 @@ def _occurs_in_link(match):
 
 
 def _occurs_in_backtick(match):
-    occurrences = BACKTICKED_DATA_PATTERN.finditer(match.string)
+    occurrences = re.finditer(r'`.*?`', match.string)
     return any(_spans_intersect(match.span(), m.span()) for m in occurrences)
 
 
