@@ -18,14 +18,11 @@ import re
 import defaultlist
 
 
-LINK_PATTERN = re.compile(r'\[([^\]]*?) ""(.*?)""\]')
-
-
 def LinkTransformer():  # pylint: disable=invalid-name
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
     while True:
-        line = yield LINK_PATTERN.sub(r'[\1](\2)', line)
+        line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
 def ItalicTransformer():  # pylint: disable=invalid-name
@@ -133,7 +130,7 @@ def _filter_matches(pattern, string, preds=None):
 
 
 def _not_in_link(match):
-    links = LINK_PATTERN.finditer(match.string)
+    links = re.finditer(r'\[([^\]]*?) ""(.*?)""\]', match.string)
     return not any(_spans_intersect(match.span(), m.span(2)) for m in links)
 
 
