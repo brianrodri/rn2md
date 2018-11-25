@@ -23,6 +23,7 @@ class TransformerBase():
 
     def __init__(self):
         self._transformer = self.transformer_generator()
+        # Initialize generator coroutine by calling `next` once on it.
         _ = next(self._transformer, None)
 
     def fmt(self, line):
@@ -117,7 +118,7 @@ class ListTransformer(TransformerBase):
                 i = li_match.start(1)
                 # Always clear sub-items so they restart their numbering.
                 del ordered_list_history[i + 1:]
-                # Unordered lists do not use a different format in markdown.
+                # Un-ordered lists do not use a different format in markdown.
                 if line[i] == '-':
                     continue
                 # Ordered lists should change to their actual number.
