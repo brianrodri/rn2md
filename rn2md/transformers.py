@@ -19,31 +19,38 @@ import defaultlist
 
 
 def LinkTransformer():  # pylint: disable=invalid-name
-    """Returns coroutine to transform links from RedNotebook to Markdown."""
+    """Makes coroutine to transform links from RedNotebook to Markdown."""
     return _build_transformer(_link_transformer)
 
 
 def ItalicTransformer():  # pylint: disable=invalid-name
+    """Makes coroutine to transform italics from RedNotebook to Markdown."""
     return _build_transformer(_italic_transformer)
 
 
 def StrikethroughTransformer():  # pylint: disable=invalid-name
+    """Makes coroutine to transform strikethroughs from RedNotebook to Markdown.
+    """
     return _build_transformer(_strikethrough_transformer)
 
 
 def CodeBlockTransformer():  # pylint: disable=invalid-name
+    """Makes coroutine to code blocks links from RedNotebook to Markdown."""
     return _build_transformer(_code_block_transformer)
 
 
 def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
+    """Makes coroutine to transform headers from RedNotebook to Markdown."""
     return _build_transformer(_header_transformer, init_level=init_level)
 
 
 def ListTransformer():  # pylint: disable=invalid-name
+    """Makes coroutine to transform underscores from RedNotebook to Markdown."""
     return _build_transformer(_list_transformer)
 
 
-def InnerUnderscoreEscaper():
+def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
+    """Returns coroutine to transform links from RedNotebook to Markdown."""
     return _build_transformer(_inner_underscore_escaper)
 
 
