@@ -150,14 +150,17 @@ class InnerUnderscoreEscaper(TransformerBase):
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, op=str, **kwargs):
-    """We don't use a bigger regex because avoiding link urls is messy.
+    """Finds paired delimiters and replaces them with a substitution.
+
+    Example:
+        >>> _sub_balanced_delims('*', '_', '^ *test* $', op=lambda s: s.upper())
+        ... '^ _TEST_ $'
 
     Args:
         delim_pattern: regex for the delimiter to replace.
         sub: delimiter to use instead. Can either be a string or a 2-tuple.
         string: string to have delimiters replaced.
-        op: operator to transform strings between delimiters. Does nothing by
-            default.
+        op: function to transform strings between delimiters. Defaults to no-op.
         **kwargs: downstream arguments for _filter_matches.
 
     Returns:
