@@ -153,8 +153,8 @@ def _sub_balanced_delims(delim_pattern, sub, string, op=str, **kwargs):
     """Finds paired delimiters and replaces them with a substitution.
 
     Example:
-        >>> _sub_balanced_delims('*', '_', '^ *test* $', op=lambda s: s.upper())
-        ... '^ _TEST_ $'
+        >>> _sub_balanced_delims('_', '*', '^ _test_ $', op=lambda s: s.upper())
+        ... '^ *TEST* $'
 
     Args:
         delim_pattern: regex for the delimiter to replace.
