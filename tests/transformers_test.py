@@ -1,4 +1,4 @@
-"""Test cases for the transformers module."""
+"""Test cases for the rn2md.transformers module."""
 import unittest
 
 from rn2md import transformers
