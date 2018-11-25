@@ -116,17 +116,18 @@ class ListTransformer(TransformerBase):
         sequential_empty_lines = 0
         while True:
             line = yield line
-            li_match = re.match(r'^\s*([-|\+])\s', line)
-            if li_match:
-                i = li_match.start(1)
-                # Always clear sub-items so they restart their numbering.
-                del ordered_list_history[i + 1:]
+            list_item_match = re.match(r'^\s*([-|\+])\s', line)
+            if list_item_match:
+                i = list_item_match.start(1)
                 if line[i] == '-':
-                    pass  # Un-ordered lists use same format in markdown.
+                    # Un-ordered lists have the same format in markdown.
+                    pass
                 else:
-                    # Ordered lists should change to their actual number.
+                    # Ordered lists must change to the actual number.
                     line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
                     ordered_list_history[i] += 1
+                # Reset numbering of sub-items.
+                del ordered_list_history[i + 1:]
             elif line.strip():
                 sequential_empty_lines = 0
                 ordered_list_history.clear()
