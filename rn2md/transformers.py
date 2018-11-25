@@ -25,11 +25,12 @@ class TransformerBase():
         self._transformer = self._transformer_fun(*args, **kwargs)
         _ = next(self._transformer, None)
 
+    def send(self, line):
+        """Transforms the RedNotebook formatted line into Markdown format."""
+        return self._transformer.send(line)
+
     def _transformer_fun(self, *args, **kwargs):
         raise NotImplementedError
-
-    def send(self, line):
-        return self._transformer.send(line)
 
 
 class LinkTransformer(TransformerBase):
@@ -77,6 +78,7 @@ class HeaderTransformer(TransformerBase):
 
     TODO(brianrodri): Elaborate.
     """
+
     def _transformer_fun(self, init_level=0):
         """Transforms '=TEXT=' into '# TEXT'.
 
