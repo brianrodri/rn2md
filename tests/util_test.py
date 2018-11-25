@@ -32,6 +32,7 @@ class StrictParseDate(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, r'not a valid format'):
             util.strict_parse_date('2018-03-24')
 
+
 class ParseDatesTest(unittest.TestCase):
     """Tests for the rn2md.util.parse_dates function."""
 
