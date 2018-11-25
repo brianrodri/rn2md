@@ -19,20 +19,55 @@ import defaultlist
 
 
 def LinkTransformer():  # pylint: disable=invalid-name
+    """Returns coroutine to transform links from RedNotebook to Markdown."""
+    return _build_transformer(_link_transformer)
+
+
+def ItalicTransformer():  # pylint: disable=invalid-name
+    return _build_transformer(_italic_transformer)
+
+
+def StrikethroughTransformer():  # pylint: disable=invalid-name
+    return _build_transformer(_strikethrough_transformer)
+
+
+def CodeBlockTransformer():  # pylint: disable=invalid-name
+    return _build_transformer(_code_block_transformer)
+
+
+def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
+    return _build_transformer(_header_transformer, init_level=init_level)
+
+
+def ListTransformer():  # pylint: disable=invalid-name
+    return _build_transformer(_list_transformer)
+
+
+def InnerUnderscoreEscaper():
+    return _build_transformer(_inner_underscore_escaper)
+
+
+def _build_transformer(transformer_fun, *args, **kwargs):
+    transformer = transformer_fun(*args, **kwargs)
+    _ = next(transformer, None)
+    return transformer
+
+
+def _link_transformer():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
     while True:
         line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
-def ItalicTransformer():  # pylint: disable=invalid-name
+def _italic_transformer():
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
         line = yield _sub_balanced_delims('//', '_', line)
 
 
-def StrikethroughTransformer():  # pylint: disable=invalid-name
+def _strikethrough_transformer():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
@@ -42,7 +77,7 @@ def StrikethroughTransformer():  # pylint: disable=invalid-name
                                  data_op=lambda d: d.rstrip('.?!')))
 
 
-def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
+def _header_transformer(init_level=0):
     """Transforms '=TEXT=' into '# TEXT'.
 
     Args:
@@ -61,7 +96,7 @@ def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
         line = ' '.join(['#' * (init_level + lvl), line[lvl:-lvl].lstrip()])
 
 
-def ListTransformer():  # pylint: disable=invalid-name
+def _list_transformer():
     """Transforms ordered and unordered lists into markdown syntax."""
     line = ''
     ordered_list_history = defaultlist.defaultlist(lambda: 1)
@@ -90,7 +125,7 @@ def ListTransformer():  # pylint: disable=invalid-name
                 ordered_list_history.clear()
 
 
-def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
+def _inner_underscore_escaper():
     """Transforms underscores which need to be escaped."""
     line = ''
     while True:
@@ -99,7 +134,7 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
             line = ''.join([line[:match.start()], r'\_', line[match.end():]])
 
 
-def CodeBlockTransformer():  # pylint: disable=invalid-name
+def _code_block_transformer():
     """Transforms codeblocks into markdown syntax."""
     line = ''
     while True:
