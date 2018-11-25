@@ -1,11 +1,11 @@
 init:
-	python3.6 -m pip install -r requirements.txt
+	python3 -m pip install -r requirements.txt
 
 test:
 	nosetests tests
 
 install:
-	python3.6 -m pip install .
+	python3 -m pip install . --user
 
 clean:
 	find . -name '*.pyc' -exec rm -f {} +
