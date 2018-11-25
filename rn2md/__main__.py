@@ -33,10 +33,9 @@ def main():
 
     def _rn2md_day_entry(date):
         """Returns the given date's entry in Markdown format."""
-        entry_lines = [l.rstrip() for l in day_entries[date].split('\n')]
-        # Add header for date.
-        entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))
-        return '\n'.join(rn2md(entry_lines))
+        entry_lines = [rn2md(l.rstrip()) for l in day_entries[date].split('\n')]
+        entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))  # Date header.
+        return '\n'.join(entry_lines)
 
     print('\n\n\n'.join(_rn2md_day_entry(d) for d in dates if d in day_entries))
 
