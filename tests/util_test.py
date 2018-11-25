@@ -1,4 +1,4 @@
-"""Test cases for the rn2md_util module."""
+"""Test cases for the util module."""
 import unittest
 
 import datetime as dt
@@ -8,6 +8,7 @@ from rn2md import util
 
 
 class StrictParseDate(unittest.TestCase):
+    """Tests for the rn2md.util.strict_parse_date function."""
 
     def test_correct_weekday(self):
         self.assertEqual(util.strict_parse_date('Fri Mar 23, 2018'),
@@ -28,7 +29,7 @@ class StrictParseDate(unittest.TestCase):
             util.strict_parse_date('2018-03-24')
 
 class ParseDatesTest(unittest.TestCase):
-    """Tests for the rn2md.rn2md_util.parse_dates function."""
+    """Tests for the rn2md.util.parse_dates function."""
 
     @freezegun.freeze_time(util.strict_parse_date('Mar 24, 2018'))
     def test_today(self):
