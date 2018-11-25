@@ -21,8 +21,8 @@ import defaultlist
 class TransformerBase():
     """Handles boilerplate required by all transformers."""
 
-    def __init__(self, *args, **kwargs):
-        self._transformer = self._transformer_generator(*args, **kwargs)
+    def __init__(self):
+        self._transformer = self._transformer_generator()
         _ = next(self._transformer, None)
 
     def send(self, line):
@@ -76,8 +76,11 @@ class CodeBlockTransformer(TransformerBase):
 
 class HeaderTransformer(TransformerBase):
     """Transform headers from RedNotebook syntax to Markdown syntax."""
+    def __init__(self, init_level=0):
+        self._init_level = init_level
+        super().__init__()
 
-    def _transformer_generator(self, init_level=0):
+    def _transformer_generator(self):
         """Transforms '=TEXT=' into '# TEXT'.
 
         Args:
@@ -93,7 +96,10 @@ class HeaderTransformer(TransformerBase):
             if not end_delim or end_delim.group() != start_delim.group():
                 continue
             lvl = len(start_delim.group())
-            line = ' '.join(['#' * (init_level + lvl), line[lvl:-lvl].lstrip()])
+            line = ' '.join([
+                '#' * (self._init_level + lvl),
+                line[lvl:-lvl].lstrip()
+            ])
 
 
 class ListTransformer(TransformerBase):
