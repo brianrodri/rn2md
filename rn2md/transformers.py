@@ -19,7 +19,17 @@ import defaultlist
 
 
 class TransformerBase():
-    """Handles boilerplate required by all transformers."""
+    """Handles boilerplate required by all transformers.
+
+    Transformers are stateful objects. Pass in sequential RedNotebook-formatted
+    lines to the fmt method one-by-one to recreate the text in Markdown syntax.
+
+    For example:
+        >>> rn_lines = ['//examples// are', ' + --not--', ' + cool!']
+        >>> t = MasterTransformer()
+        >>> md_lines = [t.fmt(line) for line in rn_lines]
+        ... ['_examples_ are', ' 1. ~not~', ' 2. cool!']
+    """
 
     def __init__(self):
         self._transformer = self.transformer_generator()
@@ -64,8 +74,7 @@ class StrikethroughTransformer(TransformerBase):
         while True:
             line = yield (
                 line if set(line) == {'-'} else
-                _sub_balanced_delims('--', ('**OBSOLETE**(', ')'), line,
-                                     oper=lambda d: d.rstrip('.?!')))
+                _sub_balanced_delims('--', '~', line))
 
 
 class CodeBlockTransformer(TransformerBase):
@@ -150,19 +159,17 @@ class InnerUnderscoreEscaper(TransformerBase):
                 line = f'{line[:match.start()]}\\_{line[match.end():]}'
 
 
-def _sub_balanced_delims(delim_pattern, sub, string, oper=str, **kwargs):
+def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
     """Finds paired delimiters and replaces them with a substitution.
 
     Example:
-        >>> _sub_balanced_delims('_', '*', '^_test_$', oper=lambda s: s.upper())
-        ... '^*TEST*$'
+        >>> _sub_balanced_delims('_', '*', '^_test_$')
+        ... '^*test*$'
 
     Args:
         delim_pattern: regex for the delimiter to replace.
         sub: delimiter to use instead. Can either be a string or a 2-tuple.
         string: string to have delimiters replaced.
-        oper: function to transform strings between delimiters.
-            Defaults to no-op.
         **kwargs: downstream arguments for _filter_matches.
 
     Returns:
@@ -179,7 +186,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, oper=str, **kwargs):
         start = string[:start_delim.start()]
         data = string[start_delim.end():end_delim.start()]
         end = string[end_delim.end():]
-        string = f'{start}{start_sub}{oper(data)}{end_sub}{end}'
+        string = f'{start}{start_sub}{data}{end_sub}{end}'
     return string
 
 

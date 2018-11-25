@@ -48,32 +48,33 @@ class StrikethroughTransformerTest(unittest.TestCase):
     def test_transformation(self):
         """Tests expected usage."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.fmt('--text--'), '**OBSOLETE**(text)')
+        self.assertEqual(transformer.fmt('--text--'), '~text~')
 
     def test_punctuation_gets_stripped(self):
         """Tests punctuation is removed from parenthesized text."""
         transformer = transformers.StrikethroughTransformer()
         self.assertEqual(transformer.fmt('--a complete sentence.--'),
-                         '**OBSOLETE**(a complete sentence)')
+                         '~a complete sentence.~')
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
         transformer = transformers.StrikethroughTransformer()
         self.assertEqual(
             transformer.fmt('--changed--, --this too--, not here--or here.'),
-            '**OBSOLETE**(changed), **OBSOLETE**(this too), not here--or here.')
+            '~changed~, ~this too~, not here--or here.')
 
     def test_ignores_urls(self):
         """Tests urls are not changed."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.fmt('http://do/something--weird'),
-                         'http://do/something--weird')
+        self.assertEqual(
+            transformer.fmt('[x ""http://do/kinda--weird--thing""]'),
+            '[x ""http://do/kinda--weird--thing""]')
 
     def test_ignores_backticked_data(self):
         """Tests backticked data is left alone."""
         transformer = transformers.StrikethroughTransformer()
         self.assertEqual(transformer.fmt('--hit--, `--not hit--`'),
-                         '**OBSOLETE**(hit), `--not hit--`')
+                         '~hit~, `--not hit--`')
 
     def test_ignores_lines_with_only_backticks(self):
         """Tests that data with only backticks are not changed."""
