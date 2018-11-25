@@ -19,9 +19,10 @@ def _fmt(lines):
         transformers.ListTransformer(),
     ]
     for line in lines:
+        line = line.rstrip()
         for transformer in transformer_sequence:
             line = transformer.fmt(line)
-        yield line
+        yield str(line)
 
 
 def main():
@@ -33,7 +34,7 @@ def main():
     day_entries = storage.load_daily_entries(options.data_path)
     def _fmt_day_entry(date):
         """Returns the given date's entry in Markdown format."""
-        entry_lines = [_fmt(l.rstrip()) for l in day_entries[date].split('\n')]
+        entry_lines = list(_fmt(day_entries[date].split('\n')))
         entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))  # Date header.
         return '\n'.join(entry_lines)
 
