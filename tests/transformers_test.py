@@ -10,25 +10,25 @@ class ItalicTransformerTest(unittest.TestCase):
     def test_transformation(self):
         """Test expected usage"""
         transformer = transformers.ItalicTransformer()
-        self.assertEqual(transformer.send('Text with //italicized// content.'),
+        self.assertEqual(transformer.fmt('Text with //italicized// content.'),
                          'Text with _italicized_ content.')
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
         transformer = transformers.ItalicTransformer()
-        self.assertEqual(transformer.send('//italic1//, //italic2//, unused //'),
+        self.assertEqual(transformer.fmt('//italic1//, //italic2//, unused //'),
                          '_italic1_, _italic2_, unused //')
 
     def test_ignores_urls(self):
         """Tests urls do not have their dashes changed."""
         transformer = transformers.ItalicTransformer()
-        self.assertEqual(transformer.send('http://github.com/brianrodri'),
+        self.assertEqual(transformer.fmt('http://github.com/brianrodri'),
                          'http://github.com/brianrodri')
 
     def test_ignores_backticked_data(self):
         """Tests that backticked data do not get changed."""
         transformer = transformers.ItalicTransformer()
-        self.assertEqual(transformer.send('//italic//, `//escaped italic//`'),
+        self.assertEqual(transformer.fmt('//italic//, `//escaped italic//`'),
                          '_italic_, `//escaped italic//`')
 
 
@@ -38,7 +38,7 @@ class LinkTransformerTest(unittest.TestCase):
     def test_transformation(self):
         """Tests expected usage."""
         transformer = transformers.LinkTransformer()
-        self.assertEqual(transformer.send('[sample text ""go/somewhere""]'),
+        self.assertEqual(transformer.fmt('[sample text ""go/somewhere""]'),
                          '[sample text](go/somewhere)')
 
 
@@ -48,37 +48,37 @@ class StrikethroughTransformerTest(unittest.TestCase):
     def test_transformation(self):
         """Tests expected usage."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.send('--text--'), '**OBSOLETE**(text)')
+        self.assertEqual(transformer.fmt('--text--'), '**OBSOLETE**(text)')
 
     def test_punctuation_gets_stripped(self):
         """Tests punctuation is removed from parenthesized text."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.send('--a complete sentence.--'),
+        self.assertEqual(transformer.fmt('--a complete sentence.--'),
                          '**OBSOLETE**(a complete sentence)')
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
         transformer = transformers.StrikethroughTransformer()
         self.assertEqual(
-            transformer.send('--changed--, --this too--, not here--or here.'),
+            transformer.fmt('--changed--, --this too--, not here--or here.'),
             '**OBSOLETE**(changed), **OBSOLETE**(this too), not here--or here.')
 
     def test_ignores_urls(self):
         """Tests urls are not changed."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.send('http://do/something--weird'),
+        self.assertEqual(transformer.fmt('http://do/something--weird'),
                          'http://do/something--weird')
 
     def test_ignores_backticked_data(self):
         """Tests backticked data is left alone."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.send('--hit--, `--not hit--`'),
+        self.assertEqual(transformer.fmt('--hit--, `--not hit--`'),
                          '**OBSOLETE**(hit), `--not hit--`')
 
     def test_ignores_lines_with_only_backticks(self):
         """Tests that data with only backticks are not changed."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.send('-' * 12), '-' * 12)
+        self.assertEqual(transformer.fmt('-' * 12), '-' * 12)
 
 
 class HeaderTransformerTest(unittest.TestCase):
@@ -87,31 +87,31 @@ class HeaderTransformerTest(unittest.TestCase):
     def test_transformation(self):
         """Tests expected usage."""
         transformer = transformers.HeaderTransformer()
-        self.assertEqual(transformer.send('=Level One='), '# Level One')
-        self.assertEqual(transformer.send('===Level Three==='),
+        self.assertEqual(transformer.fmt('=Level One='), '# Level One')
+        self.assertEqual(transformer.fmt('===Level Three==='),
                          '### Level Three')
 
     def test_base_level_is_respected(self):
         """Tests changes to init level."""
         transformer = transformers.HeaderTransformer(init_level=2)
-        self.assertEqual(transformer.send('===Only 3==='), '##### Only 3')
+        self.assertEqual(transformer.fmt('===Only 3==='), '##### Only 3')
 
     def test_inner_markers_are_ignored(self):
         """Tests header markings are only interpreted when surrounding line."""
         transformer = transformers.HeaderTransformer()
-        self.assertEqual(transformer.send('Not at =start= of text'),
+        self.assertEqual(transformer.fmt('Not at =start= of text'),
                          'Not at =start= of text')
 
     def test_only_markers_are_ignored(self):
         """Tests lines with only markers aren't affected."""
         transformer = transformers.HeaderTransformer()
-        self.assertEqual(transformer.send('=' * 6), '=' * 6)
-        self.assertEqual(transformer.send('=' * 7), '=' * 7)
+        self.assertEqual(transformer.fmt('=' * 6), '=' * 6)
+        self.assertEqual(transformer.fmt('=' * 7), '=' * 7)
 
     def test_un_balanced_markers_are_ignored(self):
         """Tests that lines must use balanced markers."""
         transformer = transformers.HeaderTransformer()
-        self.assertEqual(transformer.send('==Unbalanced==='), '==Unbalanced===')
+        self.assertEqual(transformer.fmt('==Unbalanced==='), '==Unbalanced===')
 
 
 class ListTransformerTest(unittest.TestCase):
@@ -125,7 +125,7 @@ class ListTransformerTest(unittest.TestCase):
             ' - B',
             '- A',
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '- A',
             ' - B',
             '- A',
@@ -139,7 +139,7 @@ class ListTransformerTest(unittest.TestCase):
             ' + B',
             '+ A',
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '1. A',
             ' 1. B',
             '2. A',
@@ -155,7 +155,7 @@ class ListTransformerTest(unittest.TestCase):
             '',
             '+ C'
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '1. A',
             '2. B',
             '',
@@ -172,7 +172,7 @@ class ListTransformerTest(unittest.TestCase):
             'Content',
             '+ C',
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '1. A',
             '2. B',
             'Content',
@@ -191,7 +191,7 @@ class ListTransformerTest(unittest.TestCase):
             ' + F',
             '  + G',
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '1. A',
             ' 1. B',
             ' 2. C',
@@ -209,7 +209,7 @@ class ListTransformerTest(unittest.TestCase):
             ' - B',
             '+ C',
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '1. A',
             ' - B',
             '2. C',
@@ -222,26 +222,26 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
     def test_transformation(self):
         """Tests expected usage."""
         transformer = transformers.InnerUnderscoreEscaper()
-        self.assertEqual(transformer.send('underscore_delimited_word'),
+        self.assertEqual(transformer.fmt('underscore_delimited_word'),
                          r'underscore\_delimited\_word')
 
     def test_trailing_underscores_ignored(self):
         """Tests trailing underscores are left alone."""
         transformer = transformers.InnerUnderscoreEscaper()
-        self.assertEqual(transformer.send('_with_trailing_underscores_'),
+        self.assertEqual(transformer.fmt('_with_trailing_underscores_'),
                          r'_with\_trailing\_underscores_')
 
     def test_ignores_urls(self):
         """Tests that underscores in urls are left alone."""
         transformer = transformers.InnerUnderscoreEscaper()
         self.assertEqual(
-            transformer.send('[test_thing ""http://github.com/test_thing""]'),
+            transformer.fmt('[test_thing ""http://github.com/test_thing""]'),
             r'[test\_thing ""http://github.com/test_thing""]')
 
     def test_ignores_backticked_data(self):
         """Tests that underscores between backticks are left alone."""
         transformer = transformers.InnerUnderscoreEscaper()
-        self.assertEqual(transformer.send('gets_escaped, `no_escape`'),
+        self.assertEqual(transformer.fmt('gets_escaped, `no_escape`'),
                          r'gets\_escaped, `no_escape`')
 
 
@@ -251,7 +251,7 @@ class CodeBlockTransformerTest(unittest.TestCase):
     def test_transformation(self):
         """Tests expected usage."""
         transformer = transformers.CodeBlockTransformer()
-        self.assertEqual(transformer.send('``code encoded stuff``'),
+        self.assertEqual(transformer.fmt('``code encoded stuff``'),
                          '`code encoded stuff`')
 
     def test_only_two_backticks_are_transformed(self):
@@ -262,7 +262,7 @@ class CodeBlockTransformerTest(unittest.TestCase):
             '# Python code',
             '```',
         ]
-        self.assertEqual([transformer.send(l) for l in input_lines], [
+        self.assertEqual([transformer.fmt(l) for l in input_lines], [
             '```py',
             '# Python code',
             '```',

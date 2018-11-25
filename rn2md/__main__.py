@@ -20,7 +20,7 @@ def rn2md(lines):
     ]
     for line in lines:
         for transformer in transformer_sequence:
-            line = transformer.send(line)
+            line = transformer.fmt(line)
         yield line
 
 
