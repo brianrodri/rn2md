@@ -18,6 +18,20 @@ import re
 import defaultlist
 
 
+class TransformerBase():
+    """Handles boilerplate required by all transformers."""
+
+    def __init__(self, *args, **kwargs):
+        self._transformer = self._transformer_fun(*args, **kwargs)
+        _ = next(self._transformer, None)
+
+    def _transformer_fun(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def send(self, line):
+        return self._transformer.send(line)
+
+
 def LinkTransformer():  # pylint: disable=invalid-name
     """Makes coroutine to transform links from RedNotebook to Markdown."""
     return _build_transformer(_link_transformer)
@@ -39,9 +53,28 @@ def CodeBlockTransformer():  # pylint: disable=invalid-name
     return _build_transformer(_code_block_transformer)
 
 
-def HeaderTransformer(init_level=0):  # pylint: disable=invalid-name
-    """Makes coroutine to transform headers from RedNotebook to Markdown."""
-    return _build_transformer(_header_transformer, init_level=init_level)
+class HeaderTransformer(TransformerBase):
+    """Transform headers from RedNotebook syntax to Markdown syntax.
+
+    TODO(brianrodri): Elaborate.
+    """
+    def _transformer_fun(self, init_level=0):
+        """Transforms '=TEXT=' into '# TEXT'.
+
+        Args:
+            init_level: additional levels to add to all headers.
+        """
+        line = ''
+        while True:
+            line = yield line
+            start_delim = re.search(r'^=+', line)
+            if not start_delim or start_delim.group() == line:
+                continue
+            end_delim = re.search(r'=+$', line)
+            if not end_delim or end_delim.group() != start_delim.group():
+                continue
+            lvl = len(start_delim.group())
+            line = ' '.join(['#' * (init_level + lvl), line[lvl:-lvl].lstrip()])
 
 
 def ListTransformer():  # pylint: disable=invalid-name
@@ -87,25 +120,6 @@ def _strikethrough_transformer():
             line if set(line) == {'-'} else
             _sub_balanced_delims('--', ['**OBSOLETE**(', ')'], line,
                                  data_op=lambda d: d.rstrip('.?!')))
-
-
-def _header_transformer(init_level=0):
-    """Transforms '=TEXT=' into '# TEXT'.
-
-    Args:
-        init_level: additional levels to add to all headers.
-    """
-    line = ''
-    while True:
-        line = yield line
-        start_delim = re.search(r'^=+', line)
-        if not start_delim or start_delim.group() == line:
-            continue
-        end_delim = re.search(r'=+$', line)
-        if not end_delim or end_delim.group() != start_delim.group():
-            continue
-        lvl = len(start_delim.group())
-        line = ' '.join(['#' * (init_level + lvl), line[lvl:-lvl].lstrip()])
 
 
 def _list_transformer():
