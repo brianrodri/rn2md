@@ -18,8 +18,6 @@ def rn2md(lines):
         transformers.StrikethroughTransformer(),
         transformers.ListTransformer(),
     ]
-    # Transformers are generators with meaningful state, so they need to be
-    # prepared with an initial call to `next`.
     for line in lines:
         for transformer in required_transformer_sequence:
             line = transformer.send(line)
