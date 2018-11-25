@@ -65,7 +65,7 @@ class StrikethroughTransformer(TransformerBase):
             line = yield (
                 line if set(line) == {'-'} else
                 _sub_balanced_delims('--', ('**OBSOLETE**(', ')'), line,
-                                     op=lambda d: d.rstrip('.?!')))
+                                     oper=lambda d: d.rstrip('.?!')))
 
 
 class CodeBlockTransformer(TransformerBase):
@@ -149,18 +149,19 @@ class InnerUnderscoreEscaper(TransformerBase):
                 line = f'{line[:match.start()]}\\_{line[match.end():]}'
 
 
-def _sub_balanced_delims(delim_pattern, sub, string, op=str, **kwargs):
+def _sub_balanced_delims(delim_pattern, sub, string, oper=str, **kwargs):
     """Finds paired delimiters and replaces them with a substitution.
 
     Example:
-        >>> _sub_balanced_delims('_', '*', '^ _test_ $', op=lambda s: s.upper())
-        ... '^ *TEST* $'
+        >>> _sub_balanced_delims('_', '*', '^_test_$', oper=lambda s: s.upper())
+        ... '^*TEST*$'
 
     Args:
         delim_pattern: regex for the delimiter to replace.
         sub: delimiter to use instead. Can either be a string or a 2-tuple.
         string: string to have delimiters replaced.
-        op: function to transform strings between delimiters. Defaults to no-op.
+        oper: function to transform strings between delimiters.
+            Defaults to no-op.
         **kwargs: downstream arguments for _filter_matches.
 
     Returns:
@@ -177,7 +178,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, op=str, **kwargs):
         start = string[:start_delim.start()]
         data = string[start_delim.end():end_delim.start()]
         end = string[end_delim.end():]
-        string = f'{start}{start_sub}{op(data)}{end_sub}{end}'
+        string = f'{start}{start_sub}{oper(data)}{end_sub}{end}'
     return string
 
 
