@@ -128,7 +128,7 @@ class ListTransformer(TransformerBase):
                     continue
                 # Ordered lists should change to their actual number.
                 line = ''.join([
-                    line[:i], str(ordered_list_history[i]) + '.', line[i + 1:]
+                    line[:i], f'{ordered_list_history[i]}.', line[i + 1:]
                 ])
                 ordered_list_history[i] += 1
             elif line.strip():
