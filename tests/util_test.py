@@ -20,8 +20,10 @@ def strict_parse_date(date_str):
 
     Args:
         date_str: Format must be: '%a %b %d, %Y' or '%b %d, %Y'.
+
     Returns:
         The parsed datetime.date instance.
+
     Raises:
         ValueError:
             - none of the formats could parse date_str
