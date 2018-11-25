@@ -122,8 +122,7 @@ class ListTransformer(TransformerBase):
                 # Always clear sub-items so they restart their numbering.
                 del ordered_list_history[i + 1:]
                 if line[i] == '-':
-                    # Un-ordered lists do not use different markdown format.
-                    pass
+                    pass  # Un-ordered lists use same format in markdown.
                 else:
                     # Ordered lists should change to their actual number.
                     line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
