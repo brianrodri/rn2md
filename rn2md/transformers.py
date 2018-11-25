@@ -31,7 +31,7 @@ class TransformerBase():
         return self._transformer.send(line)
 
     def transformer_generator(self):
-        """Virtual generator for formatting RedNotebook text as Markdown."""
+        """Generator for subclasses to format RedNotebook text as Markdown."""
         raise NotImplementedError
 
 
