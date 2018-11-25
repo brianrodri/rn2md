@@ -70,14 +70,12 @@ class CodeBlockTransformer(TransformerBase):
         """Transforms codeblocks into markdown syntax."""
         line = ''
         while True:
-            line = yield _sub_balanced_delims('``', '`', line, preds=[_not_in_link])
+            line = yield _sub_balanced_delims('``', '`', line,
+                                              preds=[_not_in_link])
 
 
 class HeaderTransformer(TransformerBase):
-    """Transform headers from RedNotebook syntax to Markdown syntax.
-
-    TODO(brianrodri): Elaborate.
-    """
+    """Transform headers from RedNotebook syntax to Markdown syntax."""
 
     def _transformer_generator(self, init_level=0):
         """Transforms '=TEXT=' into '# TEXT'.
@@ -136,8 +134,13 @@ class InnerUnderscoreEscaper(TransformerBase):
         line = ''
         while True:
             line = yield line
-            for match in reversed(list(_filter_matches(r'(?<=\w)_(?=\w)', line))):
-                line = ''.join([line[:match.start()], r'\_', line[match.end():]])
+            inner_underscores = list(_filter_matches(r'(?<=\w)_(?=\w)', line))
+            for match in reversed(inner_underscores):
+                line = ''.join([
+                    line[:match.start()],
+                    r'\_',
+                    line[match.end():]
+                ])
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
