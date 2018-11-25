@@ -2,9 +2,9 @@
 import sys
 
 from . import config
-from . import util
 from . import storage
 from . import transformers
+from . import util
 
 
 def rn2md(lines):
