@@ -1,7 +1,4 @@
 """Entry point for rn2md tool."""
-from typing import Iterable
-
-import datetime as dt
 import sys
 
 from . import config
