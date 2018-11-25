@@ -26,7 +26,7 @@ class TransformerBase():
         _ = next(self._transformer, None)
 
     def fmt(self, line):
-        """Transforms the RedNotebook formatted line into Markdown format."""
+        """Returns the given RedNotebook line in Markdown format."""
         return self._transformer.send(line)
 
     def transformer_generator(self):
