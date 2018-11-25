@@ -7,7 +7,7 @@ import freezegun
 from rn2md import util
 
 
-class StrictParseDate(unittest.TestCase):
+class StrictParseDateTest(unittest.TestCase):
     """Tests for the strict_parse_date function."""
 
     def test_correct_weekday(self):
