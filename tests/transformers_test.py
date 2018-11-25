@@ -79,7 +79,7 @@ class StrikethroughTransformerTest(unittest.TestCase):
     def test_ignores_lines_with_only_backticks(self):
         """Tests that data with only backticks are not changed."""
         transformer = transformers.StrikethroughTransformer()
-        self.assertEqual(transformer.fmt('-' * 12), '-' * 12)
+        self.assertEqual(transformer.fmt('-----'), '-----')
 
 
 class HeaderTransformerTest(unittest.TestCase):
