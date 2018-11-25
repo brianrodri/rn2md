@@ -18,8 +18,8 @@ class StrictParseDate(unittest.TestCase):
     def test_wrong_weekday(self):
         """Tests that date with wrong weekday raises an error."""
         with self.assertRaisesRegex(ValueError,
-                                    'does not have the same weekday .* '
-                                    '\(expected: \'Sat\', actual: \'Fri\'\)'):
+                                    r"does not have the same weekday .* "
+                                    r"\(expected: 'Sat', actual: 'Fri'\)"):
             util.strict_parse_date('Sat Mar 23, 2018')
 
     def test_without_weekday(self):
