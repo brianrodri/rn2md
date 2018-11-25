@@ -173,7 +173,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, oper=str, **kwargs):
         start_sub = end_sub = sub
     delims = _filter_matches(delim_pattern, string, **kwargs)
     balanced_delims = list(zip(delims, delims))
-    # NOTE: Do substitutions in reverse so the match indices stay valid.
+    # Do substitutions in reverse so the match indices stay valid.
     for start_delim, end_delim in reversed(balanced_delims):
         start = string[:start_delim.start()]
         data = string[start_delim.end():end_delim.start()]
