@@ -102,10 +102,7 @@ class HeaderTransformer(TransformerBase):
             if not end_delim or end_delim.group() != start_delim.group():
                 continue
             lvl = len(start_delim.group())
-            line = ' '.join([
-                '#' * (self._init_level + lvl),
-                line[lvl:-lvl].lstrip()
-            ])
+            line = f'{"#" * (self._init_level + lvl)} {line[lvl:-lvl].lstrip()}'
 
 
 class ListTransformer(TransformerBase):
@@ -127,9 +124,7 @@ class ListTransformer(TransformerBase):
                 if line[i] == '-':
                     continue
                 # Ordered lists should change to their actual number.
-                line = ''.join([
-                    line[:i], f'{ordered_list_history[i]}.', line[i + 1:]
-                ])
+                line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
                 ordered_list_history[i] += 1
             elif line.strip():
                 sequential_empty_lines = 0
@@ -150,11 +145,7 @@ class InnerUnderscoreEscaper(TransformerBase):
             line = yield line
             inner_underscores = list(_filter_matches(r'(?<=\w)_(?=\w)', line))
             for match in reversed(inner_underscores):
-                line = ''.join([
-                    line[:match.start()],
-                    r'\_',
-                    line[match.end():]
-                ])
+                line = f'{line[:match.start()]}\\_{line[match.end():]}'
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
@@ -170,7 +161,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
         start = string[:start_delim.start()]
         data = string[start_delim.end():end_delim.start()]
         end = string[end_delim.end():]
-        string = ''.join([start, sub_start, data_op(data), sub_end, end])
+        string = f'{start}{sub_start}{data_op(data)}{sub_end}{end}'
     return string
 
 
