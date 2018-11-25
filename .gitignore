@@ -94,4 +94,4 @@ Icon
 
 # vim settings
 *.swp
-.tags
+.tags*
