@@ -10,7 +10,7 @@ from . import storage
 from . import transformers
 
 
-def rn2md(lines: Iterable[str]) -> Iterable[str]:
+def rn2md(lines):
     """Transform given lines from Markdown syntax to RedNotebook syntax."""
     required_transformer_sequence = [
         transformers.InnerUnderscoreEscaper(),
@@ -38,7 +38,8 @@ def main():
     target_date = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(target_date, workdays_only=options.workdays_only)
 
-    def _rn2md_day_entry(date: dt.date) -> str:
+    def _rn2md_day_entry(date):
+        """Returns the given date's entry in Markdown format."""
         entry_lines = [l.rstrip() for l in day_entries[date].split('\n')]
         # Add header for date.
         entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))
