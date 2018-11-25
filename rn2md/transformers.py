@@ -83,15 +83,16 @@ class HeaderTransformer(TransformerBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
     def __init__(self, init_level=0):
-        self._init_level = init_level
-        super().__init__()
-
-    def transformer_generator(self):
-        """Transforms '=TEXT=' into '# TEXT'.
+        """Constructor.
 
         Args:
             init_level: additional levels to add to all headers.
         """
+        self._init_level = init_level
+        super().__init__()
+
+    def transformer_generator(self):
+        """Transforms '=TEXT=' into '# TEXT'."""
         line = ''
         while True:
             line = yield line
