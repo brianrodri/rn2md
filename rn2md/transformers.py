@@ -152,9 +152,9 @@ class InnerUnderscoreEscaper(TransformerBase):
 def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
     """We don't use a bigger regex because avoiding link urls is messy."""
     try:
-        sub_start, sub_end = sub
+        start_sub, end_sub = sub
     except ValueError:
-        sub_start = sub_end = sub
+        start_sub = end_sub = sub
     delims = _filter_matches(delim_pattern, string, **kwargs)
     balanced_delims = list(zip(delims, delims))
     # NOTE: Do substitutions in reverse so the match indices stay valid.
@@ -162,7 +162,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
         start = string[:start_delim.start()]
         data = string[start_delim.end():end_delim.start()]
         end = string[end_delim.end():]
-        string = f'{start}{sub_start}{data_op(data)}{sub_end}{end}'
+        string = f'{start}{start_sub}{data_op(data)}{end_sub}{end}'
     return string
 
 
