@@ -36,7 +36,8 @@ class TransformerBase():
 
 
 class LinkTransformer(TransformerBase):
-    """Makes coroutine to transform links from RedNotebook to Markdown."""
+    """Transform links from RedNotebook syntax to Markdown syntax."""
+
     def transformer_generator(self):
         """Transforms '[[text ""url""]]' to '[text](url)'."""
         line = ''
@@ -45,7 +46,8 @@ class LinkTransformer(TransformerBase):
 
 
 class ItalicTransformer(TransformerBase):
-    """Makes coroutine to transform italics from RedNotebook to Markdown."""
+    """Transform italics from RedNotebook syntax to Markdown syntax."""
+
     def transformer_generator(self):
         """Transforms '//text//' to '_text_'."""
         line = ''
@@ -54,8 +56,8 @@ class ItalicTransformer(TransformerBase):
 
 
 class StrikethroughTransformer(TransformerBase):
-    """Makes coroutine to transform strikethroughs from RedNotebook to Markdown.
-    """
+    """Transform strikethroughs from RedNotebook syntax to Markdown syntax."""
+
     def transformer_generator(self):
         """Transforms '--text--' to '**OBSOLETE**(text)'."""
         line = ''
@@ -67,7 +69,8 @@ class StrikethroughTransformer(TransformerBase):
 
 
 class CodeBlockTransformer(TransformerBase):
-    """Makes coroutine to code blocks links from RedNotebook to Markdown."""
+    """Transform code blocks from RedNotebook syntax to Markdown syntax."""
+
     def transformer_generator(self):
         """Transforms codeblocks into markdown syntax."""
         line = ''
@@ -78,6 +81,7 @@ class CodeBlockTransformer(TransformerBase):
 
 class HeaderTransformer(TransformerBase):
     """Transform headers from RedNotebook syntax to Markdown syntax."""
+
     def __init__(self, init_level=0):
         self._init_level = init_level
         super().__init__()
@@ -105,7 +109,8 @@ class HeaderTransformer(TransformerBase):
 
 
 class ListTransformer(TransformerBase):
-    """Makes coroutine to transform underscores from RedNotebook to Markdown."""
+    """Transform lists from RedNotebook syntax to Markdown syntax."""
+
     def transformer_generator(self):
         """Transforms ordered and unordered lists into markdown syntax."""
         line = ''
@@ -136,7 +141,8 @@ class ListTransformer(TransformerBase):
 
 
 class InnerUnderscoreEscaper(TransformerBase):
-    """Returns coroutine to transform links from RedNotebook to Markdown."""
+    """Transform underscores from RedNotebook syntax to Markdown syntax."""
+
     def transformer_generator(self):
         """Transforms underscores which need to be escaped."""
         line = ''
