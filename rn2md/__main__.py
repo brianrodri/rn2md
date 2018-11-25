@@ -27,8 +27,8 @@ def rn2md(lines):
 def main():
     """Prints RedNotebook entries in markdown syntax."""
     options, remaining_argv = config.build_config_options(sys.argv)
-    target_date = ' '.join(remaining_argv) or 'today'
-    dates = util.parse_dates(target_date, workdays_only=options.workdays_only)
+    date_arg = ' '.join(remaining_argv) or 'today'
+    dates = util.parse_dates(date_arg, workdays_only=options.workdays_only)
 
     day_entries = storage.load_daily_entries(options.data_path)
     def _rn2md_day_entry(date):
