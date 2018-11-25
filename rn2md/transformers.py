@@ -29,7 +29,7 @@ class TransformerBase():
         """Transforms the RedNotebook formatted line into Markdown format."""
         return self._transformer.send(line)
 
-    def _transformer_generator(self, *args, **kwargs):
+    def _transformer_generator(self):
         raise NotImplementedError
 
 
