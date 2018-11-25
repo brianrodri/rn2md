@@ -1,4 +1,4 @@
-"""Helpers to tranform data in RedNotebook syntax to Markdown syntax.
+"""Helpers to tranform data in RedNotebook-syntax to Markdown-syntax.
 
 Here is a summary of the currently implemented transformers:
 
@@ -36,7 +36,7 @@ class TransformerBase():
 
 
 class LinkTransformer(TransformerBase):
-    """Transform links from RedNotebook syntax to Markdown syntax."""
+    """Transform links from RedNotebook-syntax to Markdown-syntax."""
 
     def transformer_generator(self):
         """Transforms '[[text ""url""]]' to '[text](url)'."""
@@ -46,7 +46,7 @@ class LinkTransformer(TransformerBase):
 
 
 class ItalicTransformer(TransformerBase):
-    """Transform italics from RedNotebook syntax to Markdown syntax."""
+    """Transform italics from RedNotebook-syntax to Markdown-syntax."""
 
     def transformer_generator(self):
         """Transforms '//text//' to '_text_'."""
@@ -56,7 +56,7 @@ class ItalicTransformer(TransformerBase):
 
 
 class StrikethroughTransformer(TransformerBase):
-    """Transform strikethroughs from RedNotebook syntax to Markdown syntax."""
+    """Transform strikethroughs from RedNotebook-syntax to Markdown-syntax."""
 
     def transformer_generator(self):
         """Transforms '--text--' to '**OBSOLETE**(text)'."""
@@ -69,10 +69,10 @@ class StrikethroughTransformer(TransformerBase):
 
 
 class CodeBlockTransformer(TransformerBase):
-    """Transform code blocks from RedNotebook syntax to Markdown syntax."""
+    """Transform code blocks from RedNotebook-syntax to Markdown-syntax."""
 
     def transformer_generator(self):
-        """Transforms codeblocks into markdown syntax."""
+        """Transforms codeblocks into markdown-syntax."""
         line = ''
         while True:
             line = yield _sub_balanced_delims('``', '`', line,
@@ -80,7 +80,7 @@ class CodeBlockTransformer(TransformerBase):
 
 
 class HeaderTransformer(TransformerBase):
-    """Transform headers from RedNotebook syntax to Markdown syntax."""
+    """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
     def __init__(self, init_level=0):
         self._init_level = init_level
@@ -109,10 +109,10 @@ class HeaderTransformer(TransformerBase):
 
 
 class ListTransformer(TransformerBase):
-    """Transform lists from RedNotebook syntax to Markdown syntax."""
+    """Transform lists from RedNotebook-syntax to Markdown-syntax."""
 
     def transformer_generator(self):
-        """Transforms ordered and unordered lists into markdown syntax."""
+        """Transforms ordered and unordered lists into markdown-syntax."""
         line = ''
         ordered_list_history = defaultlist.defaultlist(lambda: 1)
         sequential_empty_lines = 0
@@ -141,7 +141,7 @@ class ListTransformer(TransformerBase):
 
 
 class InnerUnderscoreEscaper(TransformerBase):
-    """Transform underscores from RedNotebook syntax to Markdown syntax."""
+    """Transform underscores from RedNotebook-syntax to Markdown-syntax."""
 
     def transformer_generator(self):
         """Transforms underscores which need to be escaped."""
@@ -165,8 +165,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, data_op=str, **kwargs):
         sub_start = sub_end = sub
     delims = _filter_matches(delim_pattern, string, **kwargs)
     balanced_delims = list(zip(delims, delims))
-    # NOTE: Always do delim substitutions in reverse so the indices found remain
-    # valid.
+    # NOTE: Do substitutions in reverse so the match indices stay valid.
     for start_delim, end_delim in reversed(balanced_delims):
         start = string[:start_delim.start()]
         data = string[start_delim.end():end_delim.start()]
