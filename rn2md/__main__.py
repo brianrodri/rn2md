@@ -7,7 +7,7 @@ from . import transformers
 from . import util
 
 
-def fmt(lines):
+def _fmt(lines):
     """Transform given lines from Markdown syntax to RedNotebook syntax."""
     transformer_sequence = [
         transformers.InnerUnderscoreEscaper(),
@@ -33,7 +33,7 @@ def main():
     day_entries = storage.load_daily_entries(options.data_path)
     def _fmt_day_entry(date):
         """Returns the given date's entry in Markdown format."""
-        entry_lines = [fmt(l.rstrip()) for l in day_entries[date].split('\n')]
+        entry_lines = [_fmt(l.rstrip()) for l in day_entries[date].split('\n')]
         entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))  # Date header.
         return '\n'.join(entry_lines)
 
