@@ -64,7 +64,7 @@ class StrikethroughTransformer(TransformerBase):
         while True:
             line = yield (
                 line if set(line) == {'-'} else
-                _sub_balanced_delims('--', ['**OBSOLETE**(', ')'], line,
+                _sub_balanced_delims('--', ('**OBSOLETE**(', ')'), line,
                                      data_op=lambda d: d.rstrip('.?!')))
 
 
