@@ -1,4 +1,4 @@
-"""Test cases for the config rn2md.module."""
+"""Test cases for the rn2md.config module."""
 import os
 import unittest
 
