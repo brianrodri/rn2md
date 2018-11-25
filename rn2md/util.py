@@ -64,9 +64,9 @@ def strict_parse_date(date_str):
         parsed_date_weekday = _Weekdays(parsed_date.weekday()).name
         if date_str_weekday != parsed_date_weekday:
             raise ValueError(
-                f'weekday provided in {date_str!r} was not the same as the '
-                f'weekday parsed from it (actual: {parsed_date_weekday!r}, '
-                f'expected: {date_str_weekday!r})')
+                f'{date_str!r} does not have the same weekday as the date '
+                f'parsed from it. (expected: {date_str_weekday!r}, '
+                f'actual: {parsed_date_weekday!r})')
         return parsed_date
 
     fmt_without_dow = '%b %d, %Y'
@@ -77,8 +77,8 @@ def strict_parse_date(date_str):
     else:
         return parsed_date
 
-    raise ValueError(f'{date_str!r} did not match any of the expected formats: '
-                     f'[{fmt_with_dow!r}, {fmt_without_dow!r}]')
+    raise ValueError(f'{date_str!r} is not a valid format (expected formats: '
+                     f'[{fmt_with_dow!r}, {fmt_without_dow!r}])')
 
 
 def _get_week_days(date, workdays_only):

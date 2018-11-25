@@ -8,8 +8,24 @@ from rn2md import util
 
 
 class StrictParseDate(unittest.TestCase):
-    pass
 
+    def test_correct_weekday(self):
+        self.assertEqual(util.strict_parse_date('Fri Mar 23, 2018'),
+                         dt.date(2018, 3, 23))
+
+    def test_wrong_weekday(self):
+        with self.assertRaisesRegexp(ValueError,
+                                     'does not have the same weekday .* '
+                                     '\(expected: \'Sat\', actual: \'Fri\'\)'):
+            util.strict_parse_date('Sat Mar 23, 2018')
+
+    def test_without_weekday(self):
+        self.assertEqual(util.strict_parse_date('Mar 23, 2018'),
+                         dt.date(2018, 3, 23))
+
+    def test_wrong_format(self):
+        with self.assertRaisesRegexp(ValueError, r'not a valid format'):
+            util.strict_parse_date('2018-03-24')
 
 class ParseDatesTest(unittest.TestCase):
     """Tests for the rn2md.rn2md_util.parse_dates function."""
