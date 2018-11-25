@@ -1,4 +1,4 @@
-"""Test cases for the storage module."""
+"""Test cases for the rn2md.storage module."""
 import datetime as dt
 import os
 import unittest
