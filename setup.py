@@ -13,7 +13,7 @@ setup(
     author_email='brian@brianrodri.com',
     packages=find_packages(exclude=('tests',)),
     python_requires=">=3.6",
-    install_requires=open('requirements.txt').read().split('\n'),
+    install_requires=open('requirements.txt').read().split(),
     entry_points={
         'console_scripts': [
             'rn2md=rn2md.__main__:main',
