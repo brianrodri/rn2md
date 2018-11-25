@@ -23,7 +23,7 @@ class StrictParseDate(unittest.TestCase):
             util.strict_parse_date('Sat Mar 23, 2018')
 
     def test_without_weekday(self):
-        """Tests that date without weekday can be parsed."""
+        """Tests that date without weekday can still be parsed."""
         self.assertEqual(util.strict_parse_date('Mar 23, 2018'),
                          dt.date(2018, 3, 23))
 
