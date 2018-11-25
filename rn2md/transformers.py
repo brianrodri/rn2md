@@ -121,12 +121,13 @@ class ListTransformer(TransformerBase):
                 i = li_match.start(1)
                 # Always clear sub-items so they restart their numbering.
                 del ordered_list_history[i + 1:]
-                # Un-ordered lists do not use a different format in markdown.
                 if line[i] == '-':
-                    continue
-                # Ordered lists should change to their actual number.
-                line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
-                ordered_list_history[i] += 1
+                    # Un-ordered lists do not use different markdown format.
+                    pass
+                else:
+                    # Ordered lists should change to their actual number.
+                    line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
+                    ordered_list_history[i] += 1
             elif line.strip():
                 sequential_empty_lines = 0
                 ordered_list_history.clear()
