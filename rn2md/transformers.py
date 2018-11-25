@@ -111,7 +111,7 @@ class ListTransformer(TransformerBase):
 
     def transformer_generator(self):
         """Transforms ordered and unordered lists into markdown-syntax."""
-        line = ''
+        line = None
         ordered_list_history = defaultlist.defaultlist(lambda: 1)
         sequential_empty_lines = 0
         while True:
