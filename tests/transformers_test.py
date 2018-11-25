@@ -42,6 +42,16 @@ class LinkTransformerTest(unittest.TestCase):
                          '[sample text](go/somewhere)')
 
 
+class ImageTransformerTest(unittest.TestCase):
+    """Test transforming Rednotebook-style links to markdown-style."""
+
+    def test_transformation(self):
+        """Tests expected usage."""
+        transformer = transformers.ImageTransformer()
+        self.assertEqual(transformer.fmt('[""http://www.site.com/image.jpg""]'),
+                         '![](http://www.site.com/image.jpg)')
+
+
 class StrikethroughTransformerTest(unittest.TestCase):
     """Test transforming Rednotebook-style strikethroughs to markdown-style."""
 

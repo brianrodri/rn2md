@@ -55,6 +55,16 @@ class LinkTransformer(TransformerBase):
             line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
+class ImageTransformer(TransformerBase):
+    """Transform images from RedNotebook-syntax to Markdown-syntax."""
+
+    def transformer_generator(self):
+        """Transforms '[[""image url""]]' to '![](image url)'."""
+        line = ''
+        while True:
+            line = yield re.sub(r'\[""(.*?)""\]', r'![](\1)', line)
+
+
 class ItalicTransformer(TransformerBase):
     """Transform italics from RedNotebook-syntax to Markdown-syntax."""
 
