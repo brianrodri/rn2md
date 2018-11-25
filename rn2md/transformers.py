@@ -55,6 +55,11 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
 
 
 def _build_transformer(transformer_fun, *args, **kwargs):
+    """Construct the given transformer.
+
+    Transformers are implemented via generators. We call `next` once to prepare
+    them for usage.
+    """
     transformer = transformer_fun(*args, **kwargs)
     _ = next(transformer, None)
     return transformer
