@@ -1,8 +1,13 @@
 """Arbitrary utility functions for the rn2md tool."""
+import enum
 import datetime as dt
 
 import isoweek
 import parsedatetime as pdt
+
+
+_Weekdays = (  # pylint: disable=invalid-name
+    enum.Enum('_Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0))
 
 
 def parse_dates(date_str, workdays_only=False):
@@ -25,10 +30,55 @@ def parse_dates(date_str, workdays_only=False):
     # by DD-MM-YYYY anyway, HH-MM-SS gets ignored.
     parsed_time_struct, result = pdt.Calendar().parse(date_str, noon_tuple)
     if not result:
-        raise ValueError('%s could not be parsed into a date' % date_str)
+        raise ValueError(f'{date_str} could not be parsed into a date')
     parsed_date = dt.datetime(*parsed_time_struct[:6]).date()
     get_days = _get_week_days if 'week' in date_str else _get_single_day
     return get_days(parsed_date, workdays_only)
+
+
+def strict_parse_date(date_str):
+    """Parses date with strict requirements on the output.
+
+    Asserts that when a weekday ('%a') is provided, the parsed date's weekday
+    matches it. Normally, mismatches are ignored by date parsers.
+
+    Args:
+        date_str: Format must be: '%a %b %d, %Y' or '%b %d, %Y'.
+
+    Returns:
+        The parsed datetime.date instance.
+
+    Raises:
+        ValueError:
+            - none of the formats could parse date_str
+            - weekday provided in date_str was not the same as the weekday
+              parsed from it
+    """
+    fmt_with_dow = '%a %b %d, %Y'
+    try:
+        parsed_date = dt.datetime.strptime(date_str, fmt_with_dow).date()
+    except ValueError:
+        pass
+    else:
+        date_str_weekday = date_str[:3].capitalize()
+        parsed_date_weekday = _Weekdays(parsed_date.weekday()).name
+        if date_str_weekday != parsed_date_weekday:
+            raise ValueError(
+                f'weekday provided in {date_str!r} was not the same as the '
+                f'weekday parsed from it (actual: {parsed_date_weekday!r}, '
+                f'expected: {date_str_weekday!r})')
+        return parsed_date
+
+    fmt_without_dow = '%b %d, %Y'
+    try:
+        parsed_date = dt.datetime.strptime(date_str, fmt_without_dow).date()
+    except ValueError:
+        pass
+    else:
+        return parsed_date
+
+    raise ValueError(f'{date_str!r} did not match any of the expected formats: '
+                     f'[{fmt_with_dow!r}, {fmt_without_dow!r}]')
 
 
 def _get_week_days(date, workdays_only):
