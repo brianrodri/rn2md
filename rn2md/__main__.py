@@ -7,38 +7,35 @@ from . import transformers
 from . import util
 
 
-def _fmt(lines):
-    """Transform given lines from Markdown syntax to RedNotebook syntax."""
-    transformer_sequence = [
-        transformers.InnerUnderscoreEscaper(),
-        transformers.LinkTransformer(),
-        transformers.HeaderTransformer(init_level=1),
-        transformers.CodeBlockTransformer(),
-        transformers.ItalicTransformer(),
-        transformers.StrikethroughTransformer(),
-        transformers.ListTransformer(),
-    ]
-    for line in lines:
-        line = line.rstrip()
-        for transformer in transformer_sequence:
-            line = transformer.fmt(line)
-        yield line
-
-
 def main():
     """Prints RedNotebook entries in markdown syntax."""
     options, remaining_argv = config.build_config_options(sys.argv)
     date_arg = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(date_arg, workdays_only=options.workdays_only)
-
     day_entries = storage.load_daily_entries(options.data_path)
-    def _fmt_day_entry(date):
-        """Returns the given date's entry in Markdown format."""
-        entry_lines = list(_fmt(day_entries[date].split('\n')))
-        entry_lines.insert(0, date.strftime('# %a %b %d, %Y'))  # Date header.
-        return '\n'.join(entry_lines)
 
-    print('\n\n\n'.join(_fmt_day_entry(d) for d in dates if d in day_entries))
+    def entry_to_markdown(date):
+        """Returns the given date's RedNotebook entry in Markdown format."""
+        sequenced_transformers = [
+            transformers.InnerUnderscoreEscaper(),
+            transformers.LinkTransformer(),
+            transformers.HeaderTransformer(init_level=1),
+            transformers.CodeBlockTransformer(),
+            transformers.ItalicTransformer(),
+            transformers.StrikethroughTransformer(),
+            transformers.ListTransformer(),
+        ]
+        rn_lines = day_entries[date].split('\n') if date in day_entries else []
+        # Start with a date header to help visually separate entries.
+        md_lines = [date.strftime('# %a %b %d, %Y')]
+        for rn_line in rn_lines:
+            md_line = rn_line.rstrip()
+            for transformer in sequenced_transformers:
+                md_line = transformer.fmt(md_line)
+            md_lines.append(md_line)
+        return '\n'.join(md_lines)
+
+    print('\n\n\n'.join(entry_to_markdown(d) for d in dates))
 
 
 if __name__ == '__main__':
