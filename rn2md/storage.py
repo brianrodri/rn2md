@@ -5,13 +5,13 @@ import os
 import yaml
 
 
-def load_daily_entries(data_path):
+def load_rednotebook_entries(data_path):
     """Extracts the Rednotebook-styled data found in the given path."""
-    daily_entries = {}
+    rednotebook = {}
     for month_date, month_path in _load_month_paths(data_path):
         with open(month_path, encoding='utf-8') as month_file:
-            daily_entries.update(_load_daily_entries(month_date, month_file))
-    return daily_entries
+            rednotebook.update(_load_daily_entries(month_date, month_file))
+    return rednotebook
 
 
 def _load_month_paths(data_path):

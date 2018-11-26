@@ -12,7 +12,7 @@ def main():
     options, remaining_argv = config.build_config_options(sys.argv)
     date_arg = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(date_arg, workdays_only=options.workdays_only)
-    rednotebook = storage.load_daily_entries(options.data_path)
+    rednotebook = storage.load_rednotebook_entries(options.data_path)
 
     def entry_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""

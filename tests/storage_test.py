@@ -10,7 +10,7 @@ from rn2md import storage
 
 
 class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
-    """Test case for the load_daily_entries function."""
+    """Test case for the load_rednotebook_entries function."""
 
     def _create_month_test_file(self, month_filename, daily_entries):
         month_file_path = os.path.join('/data', month_filename)
@@ -23,12 +23,12 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
 
     def test_gathering_data(self):
-        """Tests the basic functionality expected from load_daily_entries."""
+        """Tests basic functionality expected from load_rednotebook_entries."""
         self._create_month_test_file('1993-01.txt', {17: '🎂'})
         self._create_month_test_file('2017-12.txt', {25: '🎅'})
         self._create_month_test_file('2018-03.txt', {1: 'data', 24: 'info'})
 
-        self.assertEqual(storage.load_daily_entries('/data'), {
+        self.assertEqual(storage.load_rednotebook_entries('/data'), {
             dt.date(1993, 1, 17): '🎂',
             dt.date(2017, 12, 25): '🎅',
             dt.date(2018, 3, 1): 'data',
@@ -40,7 +40,7 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
         self._create_month_test_file('2018-01.txt', {17: 'from valid file'})
         self._create_month_test_file('2018-MAR.txt', {24: 'from invalid file'})
 
-        self.assertEqual(storage.load_daily_entries('/data'), {
+        self.assertEqual(storage.load_rednotebook_entries('/data'), {
             dt.date(2018, 1, 17): 'from valid file',
         })
 
@@ -48,7 +48,7 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
         """Tests that only entries with data are part of the result."""
         self._create_month_test_file('2018-03.txt', {12: '', 24: 'non-empty'})
 
-        self.assertEqual(storage.load_daily_entries('/data'), {
+        self.assertEqual(storage.load_rednotebook_entries('/data'), {
             dt.date(2018, 3, 24): 'non-empty',
         })
 
@@ -57,7 +57,7 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
         self.fs.create_file(
             '2018-03.txt', contents='I AM }NOT{ YAML!', encoding='utf-8')
 
-        self.assertFalse(storage.load_daily_entries('/data'))
+        self.assertFalse(storage.load_rednotebook_entries('/data'))
 
     def test_non_utf8_data_is_ignored(self):
         """Tests that files without utf8-encoding are ignored."""
@@ -65,7 +65,7 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
             '2018-03.txt', contents=yaml.dump({24: {'text': '😂'}}),
             encoding='ascii')
 
-        self.assertFalse(storage.load_daily_entries('/data'))
+        self.assertFalse(storage.load_rednotebook_entries('/data'))
 
 
 if __name__ == '__main__':
