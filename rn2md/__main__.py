@@ -12,7 +12,7 @@ def main():
     options, remaining_argv = config.build_config_options(sys.argv)
     date_arg = ' '.join(remaining_argv) or 'today'
     dates = util.parse_dates(date_arg, workdays_only=options.workdays_only)
-    day_entries = storage.load_daily_entries(options.data_path)
+    rednotebook = storage.load_daily_entries(options.data_path)
 
     def entry_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""
@@ -25,7 +25,7 @@ def main():
             transformers.StrikethroughTransformer(),
             transformers.ListTransformer(),
         ]
-        rn_lines = day_entries[date].split('\n') if date in day_entries else []
+        rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
         # Start with a date header to help visually separate entries.
         md_lines = [date.strftime('# %a %b %d, %Y')]
         for rn_line in rn_lines:
