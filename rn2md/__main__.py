@@ -22,7 +22,7 @@ def _fmt(lines):
         line = line.rstrip()
         for transformer in transformer_sequence:
             line = transformer.fmt(line)
-        yield str(line)
+        yield line
 
 
 def main():
