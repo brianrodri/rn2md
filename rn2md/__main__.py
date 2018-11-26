@@ -14,9 +14,11 @@ def main():
     dates = util.parse_dates(date_arg, workdays_only=options.workdays_only)
     rednotebook = storage.load_rednotebook_entries(options.data_path)
 
-    def entry_to_markdown(date):
+    def rednotebook_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""
-        sequenced_transformers = [
+        rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
+        md_lines = []
+        rn2md_transformers = [
             transformers.InnerUnderscoreEscaper(),
             transformers.LinkTransformer(),
             transformers.HeaderTransformer(init_level=1),
@@ -25,17 +27,18 @@ def main():
             transformers.StrikethroughTransformer(),
             transformers.ListTransformer(),
         ]
-        rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
-        # Start with a date header to help visually separate entries.
-        md_lines = [date.strftime('# %a %b %d, %Y')]
+
         for rn_line in rn_lines:
             md_line = rn_line.rstrip()
-            for transformer in sequenced_transformers:
-                md_line = transformer.fmt(md_line)
+            for rn2md_transformer in rn2md_transformers:
+                md_line = rn2md_transformer.fmt(md_line)
             md_lines.append(md_line)
+
+        # Prepend entry with a date header to help distinguish it from others.
+        md_lines.insert(0, date.strftime('# %a %b %d, %Y'))
         return '\n'.join(md_lines)
 
-    print('\n\n\n'.join(entry_to_markdown(d) for d in dates))
+    print('\n\n\n'.join(rednotebook_to_markdown(d) for d in dates))
 
 
 if __name__ == '__main__':
