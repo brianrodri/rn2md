@@ -34,7 +34,8 @@ def main():
                 md_line = rn2md_transformer.fmt(md_line)
             md_lines.append(md_line)
 
-        # Prepend entry with a date header to help distinguish it from others.
+        # Prepend entry with a markdown-formatted date header to help
+        # distinguish it from other entries.
         md_lines.insert(0, date.strftime('# %a %b %d, %Y'))
         return '\n'.join(md_lines)
 
