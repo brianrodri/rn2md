@@ -101,13 +101,13 @@ class CodeBlockTransformer(TransformerBase):
 class HeaderTransformer(TransformerBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
-    def __init__(self, init_level=0):
+    def __init__(self, padding=0):
         """Constructor.
 
         Args:
-            init_level: additional levels to add to all headers.
+            padding: additional levels to add to all headers.
         """
-        self._init_level = init_level
+        self._padding = padding
         super().__init__()
 
     def transformer_generator(self):
@@ -122,7 +122,7 @@ class HeaderTransformer(TransformerBase):
             if not end_delim or end_delim.group() != start_delim.group():
                 continue
             lvl = len(start_delim.group())
-            line = f'{"#" * (self._init_level + lvl)} {line[lvl:-lvl].lstrip()}'
+            line = f'{"#" * (self._padding + lvl)} {line[lvl:-lvl].lstrip()}'
 
 
 class ListTransformer(TransformerBase):

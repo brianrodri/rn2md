@@ -104,7 +104,7 @@ class HeaderTransformerTest(unittest.TestCase):
 
     def test_base_level_is_respected(self):
         """Tests changes to init level."""
-        transformer = transformers.HeaderTransformer(init_level=2)
+        transformer = transformers.HeaderTransformer(padding=2)
         self.assertEqual(transformer.fmt('===Only 3==='), '##### Only 3')
 
     def test_inner_markers_are_ignored(self):

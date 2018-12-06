@@ -21,7 +21,7 @@ def main():
         rn2md_transformers = [
             transformers.InnerUnderscoreEscaper(),
             transformers.LinkTransformer(),
-            transformers.HeaderTransformer(init_level=1),
+            transformers.HeaderTransformer(padding=1),
             transformers.CodeBlockTransformer(),
             transformers.ItalicTransformer(),
             transformers.StrikethroughTransformer(),
