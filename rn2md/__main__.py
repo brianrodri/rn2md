@@ -1,4 +1,5 @@
 """Entry point for rn2md tool."""
+import collections
 import sys
 
 from . import config
@@ -17,7 +18,7 @@ def main():
     def rednotebook_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""
         rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
-        md_lines = []
+        md_lines = collections.deque()
         rn2md_transformers = [
             transformers.InnerUnderscoreEscaper(),
             transformers.LinkTransformer(),
@@ -36,7 +37,7 @@ def main():
 
         # Prepend entry with a markdown-formatted date header to help
         # distinguish it from other entries.
-        md_lines.insert(0, date.strftime('# %a %b %d, %Y'))
+        md_lines.appendleft(date.strftime('# %a %b %d, %Y'))
         return '\n'.join(md_lines)
 
     print('\n\n\n'.join(rednotebook_to_markdown(d) for d in dates))
