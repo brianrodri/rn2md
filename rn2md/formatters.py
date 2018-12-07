@@ -53,7 +53,7 @@ class RednotebookToMarkdownFormatter(FormatterBase):
         super().__init__()
 
     def format_generator(self):
-        sequenced_formatters = [
+        ordered_formatters = [
             InnerUnderscoreEscaper(),
             LinkFormatter(),
             HeaderFormatter(padding=self._header_padding),
@@ -65,7 +65,7 @@ class RednotebookToMarkdownFormatter(FormatterBase):
         line = ''
         while True:
             line = yield line
-            for formatter in sequenced_formatters:
+            for formatter in ordered_formatters:
                 line = formatter.fmt(line)
 
 
