@@ -45,7 +45,7 @@ class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
 
     @classmethod
-    def format_generator(self, header_padding=0):
+    def format_generator(cls, header_padding=0):
         ordered_formatters = [
             InnerUnderscoreEscaper(),
             LinkFormatter(),
@@ -124,7 +124,7 @@ class HeaderFormatter(FormatterBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(self, padding=0):
+    def format_generator(cls, padding=0):
         """Transforms '=TEXT=' into '# TEXT'."""
         line = ''
         while True:
