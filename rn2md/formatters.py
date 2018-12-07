@@ -225,7 +225,12 @@ def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
 
 
 def _filter_matches(pattern, string, when=None):
-    """Returns iterable of matches that do not pass all predicates of `when`."""
+    """Returns iterable of matches that pass all of the predicates in `when`.
+
+    If no predicates are provided, they default to:
+        - Match must not appear in link.
+        - Match must not appear in backticks.
+    """
     if when is None:
         when = (_not_in_link, _not_in_backticks)
     return (m for m in re.finditer(pattern, string) if all(p(m) for p in when))
