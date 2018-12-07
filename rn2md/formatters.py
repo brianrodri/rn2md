@@ -119,7 +119,7 @@ class CodeBlockFormatter(FormatterBase):
         line = ''
         while True:
             line = yield _sub_balanced_delims('``', '`', line,
-                                              preds=[_not_in_link])
+                                              when=[_not_in_link])
 
 
 class HeaderFormatter(FormatterBase):
@@ -224,10 +224,10 @@ def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
     return string
 
 
-def _filter_matches(pattern, string, preds=None):
-    if preds is None:
-        preds = (_not_in_link, _not_in_backticks)
-    return (m for m in re.finditer(pattern, string) if all(p(m) for p in preds))
+def _filter_matches(pattern, string, when=None):
+    if when is None:
+        when = (_not_in_link, _not_in_backticks)
+    return (m for m in re.finditer(pattern, string) if all(p(m) for p in when))
 
 
 def _not_in_link(match):
