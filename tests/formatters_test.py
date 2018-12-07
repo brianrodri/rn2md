@@ -7,7 +7,7 @@ from rn2md import formatters
 class ItalicFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style italics to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Test expected usage"""
         formatter = formatters.ItalicFormatter()
         self.assertEqual(formatter.fmt('Text with //italicized// content.'),
@@ -35,7 +35,7 @@ class ItalicFormatterTest(unittest.TestCase):
 class LinkFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style links to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.LinkFormatter()
         self.assertEqual(formatter.fmt('[sample text ""go/somewhere""]'),
@@ -45,7 +45,7 @@ class LinkFormatterTest(unittest.TestCase):
 class ImageFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style links to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.ImageFormatter()
         self.assertEqual(formatter.fmt('[""http://www.site.com/image.jpg""]'),
@@ -55,7 +55,7 @@ class ImageFormatterTest(unittest.TestCase):
 class StrikethroughFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style strikethroughs to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.StrikethroughFormatter()
         self.assertEqual(formatter.fmt('--text--'), '~text~')
@@ -95,7 +95,7 @@ class StrikethroughFormatterTest(unittest.TestCase):
 class HeaderFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style header to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.HeaderFormatter()
         self.assertEqual(formatter.fmt('=Level One='), '# Level One')
@@ -230,7 +230,7 @@ class ListFormatterTest(unittest.TestCase):
 class InnerUnderscoreEscaperTest(unittest.TestCase):
     """Test formatting Rednotebook-style underscores to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.InnerUnderscoreEscaper()
         self.assertEqual(formatter.fmt('underscore_delimited_word'),
@@ -259,7 +259,7 @@ class InnerUnderscoreEscaperTest(unittest.TestCase):
 class CodeBlockFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style code blocks to markdown-style."""
 
-    def test_formatation(self):
+    def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.CodeBlockFormatter()
         self.assertEqual(formatter.fmt('``code encoded stuff``'),
