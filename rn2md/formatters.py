@@ -40,7 +40,7 @@ class FormatterBase():
         """Returns the given RedNotebook line in Markdown format."""
         return self._formatter.send(line)
 
-    def format_generator(self, *args, **kwargs):
+    def format_generator(self):
         """Generator for subclasses to format RedNotebook text as Markdown."""
         raise NotImplementedError
 
