@@ -32,7 +32,7 @@ class FormatterBase():
     """
 
     def __init__(self, *args, **kwargs):
-        self._formatter = self.__class__.format_generator(*args, **kwargs)
+        self._formatter = self.format_generator(*args, **kwargs)
         # Initialize generator coroutine by calling `next` once on it.
         _ = next(self._formatter, None)
 
@@ -46,6 +46,7 @@ class RednotebookToMarkdownFormatter(FormatterBase):
 
     @classmethod
     def format_generator(cls, header_padding=0):
+        """Sequences all other formatters to create markdown-formatted lines."""
         ordered_formatters = [
             InnerUnderscoreEscaper(),
             LinkFormatter(),
