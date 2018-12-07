@@ -62,11 +62,11 @@ class RednotebookToMarkdownFormatter(FormatterBase):
             StrikethroughFormatter(),
             ListFormatter(),
         ]
-        line = ''
+        line = yield None
         while True:
-            line = yield line
             for formatter in ordered_formatters:
                 line = formatter.fmt(line)
+            line = yield line
 
 
 class LinkFormatter(FormatterBase):
