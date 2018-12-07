@@ -6,6 +6,7 @@ from rn2md import formatters
 
 class RednotebookToMarkdownFormatterTest(unittest.TestCase):
     """Test formatting RedNotebook-style data to markdown-style."""
+
     def test_constructor(self):
         """Basic test to ensure construction works."""
         with self.subTest():
