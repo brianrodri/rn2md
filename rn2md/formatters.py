@@ -32,7 +32,7 @@ class FormatterBase():
     """
 
     def __init__(self, *args, **kwargs):
-        self._formatter = self.format_generator(*args, **kwargs)
+        self._formatter = self.__class__.format_generator(*args, **kwargs)
         # Initialize generator coroutine by calling `next` once on it.
         _ = next(self._formatter, None)
 
