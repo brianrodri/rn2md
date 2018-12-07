@@ -225,6 +225,7 @@ def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
 
 
 def _filter_matches(pattern, string, when=None):
+    """Returns iterable of matches that do not fail the predicates of `when`."""
     if when is None:
         when = (_not_in_link, _not_in_backticks)
     return (m for m in re.finditer(pattern, string) if all(p(m) for p in when))
