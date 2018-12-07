@@ -119,7 +119,7 @@ class CodeBlockFormatter(FormatterBase):
         line = ''
         while True:
             line = yield _sub_balanced_delims('``', '`', line,
-                                              when=[_not_in_link])
+                                              preds=[_not_in_link])
 
 
 class HeaderFormatter(FormatterBase):
@@ -224,16 +224,16 @@ def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
     return string
 
 
-def _filter_matches(pattern, string, when=None):
-    """Returns iterable of matches that pass all of the predicates in `when`.
+def _filter_matches(pattern, string, preds=None):
+    """Returns iterable of matches that pass all of the predicates in `preds`.
 
     If no predicates are provided, they default to:
         - Match must not appear in link.
         - Match must not appear in backticks.
     """
-    if when is None:
-        when = (_not_in_link, _not_in_backticks)
-    return (m for m in re.finditer(pattern, string) if all(p(m) for p in when))
+    if preds is None:
+        preds = (_not_in_link, _not_in_backticks)
+    return (m for m in re.finditer(pattern, string) if all(p(m) for p in preds))
 
 
 def _not_in_link(match):
