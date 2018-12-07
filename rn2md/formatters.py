@@ -46,7 +46,7 @@ class FormatterBase():
 
 
 class RednotebookToMarkdownFormatter(FormatterBase):
-    """Master formatter for formatting RedNotebook entry in Markdown format."""
+    """Master formatter for returning RedNotebook lines in Markdown format."""
 
     def format_generator(self):
         sequenced_formatters = [

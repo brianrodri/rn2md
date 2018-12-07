@@ -16,8 +16,8 @@ def main():
     rednotebook = storage.load_rednotebook_entries(options.data_path)
     def rednotebook_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""
-        formatter = formatters.RednotebookToMarkdownFormatter()
         rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
+        formatter = formatters.RednotebookToMarkdownFormatter()
         md_lines = collections.deque(formatter.fmt(l) for l in rn_lines)
         # Prepend entry with a markdown-formatted date header to help
         # distinguish it from other entries.
