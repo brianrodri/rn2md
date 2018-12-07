@@ -48,15 +48,19 @@ class FormatterBase():
 class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
 
+    def __init__(self, header_padding=0):
+        super().__init__()
+        self._header_padding = header_padding
+
     def format_generator(self):
         sequenced_formatters = [
-            formatters.InnerUnderscoreEscaper(),
-            formatters.LinkFormatter(),
-            formatters.HeaderFormatter(padding=1),
-            formatters.CodeBlockFormatter(),
-            formatters.ItalicFormatter(),
-            formatters.StrikethroughFormatter(),
-            formatters.ListFormatter(),
+            InnerUnderscoreEscaper(),
+            LinkFormatter(),
+            HeaderFormatter(padding=self._header_padding),
+            CodeBlockFormatter(),
+            ItalicFormatter(),
+            StrikethroughFormatter(),
+            ListFormatter(),
         ]
         line = ''
         while True:
@@ -127,8 +131,8 @@ class HeaderFormatter(FormatterBase):
         Args:
             padding: additional levels to add to all headers.
         """
-        self._padding = padding
         super().__init__()
+        self._padding = padding
 
     def format_generator(self):
         """Transforms '=TEXT=' into '# TEXT'."""
