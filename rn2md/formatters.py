@@ -40,6 +40,10 @@ class FormatterBase():  # pylint-disable: too-few-public-methods
         """Returns the given RedNotebook line in Markdown format."""
         return self._formatter.send(line)
 
+    @classmethod
+    def format_generator(cls, *unused_args, **unused_kwargs):
+        raise NotImplementedError
+
 
 class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
