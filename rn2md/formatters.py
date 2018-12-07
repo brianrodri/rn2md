@@ -1,6 +1,6 @@
 """Helpers to tranform data in RedNotebook-syntax to Markdown-syntax.
 
-Here is a summary of the currently implemented transformers:
+Here is a summary of the currently implemented formatters:
 
     RedNotebook                       Markdown
     ===========                       ========
@@ -18,67 +18,67 @@ import re
 import defaultlist
 
 
-class TransformerBase():
-    """Handles boilerplate required by all transformers.
+class FormatterBase():
+    """Handles boilerplate required by all formatters.
 
-    Transformers are stateful objects. Pass in sequential RedNotebook-formatted
+    Formatters are stateful objects. Pass in sequential RedNotebook-formatted
     lines to the fmt method one-by-one to recreate the text in Markdown syntax.
 
     For example:
         >>> rn_lines = ['//examples// are', ' + --not--', ' + cool!']
-        >>> t = MasterTransformer()
+        >>> t = MasterFormatter()
         >>> md_lines = [t.fmt(line) for line in rn_lines]
         ... ['_examples_ are', ' 1. ~not~', ' 2. cool!']
     """
 
     def __init__(self):
-        self._transformer = self.transformer_generator()
+        self._formatter = self.formatter_generator()
         # Initialize generator coroutine by calling `next` once on it.
-        _ = next(self._transformer, None)
+        _ = next(self._formatter, None)
 
     def fmt(self, line):
         """Returns the given RedNotebook line in Markdown format."""
-        return self._transformer.send(line)
+        return self._formatter.send(line)
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Generator for subclasses to format RedNotebook text as Markdown."""
         raise NotImplementedError
 
 
-class LinkTransformer(TransformerBase):
+class LinkFormatter(FormatterBase):
     """Transform links from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms '[[text ""url""]]' to '[text](url)'."""
         line = ''
         while True:
             line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
-class ImageTransformer(TransformerBase):
+class ImageFormatter(FormatterBase):
     """Transform images from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms '[[""image url""]]' to '![](image url)'."""
         line = ''
         while True:
             line = yield re.sub(r'\[""(.*?)""\]', r'![](\1)', line)
 
 
-class ItalicTransformer(TransformerBase):
+class ItalicFormatter(FormatterBase):
     """Transform italics from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms '//text//' to '_text_'."""
         line = ''
         while True:
             line = yield _sub_balanced_delims('//', '_', line)
 
 
-class StrikethroughTransformer(TransformerBase):
+class StrikethroughFormatter(FormatterBase):
     """Transform strikethroughs from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms '--text--' to '**OBSOLETE**(text)'."""
         line = ''
         while True:
@@ -87,10 +87,10 @@ class StrikethroughTransformer(TransformerBase):
                 _sub_balanced_delims('--', '~', line))
 
 
-class CodeBlockTransformer(TransformerBase):
+class CodeBlockFormatter(FormatterBase):
     """Transform code blocks from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms codeblocks into markdown-syntax."""
         line = ''
         while True:
@@ -98,7 +98,7 @@ class CodeBlockTransformer(TransformerBase):
                                               preds=[_not_in_link])
 
 
-class HeaderTransformer(TransformerBase):
+class HeaderFormatter(FormatterBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
     def __init__(self, padding=0):
@@ -110,7 +110,7 @@ class HeaderTransformer(TransformerBase):
         self._padding = padding
         super().__init__()
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms '=TEXT=' into '# TEXT'."""
         line = ''
         while True:
@@ -125,10 +125,10 @@ class HeaderTransformer(TransformerBase):
             line = f'{"#" * (self._padding + lvl)} {line[lvl:-lvl].lstrip()}'
 
 
-class ListTransformer(TransformerBase):
+class ListFormatter(FormatterBase):
     """Transform lists from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms ordered and unordered lists into markdown-syntax."""
         line = None
         ordered_list_history = defaultlist.defaultlist(lambda: 1)
@@ -156,10 +156,10 @@ class ListTransformer(TransformerBase):
                     ordered_list_history.clear()
 
 
-class InnerUnderscoreEscaper(TransformerBase):
+class InnerUnderscoreEscaper(FormatterBase):
     """Transform underscores from RedNotebook-syntax to Markdown-syntax."""
 
-    def transformer_generator(self):
+    def formatter_generator(self):
         """Transforms underscores which need to be escaped."""
         line = ''
         while True:

@@ -3,8 +3,8 @@ import collections
 import sys
 
 from . import config
+from . import formatters
 from . import storage
-from . import transformers
 from . import util
 
 
@@ -18,19 +18,19 @@ def main():
         """Returns the given date's RedNotebook entry in Markdown format."""
         rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
         md_lines = collections.deque()
-        rn2md_transformers = [
-            transformers.InnerUnderscoreEscaper(),
-            transformers.LinkTransformer(),
-            transformers.HeaderTransformer(padding=1),
-            transformers.CodeBlockTransformer(),
-            transformers.ItalicTransformer(),
-            transformers.StrikethroughTransformer(),
-            transformers.ListTransformer(),
+        rn2md_formatters = [
+            formatters.InnerUnderscoreEscaper(),
+            formatters.LinkTransformer(),
+            formatters.HeaderTransformer(padding=1),
+            formatters.CodeBlockTransformer(),
+            formatters.ItalicTransformer(),
+            formatters.StrikethroughTransformer(),
+            formatters.ListTransformer(),
         ]
         for line in rn_lines:
             line = line.rstrip()
-            for rn2md_transformer in rn2md_transformers:
-                line = rn2md_transformer.fmt(line)
+            for formatter in rn2md_formatters:
+                line = formatter.fmt(line)
             md_lines.append(line)
         # Prepend entry with a markdown-formatted date header to help
         # distinguish it from other entries.
