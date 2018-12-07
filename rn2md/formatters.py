@@ -31,8 +31,8 @@ class FormatterBase():
         ... ['_examples_ are', ' 1. ~not~', ' 2. cool!']
     """
 
-    def __init__(self):
-        self._formatter = self.format_generator()
+    def __init__(self, *args, **kwargs):
+        self._formatter = self.format_generator(*args, **kwargs)
         # Initialize generator coroutine by calling `next` once on it.
         _ = next(self._formatter, None)
 
@@ -40,7 +40,7 @@ class FormatterBase():
         """Returns the given RedNotebook line in Markdown format."""
         return self._formatter.send(line)
 
-    def format_generator(self):
+    def format_generator(self, *args, **kwargs):
         """Generator for subclasses to format RedNotebook text as Markdown."""
         raise NotImplementedError
 
@@ -48,15 +48,11 @@ class FormatterBase():
 class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
 
-    def __init__(self, header_padding=0):
-        self._header_padding = header_padding
-        super().__init__()
-
-    def format_generator(self):
+    def format_generator(self, header_padding=0):
         ordered_formatters = [
             InnerUnderscoreEscaper(),
             LinkFormatter(),
-            HeaderFormatter(padding=self._header_padding),
+            HeaderFormatter(padding=header_padding),
             CodeBlockFormatter(),
             ItalicFormatter(),
             StrikethroughFormatter(),
@@ -125,16 +121,7 @@ class CodeBlockFormatter(FormatterBase):
 class HeaderFormatter(FormatterBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
-    def __init__(self, padding=0):
-        """Constructor.
-
-        Args:
-            padding: additional levels to add to all headers.
-        """
-        super().__init__()
-        self._padding = padding
-
-    def format_generator(self):
+    def format_generator(self, padding=0):
         """Transforms '=TEXT=' into '# TEXT'."""
         line = ''
         while True:
@@ -146,7 +133,7 @@ class HeaderFormatter(FormatterBase):
             if not end_delim or end_delim.group() != start_delim.group():
                 continue
             lvl = len(start_delim.group())
-            line = f'{"#" * (self._padding + lvl)} {line[lvl:-lvl].lstrip()}'
+            line = f'{"#" * (padding + lvl)} {line[lvl:-lvl].lstrip()}'
 
 
 class ListFormatter(FormatterBase):
