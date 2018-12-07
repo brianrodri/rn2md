@@ -27,11 +27,11 @@ def main():
             transformers.StrikethroughTransformer(),
             transformers.ListTransformer(),
         ]
-        for rn_line in rn_lines:
-            md_line = rn_line.rstrip()
+        for line in rn_lines:
+            line = line.rstrip()
             for rn2md_transformer in rn2md_transformers:
-                md_line = rn2md_transformer.fmt(md_line)
-            md_lines.append(md_line)
+                line = rn2md_transformer.fmt(line)
+            md_lines.append(line)
         # Prepend entry with a markdown-formatted date header to help
         # distinguish it from other entries.
         md_lines.appendleft(date.strftime('# %a %b %d, %Y'))
