@@ -49,8 +49,8 @@ class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
 
     def __init__(self, header_padding=0):
-        super().__init__()
         self._header_padding = header_padding
+        super().__init__()
 
     def format_generator(self):
         sequenced_formatters = [

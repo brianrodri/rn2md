@@ -4,6 +4,12 @@ import unittest
 from rn2md import formatters
 
 
+class RednotebookToMarkdownFormatterTest(unittest.TestCase):
+    """Test formatting RedNotebook-style data to markdown-style."""
+    def test_constructor(self):
+        _ = formatters.RednotebookToMarkdownFormatter()
+
+
 class ItalicFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style italics to markdown-style."""
 
