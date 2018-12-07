@@ -42,6 +42,7 @@ class FormatterBase():  # pylint-disable: too-few-public-methods
 
     @classmethod
     def format_generator(cls, *unused_args, **unused_kwargs):
+        """Target method to override for subclasses which format rn lines."""
         raise NotImplementedError
 
 
