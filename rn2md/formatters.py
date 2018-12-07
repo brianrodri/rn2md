@@ -45,7 +45,7 @@ class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **kwargs):
         """Sequences all other formatters to create markdown-formatted lines."""
         ordered_formatters = [
             InnerUnderscoreEscaper(),
@@ -67,7 +67,7 @@ class LinkFormatter(FormatterBase):
     """Transform links from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms '[[text ""url""]]' to '[text](url)'."""
         line = ''
         while True:
@@ -78,7 +78,7 @@ class ImageFormatter(FormatterBase):
     """Transform images from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms '[[""image url""]]' to '![](image url)'."""
         line = ''
         while True:
@@ -89,7 +89,7 @@ class ItalicFormatter(FormatterBase):
     """Transform italics from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms '//text//' to '_text_'."""
         line = ''
         while True:
@@ -100,7 +100,7 @@ class StrikethroughFormatter(FormatterBase):
     """Transform strikethroughs from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms '--text--' to '**OBSOLETE**(text)'."""
         line = ''
         while True:
@@ -113,7 +113,7 @@ class CodeBlockFormatter(FormatterBase):
     """Transform code blocks from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms codeblocks into markdown-syntax."""
         line = ''
         while True:
@@ -125,7 +125,7 @@ class HeaderFormatter(FormatterBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **kwargs):
         """Transforms '=TEXT=' into '# TEXT'."""
         padding = kwargs.pop('padding', 0)
         line = ''
@@ -145,7 +145,7 @@ class ListFormatter(FormatterBase):
     """Transform lists from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms ordered and unordered lists into markdown-syntax."""
         line = None
         ordered_list_history = defaultlist.defaultlist(lambda: 1)
@@ -177,7 +177,7 @@ class InnerUnderscoreEscaper(FormatterBase):
     """Transform underscores from RedNotebook-syntax to Markdown-syntax."""
 
     @classmethod
-    def format_generator(cls, *args, **kwargs):
+    def format_generator(cls, *unused_args, **unused_kwargs):
         """Transforms underscores which need to be escaped."""
         line = ''
         while True:
