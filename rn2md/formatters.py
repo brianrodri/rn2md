@@ -18,7 +18,7 @@ import re
 import defaultlist
 
 
-class FormatterBase():  # pylint-disable: too-few-public-methods
+class FormatterBase():
     """Handles boilerplate required by all formatters.
 
     Formatters are stateful objects. Pass in sequential RedNotebook-formatted
