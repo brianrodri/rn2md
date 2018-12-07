@@ -1,5 +1,4 @@
 """Entry point for rn2md tool."""
-import collections
 import sys
 
 from . import config
