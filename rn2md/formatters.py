@@ -48,7 +48,7 @@ class FormatterBase():
 class RednotebookToMarkdownFormatter(FormatterBase):
     """Master formatter for returning RedNotebook lines in Markdown format."""
 
-    def format_generator(self, header_padding=0):
+    def format_generator(self, header_padding=0):  # pylint: disable=arguments-differ
         ordered_formatters = [
             InnerUnderscoreEscaper(),
             LinkFormatter(),
@@ -121,7 +121,7 @@ class CodeBlockFormatter(FormatterBase):
 class HeaderFormatter(FormatterBase):
     """Transform headers from RedNotebook-syntax to Markdown-syntax."""
 
-    def format_generator(self, padding=0):
+    def format_generator(self, padding=0):  # pylint: disable=arguments-differ
         """Transforms '=TEXT=' into '# TEXT'."""
         line = ''
         while True:
