@@ -23,12 +23,6 @@ class FormatterBase():
 
     Formatters are stateful objects. Pass in sequential RedNotebook-formatted
     lines to the fmt method one-by-one to recreate the text in Markdown syntax.
-
-    For example:
-        >>> rn_lines = ['//examples// are', ' + --not--', ' + cool!']
-        >>> t = MasterFormatter()
-        >>> md_lines = [t.fmt(line) for line in rn_lines]
-        ... ['_examples_ are', ' 1. ~not~', ' 2. cool!']
     """
 
     def __init__(self, *args, **kwargs):
