@@ -14,7 +14,8 @@ class RednotebookToMarkdownFormatterTest(unittest.TestCase):
 
     def test_constructor(self):
         """Basic test to ensure construction works."""
-        _ = formatters.format_rednotebook_as_markdown()
+        with self.subTest():
+            _ = formatters.format_rednotebook_as_markdown()
 
 
 class ItalicFormatterTest(unittest.TestCase):
