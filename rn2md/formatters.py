@@ -19,16 +19,16 @@ import re
 import defaultlist
 
 
-def Formatter(format_generator):
+def make_formatter(format_generator):
     @functools.wraps(format_generator)
     def prepared_formatter(*args, **kwargs):
-        formatter = format_generator(*args, **kwargs)
-        _ = next(formatter, None)
-        return formatter
+        f = format_generator(*args, **kwargs)
+        _ = next(f, None)
+        return f
     return prepared_formatter
 
 
-@Formatter
+@make_formatter
 def RednotebookToMarkdownFormatter(date_heading=None):
     """Sequences all other formatters to create markdown-formatted lines."""
     if date_heading is not None:
@@ -52,7 +52,7 @@ def RednotebookToMarkdownFormatter(date_heading=None):
         line = yield line
 
 
-@Formatter
+@make_formatter
 def LinkFormatter():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
@@ -60,7 +60,7 @@ def LinkFormatter():
         line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
-@Formatter
+@make_formatter
 def ImageFormatter():
     """Transforms '[[""image url""]]' to '![](image url)'."""
     line = ''
@@ -68,7 +68,7 @@ def ImageFormatter():
         line = yield re.sub(r'\[""(.*?)""\]', r'![](\1)', line)
 
 
-@Formatter
+@make_formatter
 def ItalicFormatter():
     """Transforms '//text//' to '_text_'."""
     line = ''
@@ -76,7 +76,7 @@ def ItalicFormatter():
         line = yield _sub_balanced_delims('//', '_', line)
 
 
-@Formatter
+@make_formatter
 def StrikethroughFormatter():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
@@ -86,7 +86,7 @@ def StrikethroughFormatter():
             _sub_balanced_delims('--', '~', line))
 
 
-@Formatter
+@make_formatter
 def CodeBlockFormatter():
     """Transforms codeblocks into markdown-syntax."""
     line = ''
@@ -95,7 +95,7 @@ def CodeBlockFormatter():
                                           preds=[_not_in_link])
 
 
-@Formatter
+@make_formatter
 def HeaderFormatter(padding=0):
     """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
@@ -111,7 +111,7 @@ def HeaderFormatter(padding=0):
         line = f'{"#" * (padding + lvl)} {line[lvl:-lvl].lstrip()}'
 
 
-@Formatter
+@make_formatter
 def ListFormatter():
     """Transforms ordered and unordered lists into markdown-syntax."""
     line = ''
@@ -140,7 +140,7 @@ def ListFormatter():
                 ordered_list_history.clear()
 
 
-@Formatter
+@make_formatter
 def InnerUnderscoreEscaper():
     """Transforms underscores which need to be escaped."""
     line = ''
