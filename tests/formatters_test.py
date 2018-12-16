@@ -7,9 +7,9 @@ from rn2md import formatters
 class FormatterTestBase(unittest.TestCase):
     """Provides convenience methods to make tests more readable."""
 
-    def apply_formatter(self, lines):
+    def apply_formatter(self, f, lines):
         """Returns self.formatter's application on the given lines."""
-        return [self.formatter.send(line) for line in lines]
+        return [f.send(line) for line in lines]
 
 
 class RednotebookToMarkdownFormatterTest(FormatterTestBase):
@@ -25,29 +25,30 @@ class ItalicFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Test expected usage"""
-        self.formatter = formatters.format_italic_text()
+        f = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(['Text with //italicized// content.']),
+            self.apply_formatter(f, ['Text with //italicized// content.']),
             ['Text with _italicized_ content.'])
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
-        self.formatter = formatters.format_italic_text()
+        f = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(['//italic1//, //italic2//, unused //']),
+            self.apply_formatter(f, ['//italic1//, //italic2//, unused //']),
             ['_italic1_, _italic2_, unused //'])
 
     def test_ignores_urls(self):
         """Tests that URL strings do not have their dashes changed."""
-        self.formatter = formatters.format_italic_text()
-        self.assertEqual(self.apply_formatter(['http://github.com/brianrodri']),
-                         ['http://github.com/brianrodri'])
+        f = formatters.format_italic_text()
+        self.assertEqual(
+            self.apply_formatter(f, ['http://github.com/brianrodri']),
+            ['http://github.com/brianrodri'])
 
     def test_ignores_backticked_data(self):
         """Tests that back-ticked data do not get changed."""
-        self.formatter = formatters.format_italic_text()
+        f = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(['//italic//, `//escaped italic//`']),
+            self.apply_formatter(f, ['//italic//, `//escaped italic//`']),
             ['_italic_, `//escaped italic//`'])
 
 
@@ -56,9 +57,9 @@ class LinkFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Tests expected usage."""
-        self.formatter = formatters.format_links()
+        f = formatters.format_links()
         self.assertEqual(
-            self.apply_formatter(['[sample text ""go/somewhere""]']),
+            self.apply_formatter(f, ['[sample text ""go/somewhere""]']),
             ['[sample text](go/somewhere)'])
 
 
@@ -67,9 +68,9 @@ class ImageFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Tests expected usage."""
-        self.formatter = formatters.format_images()
+        f = formatters.format_images()
         self.assertEqual(
-            self.apply_formatter(['[""http://www.site.com/image.jpg""]']),
+            self.apply_formatter(f, ['[""http://www.site.com/image.jpg""]']),
             ['![](http://www.site.com/image.jpg)'])
 
 
@@ -78,20 +79,20 @@ class StrikethroughFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Tests expected usage."""
-        self.formatter = formatters.format_strikethrough_text()
-        self.assertEqual(self.apply_formatter(['--text--']), ['~text~'])
+        f = formatters.format_strikethrough_text()
+        self.assertEqual(self.apply_formatter(f, ['--text--']), ['~text~'])
 
     def test_punctuation_gets_stripped(self):
         """Tests punctuation is removed from parenthesized text."""
-        self.formatter = formatters.format_strikethrough_text()
-        self.assertEqual(self.apply_formatter(['--a complete sentence.--']),
+        f = formatters.format_strikethrough_text()
+        self.assertEqual(self.apply_formatter(f, ['--a complete sentence.--']),
                          ['~a complete sentence.~'])
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
-        self.formatter = formatters.format_strikethrough_text()
+        f = formatters.format_strikethrough_text()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '--changed--, --this too--, not here--or here.',
             ]), [
                 '~changed~, ~this too~, not here--or here.'
@@ -99,21 +100,21 @@ class StrikethroughFormatterTest(FormatterTestBase):
 
     def test_ignores_urls(self):
         """Tests urls are not changed."""
-        self.formatter = formatters.format_strikethrough_text()
+        f = formatters.format_strikethrough_text()
         self.assertEqual(
-            self.apply_formatter(['[x ""http://do/kinda--weird--thing""]']),
+            self.apply_formatter(f, ['[x ""http://do/kinda--weird--thing""]']),
             ['[x ""http://do/kinda--weird--thing""]'])
 
     def test_ignores_backticked_data(self):
         """Tests backticked data is left alone."""
-        self.formatter = formatters.format_strikethrough_text()
-        self.assertEqual(self.apply_formatter(['--hit--, `--not hit--`']),
+        f = formatters.format_strikethrough_text()
+        self.assertEqual(self.apply_formatter(f, ['--hit--, `--not hit--`']),
                          ['~hit~, `--not hit--`'])
 
     def test_ignores_lines_with_only_backticks(self):
         """Tests that data with only backticks are not changed."""
-        self.formatter = formatters.format_strikethrough_text()
-        self.assertEqual(self.apply_formatter(['-----']), ['-----'])
+        f = formatters.format_strikethrough_text()
+        self.assertEqual(self.apply_formatter(f, ['-----']), ['-----'])
 
 
 class HeaderFormatterTest(FormatterTestBase):
@@ -121,33 +122,33 @@ class HeaderFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Tests expected usage."""
-        self.formatter = formatters.format_headers()
+        f = formatters.format_headers()
         self.assertEqual(
-            self.apply_formatter(['=Level One=', '===Level Three===']),
+            self.apply_formatter(f, ['=Level One=', '===Level Three===']),
             ['# Level One', '### Level Three'])
 
     def test_base_level_is_respected(self):
         """Tests changes to init level."""
-        self.formatter = formatters.format_headers(padding=2)
-        self.assertEqual(self.apply_formatter(['===Only 3===']),
+        f = formatters.format_headers(padding=2)
+        self.assertEqual(self.apply_formatter(f, ['===Only 3===']),
                          ['##### Only 3'])
 
     def test_inner_markers_are_ignored(self):
         """Tests header markings are only interpreted when surrounding line."""
-        self.formatter = formatters.format_headers()
-        self.assertEqual(self.apply_formatter(['Not at =start= of text']),
+        f = formatters.format_headers()
+        self.assertEqual(self.apply_formatter(f, ['Not at =start= of text']),
                          ['Not at =start= of text'])
 
     def test_only_markers_are_ignored(self):
         """Tests lines with only markers aren't affected."""
-        self.formatter = formatters.format_headers()
-        self.assertEqual(self.apply_formatter(['=' * 6]), ['=' * 6])
-        self.assertEqual(self.apply_formatter(['=' * 7]), ['=' * 7])
+        f = formatters.format_headers()
+        self.assertEqual(self.apply_formatter(f, ['=' * 6]), ['=' * 6])
+        self.assertEqual(self.apply_formatter(f, ['=' * 7]), ['=' * 7])
 
     def test_un_balanced_markers_are_ignored(self):
         """Tests that lines must use balanced markers."""
-        self.formatter = formatters.format_headers()
-        self.assertEqual(self.apply_formatter(['==Unbalanced===']),
+        f = formatters.format_headers()
+        self.assertEqual(self.apply_formatter(f, ['==Unbalanced===']),
                          ['==Unbalanced==='])
 
 
@@ -156,9 +157,9 @@ class ListFormatterTest(FormatterTestBase):
 
     def test_unordered_list(self):
         """Tests expected usage for unordered lists."""
-        self.formatter = formatters.format_lists()
+        f = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '- A',
                 ' - B',
                 '- A',
@@ -170,9 +171,9 @@ class ListFormatterTest(FormatterTestBase):
 
     def test_ordered_list(self):
         """Tests expected usage for ordered lists."""
-        self.formatter = formatters.format_lists()
+        f = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '+ A',
                 ' + B',
                 '+ A',
@@ -184,9 +185,9 @@ class ListFormatterTest(FormatterTestBase):
 
     def test_two_blank_lines_reset_numbering(self):
         """Tests two blank lines starts separate ordered lists."""
-        self.formatter = formatters.format_lists()
+        f = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '+ A',
                 '+ B',
                 '',
@@ -202,9 +203,9 @@ class ListFormatterTest(FormatterTestBase):
 
     def test_content_between_ordered_list_resets_numbering(self):
         """Tests content between ordered lists restarts numbering."""
-        self.formatter = formatters.format_lists()
+        f = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '+ A',
                 '+ B',
                 'Content',
@@ -218,9 +219,9 @@ class ListFormatterTest(FormatterTestBase):
 
     def test_nested_levels_are_reset_once_passed(self):
         """Tests that nested levels are respected."""
-        self.formatter = formatters.format_lists()
+        f = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '+ A',
                 ' + B',
                 ' + C',
@@ -240,9 +241,9 @@ class ListFormatterTest(FormatterTestBase):
 
     def test_nested_levels_are_not_interrupted_by_unordered_lists(self):
         """Tests that unordered lists do not restart ordered list numbering."""
-        self.formatter = formatters.format_lists()
+        f = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '+ A',
                 ' - B',
                 '+ C',
@@ -258,21 +259,22 @@ class InnerUnderscoreFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Tests expected usage."""
-        self.formatter = formatters.format_inner_underscores()
-        self.assertEqual(self.apply_formatter(['underscore_delimited_word']),
+        f = formatters.format_inner_underscores()
+        self.assertEqual(self.apply_formatter(f, ['underscore_delimited_word']),
                          ['underscore\_delimited\_word'])
 
     def test_trailing_underscores_ignored(self):
         """Tests trailing underscores are left alone."""
-        self.formatter = formatters.format_inner_underscores()
-        self.assertEqual(self.apply_formatter(['_with_trailing_underscores_']),
-                         ['_with\_trailing\_underscores_'])
+        f = formatters.format_inner_underscores()
+        self.assertEqual(
+            self.apply_formatter(f, ['_with_trailing_underscores_']),
+            ['_with\_trailing\_underscores_'])
 
     def test_ignores_urls(self):
         """Tests that underscores in urls are left alone."""
-        self.formatter = formatters.format_inner_underscores()
+        f = formatters.format_inner_underscores()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '[test_thing ""http://github.com/test_thing""]',
             ]), [
                 '[test\_thing ""http://github.com/test_thing""]'
@@ -280,8 +282,8 @@ class InnerUnderscoreFormatterTest(FormatterTestBase):
 
     def test_ignores_backticked_data(self):
         """Tests that underscores between backticks are left alone."""
-        self.formatter = formatters.format_inner_underscores()
-        self.assertEqual(self.apply_formatter(['gets_escaped, `no_escape`']),
+        f = formatters.format_inner_underscores()
+        self.assertEqual(self.apply_formatter(f, ['gets_escaped, `no_escape`']),
                          ['gets\_escaped, `no_escape`'])
 
 
@@ -290,15 +292,15 @@ class CodeBlockFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Tests expected usage."""
-        self.formatter = formatters.format_code_blocks()
-        self.assertEqual(self.apply_formatter(['``code encoded stuff``']),
+        f = formatters.format_code_blocks()
+        self.assertEqual(self.apply_formatter(f, ['``code encoded stuff``']),
                          ['`code encoded stuff`'])
 
     def test_only_two_backticks_are_formated(self):
         """Tests that multi-line code blocks are left alone."""
-        self.formatter = formatters.format_code_blocks()
+        f = formatters.format_code_blocks()
         self.assertEqual(
-            self.apply_formatter([
+            self.apply_formatter(f, [
                 '```py',
                 '# Python code',
                 '```',
