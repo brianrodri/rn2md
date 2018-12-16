@@ -19,19 +19,19 @@ import re
 import defaultlist
 
 
-def make_formatter(format_generator):
-    """Wraps with necessary boilerplate for transformers to accept lines."""
-    @functools.wraps(format_generator)
-    def proper_formatter(*args, **kwargs):
-        gen = format_generator(*args, **kwargs)
+def prime_coroutine_generator(coroutine_generator):
+    """Makes initial call to `next()` so coroutine is ready to receive input."""
+    @functools.wraps(coroutine_generator)
+    def primed_coroutine_generator(*args, **kwargs):
+        gen = coroutine_generator(*args, **kwargs)
         _ = next(gen, None)
         return gen
-    return proper_formatter
+    return primed_coroutine_generator
 
 
 # pylint: disable=invalid-name
 
-@make_formatter
+@prime_coroutine_generator
 def RednotebookToMarkdownFormatter(header_padding=0):
     """Sequences all other formatters to create markdown-formatted lines."""
     ordered_formatters = [
@@ -50,7 +50,7 @@ def RednotebookToMarkdownFormatter(header_padding=0):
         line = yield line
 
 
-@make_formatter
+@prime_coroutine_generator
 def LinkFormatter():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
@@ -58,7 +58,7 @@ def LinkFormatter():
         line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
-@make_formatter
+@prime_coroutine_generator
 def ImageFormatter():
     """Transforms '[[""image url""]]' to '![](image url)'."""
     line = ''
@@ -66,7 +66,7 @@ def ImageFormatter():
         line = yield re.sub(r'\[""(.*?)""\]', r'![](\1)', line)
 
 
-@make_formatter
+@prime_coroutine_generator
 def ItalicFormatter():
     """Transforms '//text//' to '_text_'."""
     line = ''
@@ -74,7 +74,7 @@ def ItalicFormatter():
         line = yield _sub_balanced_delims('//', '_', line)
 
 
-@make_formatter
+@prime_coroutine_generator
 def StrikethroughFormatter():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
@@ -84,7 +84,7 @@ def StrikethroughFormatter():
             _sub_balanced_delims('--', '~', line))
 
 
-@make_formatter
+@prime_coroutine_generator
 def CodeBlockFormatter():
     """Transforms codeblocks into markdown-syntax."""
     line = ''
@@ -93,7 +93,7 @@ def CodeBlockFormatter():
                                           preds=[_not_in_link])
 
 
-@make_formatter
+@prime_coroutine_generator
 def HeaderFormatter(padding=0):
     """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
@@ -109,7 +109,7 @@ def HeaderFormatter(padding=0):
         line = f'{"#" * (padding + lvl)} {line[lvl:-lvl].lstrip()}'
 
 
-@make_formatter
+@prime_coroutine_generator
 def ListFormatter():
     """Transforms ordered and unordered lists into markdown-syntax."""
     line = ''
@@ -138,7 +138,7 @@ def ListFormatter():
                 ordered_list_history.clear()
 
 
-@make_formatter
+@prime_coroutine_generator
 def InnerUnderscoreEscaper():
     """Transforms underscores which need to be escaped."""
     line = ''
