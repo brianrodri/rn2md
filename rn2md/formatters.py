@@ -69,9 +69,9 @@ def format_strikethrough_text():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
-        line = yield (
-            line if set(line) == {'-'} else
-            _sub_balanced_delims('--', '~', line))
+        if line != ('-' * len(line)):
+            line = _sub_balanced_delims('--', '~', line)
+        line = yield line
 
 
 @util.prime_coroutine_generator
@@ -79,8 +79,7 @@ def format_code_blocks():
     """Transforms codeblocks into markdown-syntax."""
     line = ''
     while True:
-        line = yield _sub_balanced_delims('``', '`', line,
-                                          preds=[_not_in_link])
+        line = yield _sub_balanced_delims('``', '`', line, preds=[_not_in_link])
 
 
 @util.prime_coroutine_generator
@@ -95,8 +94,8 @@ def format_headers(padding=0):
         end_delim = re.search(r'=+$', line)
         if not end_delim or end_delim.group() != start_delim.group():
             continue
-        lvl = len(start_delim.group())
-        line = f'{"#" * (padding + lvl)} {line[lvl:-lvl].lstrip()}'
+        level = len(start_delim.group())
+        line = f'{"#" * (padding + level)} {line[level:-level].lstrip()}'
 
 
 @util.prime_coroutine_generator
