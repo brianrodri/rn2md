@@ -1,6 +1,7 @@
 """Arbitrary utility functions for the rn2md tool."""
 import enum
 import datetime as dt
+import functools
 
 import isoweek
 import parsedatetime as pdt
