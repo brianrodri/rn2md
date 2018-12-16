@@ -288,7 +288,7 @@ class InnerUnderscoreFormatterTest(FormatterTestBase):
             self.apply_formatter(formatter, [
                 '[test_thing ""http://github.com/test_thing""]',
             ]), [
-                '[test\_thing ""http://github.com/test_thing""]'
+                r'[test\_thing ""http://github.com/test_thing""]'
             ])
 
     def test_ignores_backticked_data(self):
@@ -296,7 +296,7 @@ class InnerUnderscoreFormatterTest(FormatterTestBase):
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
             self.apply_formatter(formatter, ['gets_escaped, `no_escape`']),
-            ['gets\_escaped, `no_escape`'])
+            [r'gets\_escaped, `no_escape`'])
 
 
 class CodeBlockFormatterTest(FormatterTestBase):
