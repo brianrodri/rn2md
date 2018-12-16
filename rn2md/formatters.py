@@ -13,11 +13,11 @@ Here is a summary of the currently implemented formatters:
     - Unordered item                  - Unordered item
     ``asdf``                          `asdf`
 """
-from . import util
-
 import re
 
 import defaultlist
+
+from . import util
 
 
 # pylint: disable=invalid-name
