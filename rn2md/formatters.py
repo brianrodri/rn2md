@@ -21,17 +21,16 @@ from . import util
 
 
 @util.prime_coroutine_generator
-def RednotebookToMarkdownFormatter(  # pylint: disable=invalid-name
-        header_padding=0):
+def rednotebook_to_markdown_formatter(header_padding=0):
     """Sequences all other formatters to create markdown-formatted lines."""
     ordered_formatters = [
-        InnerUnderscoreFormatter(),
-        LinkFormatter(),
-        HeaderFormatter(padding=header_padding),
-        CodeBlockFormatter(),
-        ItalicFormatter(),
-        StrikethroughFormatter(),
-        ListFormatter(),
+        inner_underscore_formatter(),
+        link_formatter(),
+        header_formatter(padding=header_padding),
+        code_block_formatter(),
+        italic_formatter(),
+        strikethrough_formatter(),
+        list_formatter(),
     ]
     line = yield None
     while True:
@@ -41,7 +40,7 @@ def RednotebookToMarkdownFormatter(  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def LinkFormatter():  # pylint: disable=invalid-name
+def link_formatter():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
     while True:
@@ -49,7 +48,7 @@ def LinkFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def ImageFormatter():  # pylint: disable=invalid-name
+def image_formatter():
     """Transforms '[[""image url""]]' to '![](image url)'."""
     line = ''
     while True:
@@ -57,7 +56,7 @@ def ImageFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def ItalicFormatter():  # pylint: disable=invalid-name
+def italic_formatter():
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
@@ -65,7 +64,7 @@ def ItalicFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def StrikethroughFormatter():  # pylint: disable=invalid-name
+def strikethrough_formatter():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
@@ -75,7 +74,7 @@ def StrikethroughFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def CodeBlockFormatter():  # pylint: disable=invalid-name
+def code_block_formatter():
     """Transforms codeblocks into markdown-syntax."""
     line = ''
     while True:
@@ -84,7 +83,7 @@ def CodeBlockFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def HeaderFormatter(padding=0):  # pylint: disable=invalid-name
+def header_formatter(padding=0):
     """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
     while True:
@@ -100,7 +99,7 @@ def HeaderFormatter(padding=0):  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def ListFormatter():  # pylint: disable=invalid-name
+def list_formatter():
     """Transforms ordered and unordered lists into markdown-syntax."""
     line = ''
     ordered_list_history = defaultlist.defaultlist(lambda: 1)
@@ -129,7 +128,7 @@ def ListFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def InnerUnderscoreFormatter():  # pylint: disable=invalid-name
+def inner_underscore_formatter():
     """Transforms underscores which need to be escaped."""
     line = ''
     while True:
