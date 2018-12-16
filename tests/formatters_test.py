@@ -25,16 +25,14 @@ class ItalicFormatterTest(unittest.TestCase):
         """Test expected usage"""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            apply_formatter(
-                formatter, ['Text with //italicized// content.']),
+            apply_formatter(formatter, ['Text with //italicized// content.']),
             ['Text with _italicized_ content.'])
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            apply_formatter(
-                formatter, ['//italic1//, //italic2//, unused //']),
+            apply_formatter(formatter, ['//italic1//, //italic2//, unused //']),
             ['_italic1_, _italic2_, unused //'])
 
     def test_ignores_urls(self):
@@ -48,8 +46,7 @@ class ItalicFormatterTest(unittest.TestCase):
         """Tests that back-ticked data do not get changed."""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            apply_formatter(
-                formatter, ['//italic//, `//escaped italic//`']),
+            apply_formatter(formatter, ['//italic//, `//escaped italic//`']),
             ['_italic_, `//escaped italic//`'])
 
 
@@ -71,8 +68,7 @@ class ImageFormatterTest(unittest.TestCase):
         """Tests expected usage."""
         formatter = formatters.format_images()
         self.assertEqual(
-            apply_formatter(
-                formatter, ['[""http://www.site.com/image.jpg""]']),
+            apply_formatter(formatter, ['[""http://www.site.com/image.jpg""]']),
             ['![](http://www.site.com/image.jpg)'])
 
 
@@ -106,9 +102,8 @@ class StrikethroughFormatterTest(unittest.TestCase):
         """Tests urls are not changed."""
         formatter = formatters.format_strikethrough_text()
         self.assertEqual(
-            apply_formatter(
-                formatter, ['[x ""http://do/kinda--weird--thing""]']),
-            ['[x ""http://do/kinda--weird--thing""]'])
+            apply_formatter(formatter, ['[x ""http://do/some--weird--text""]']),
+            ['[x ""http://do/some--weird--text""]'])
 
     def test_ignores_backticked_data(self):
         """Tests backticked data is left alone."""
@@ -130,8 +125,7 @@ class HeaderFormatterTest(unittest.TestCase):
         """Tests expected usage."""
         formatter = formatters.format_headers()
         self.assertEqual(
-            apply_formatter(
-                formatter, ['=Level One=', '===Level Three===']),
+            apply_formatter(formatter, ['=Level One=', '===Level Three===']),
             ['# Level One', '### Level Three'])
 
     def test_base_level_is_respected(self):
