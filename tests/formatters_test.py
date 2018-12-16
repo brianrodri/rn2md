@@ -7,8 +7,9 @@ from rn2md import formatters
 class FormatterTestBase(unittest.TestCase):
     """Provides convenience methods to make tests more readable."""
 
-    def apply_formatter(f, lines):
-        return [f.send(line) for line in lines]
+    def apply_formatter(self, lines):
+        """Returns self.formatter's application on the given lines."""
+        return [self.formatter.send(line) for line in lines]
 
 
 class RednotebookToMarkdownFormatterTest(FormatterTestBase):
@@ -24,27 +25,43 @@ class ItalicFormatterTest(FormatterTestBase):
 
     def test_common_format(self):
         """Test expected usage"""
-        formatter = formatters.format_italic_text()
-        self.assertEqual(formatter.send('Text with //italicized// content.'),
-                         'Text with _italicized_ content.')
+        self.formatter = formatters.format_italic_text()
+        self.assertEqual(
+            self.apply_formatter([
+                'Text with //italicized// content.',
+            ]), [
+                'Text with _italicized_ content.'
+            ])
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
-        formatter = formatters.format_italic_text()
-        self.assertEqual(formatter.send('//italic1//, //italic2//, unused //'),
-                         '_italic1_, _italic2_, unused //')
+        self.formatter = formatters.format_italic_text()
+        self.assertEqual(
+            self.apply_formatter([
+                '//italic1//, //italic2//, unused //',
+            ]), [
+                '_italic1_, _italic2_, unused //'
+            ])
 
     def test_ignores_urls(self):
         """Tests that URL strings do not have their dashes changed."""
-        formatter = formatters.format_italic_text()
-        self.assertEqual(formatter.send('http://github.com/brianrodri'),
-                         'http://github.com/brianrodri')
+        self.formatter = formatters.format_italic_text()
+        self.assertEqual(
+            self.apply_formatter([
+                'http://github.com/brianrodri',
+            ]), [
+                'http://github.com/brianrodri'
+            ])
 
     def test_ignores_backticked_data(self):
         """Tests that back-ticked data do not get changed."""
-        formatter = formatters.format_italic_text()
-        self.assertEqual(formatter.send('//italic//, `//escaped italic//`'),
-                         '_italic_, `//escaped italic//`')
+        self.formatter = formatters.format_italic_text()
+        self.assertEqual(
+            self.apply_formatter([
+                '//italic//, `//escaped italic//`',
+            ]), [
+                '_italic_, `//escaped italic//`'
+            ])
 
 
 class LinkFormatterTest(FormatterTestBase):
