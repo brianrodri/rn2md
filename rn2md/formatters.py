@@ -21,16 +21,17 @@ from . import util
 
 
 @util.prime_coroutine_generator
-def rednotebook_to_markdown_formatter(header_padding=0):
+def format_rednotebook_as_markdown(header_padding=0):
     """Sequences all other formatters to create markdown-formatted lines."""
     ordered_formatters = [
-        inner_underscore_formatter(),
-        link_formatter(),
-        header_formatter(padding=header_padding),
-        code_block_formatter(),
-        italic_formatter(),
-        strikethrough_formatter(),
-        list_formatter(),
+        format_inner_underscores(),
+        format_links(),
+        format_images(),
+        format_headers(padding=header_padding),
+        format_code_blocks(),
+        format_italic_text(),
+        format_strikethrough_text(),
+        format_lists(),
     ]
     line = yield None
     while True:
@@ -40,7 +41,7 @@ def rednotebook_to_markdown_formatter(header_padding=0):
 
 
 @util.prime_coroutine_generator
-def link_formatter():
+def format_links():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
     while True:
@@ -48,7 +49,7 @@ def link_formatter():
 
 
 @util.prime_coroutine_generator
-def image_formatter():
+def format_images():
     """Transforms '[[""image url""]]' to '![](image url)'."""
     line = ''
     while True:
@@ -56,7 +57,7 @@ def image_formatter():
 
 
 @util.prime_coroutine_generator
-def italic_formatter():
+def format_italic_text():
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
@@ -64,7 +65,7 @@ def italic_formatter():
 
 
 @util.prime_coroutine_generator
-def strikethrough_formatter():
+def format_strikethrough_text():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
@@ -74,7 +75,7 @@ def strikethrough_formatter():
 
 
 @util.prime_coroutine_generator
-def code_block_formatter():
+def format_code_blocks():
     """Transforms codeblocks into markdown-syntax."""
     line = ''
     while True:
@@ -83,7 +84,7 @@ def code_block_formatter():
 
 
 @util.prime_coroutine_generator
-def header_formatter(padding=0):
+def format_headers(padding=0):
     """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
     while True:
@@ -99,7 +100,7 @@ def header_formatter(padding=0):
 
 
 @util.prime_coroutine_generator
-def list_formatter():
+def format_lists():
     """Transforms ordered and unordered lists into markdown-syntax."""
     line = ''
     ordered_list_history = defaultlist.defaultlist(lambda: 1)
@@ -128,7 +129,7 @@ def list_formatter():
 
 
 @util.prime_coroutine_generator
-def inner_underscore_formatter():
+def format_inner_underscores():
     """Transforms underscores which need to be escaped."""
     line = ''
     while True:
