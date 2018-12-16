@@ -22,9 +22,9 @@ import defaultlist
 def make_formatter(format_generator):
     @functools.wraps(format_generator)
     def prepared_formatter(*args, **kwargs):
-        f = format_generator(*args, **kwargs)
-        _ = next(f, None)
-        return f
+        gen = format_generator(*args, **kwargs)
+        _ = next(gen, None)
+        return gen
     return prepared_formatter
 
 
