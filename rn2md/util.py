@@ -6,6 +6,16 @@ import isoweek
 import parsedatetime as pdt
 
 
+def prime_coroutine_generator(coroutine_generator):
+    """Call `next()` on the coroutine generator so it can accept `send()`."""
+    @functools.wraps(coroutine_generator)
+    def primed_coroutine_generator(*args, **kwargs):
+        gen = coroutine_generator(*args, **kwargs)
+        _ = next(gen, None)
+        return gen
+    return primed_coroutine_generator
+
+
 _Weekdays = (  # pylint: disable=invalid-name
     enum.Enum('_Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0))
 
