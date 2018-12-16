@@ -29,9 +29,10 @@ def make_formatter(format_generator):
     return proper_formatter
 
 
+# pylint: disable=invalid-name
+
 @make_formatter
-def RednotebookToMarkdownFormatter(  # pylint: disable=invalid-name
-        header_padding=0):
+def RednotebookToMarkdownFormatter(header_padding=0):
     """Sequences all other formatters to create markdown-formatted lines."""
     ordered_formatters = [
         InnerUnderscoreEscaper(),
@@ -50,7 +51,7 @@ def RednotebookToMarkdownFormatter(  # pylint: disable=invalid-name
 
 
 @make_formatter
-def LinkFormatter():  # pylint: disable=invalid-name
+def LinkFormatter():
     """Transforms '[[text ""url""]]' to '[text](url)'."""
     line = ''
     while True:
@@ -58,7 +59,7 @@ def LinkFormatter():  # pylint: disable=invalid-name
 
 
 @make_formatter
-def ImageFormatter():  # pylint: disable=invalid-name
+def ImageFormatter():
     """Transforms '[[""image url""]]' to '![](image url)'."""
     line = ''
     while True:
@@ -66,7 +67,7 @@ def ImageFormatter():  # pylint: disable=invalid-name
 
 
 @make_formatter
-def ItalicFormatter():  # pylint: disable=invalid-name
+def ItalicFormatter():
     """Transforms '//text//' to '_text_'."""
     line = ''
     while True:
@@ -74,7 +75,7 @@ def ItalicFormatter():  # pylint: disable=invalid-name
 
 
 @make_formatter
-def StrikethroughFormatter():  # pylint: disable=invalid-name
+def StrikethroughFormatter():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
@@ -84,7 +85,7 @@ def StrikethroughFormatter():  # pylint: disable=invalid-name
 
 
 @make_formatter
-def CodeBlockFormatter():  # pylint: disable=invalid-name
+def CodeBlockFormatter():
     """Transforms codeblocks into markdown-syntax."""
     line = ''
     while True:
@@ -93,7 +94,7 @@ def CodeBlockFormatter():  # pylint: disable=invalid-name
 
 
 @make_formatter
-def HeaderFormatter(padding=0):  # pylint: disable=invalid-name
+def HeaderFormatter(padding=0):
     """Transforms '=TEXT=' into '# TEXT'."""
     line = ''
     while True:
@@ -109,7 +110,7 @@ def HeaderFormatter(padding=0):  # pylint: disable=invalid-name
 
 
 @make_formatter
-def ListFormatter():  # pylint: disable=invalid-name
+def ListFormatter():
     """Transforms ordered and unordered lists into markdown-syntax."""
     line = ''
     ordered_list_history = defaultlist.defaultlist(lambda: 1)
@@ -138,7 +139,7 @@ def ListFormatter():  # pylint: disable=invalid-name
 
 
 @make_formatter
-def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
+def InnerUnderscoreEscaper():
     """Transforms underscores which need to be escaped."""
     line = ''
     while True:
@@ -146,6 +147,8 @@ def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
         inner_underscores = list(_filter_matches(r'(?<=\w)_(?=\w)', line))
         for match in reversed(inner_underscores):
             line = f'{line[:match.start()]}\\_{line[match.end():]}'
+
+# pylint: enable=invalid-name
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
