@@ -25,7 +25,7 @@ def RednotebookToMarkdownFormatter(  # pylint: disable=invalid-name
         header_padding=0):
     """Sequences all other formatters to create markdown-formatted lines."""
     ordered_formatters = [
-        InnerUnderscoreEscaper(),
+        InnerUnderscoreFormatter(),
         LinkFormatter(),
         HeaderFormatter(padding=header_padding),
         CodeBlockFormatter(),
@@ -129,7 +129,7 @@ def ListFormatter():  # pylint: disable=invalid-name
 
 
 @util.prime_coroutine_generator
-def InnerUnderscoreEscaper():  # pylint: disable=invalid-name
+def InnerUnderscoreFormatter():  # pylint: disable=invalid-name
     """Transforms underscores which need to be escaped."""
     line = ''
     while True:

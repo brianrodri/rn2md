@@ -236,31 +236,31 @@ class ListFormatterTest(unittest.TestCase):
         ])
 
 
-class InnerUnderscoreEscaperTest(unittest.TestCase):
+class InnerUnderscoreFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style underscores to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
-        formatter = formatters.InnerUnderscoreEscaper()
+        formatter = formatters.InnerUnderscoreFormatter()
         self.assertEqual(formatter.send('underscore_delimited_word'),
                          r'underscore\_delimited\_word')
 
     def test_trailing_underscores_ignored(self):
         """Tests trailing underscores are left alone."""
-        formatter = formatters.InnerUnderscoreEscaper()
+        formatter = formatters.InnerUnderscoreFormatter()
         self.assertEqual(formatter.send('_with_trailing_underscores_'),
                          r'_with\_trailing\_underscores_')
 
     def test_ignores_urls(self):
         """Tests that underscores in urls are left alone."""
-        formatter = formatters.InnerUnderscoreEscaper()
+        formatter = formatters.InnerUnderscoreFormatter()
         self.assertEqual(
             formatter.send('[test_thing ""http://github.com/test_thing""]'),
             r'[test\_thing ""http://github.com/test_thing""]')
 
     def test_ignores_backticked_data(self):
         """Tests that underscores between backticks are left alone."""
-        formatter = formatters.InnerUnderscoreEscaper()
+        formatter = formatters.InnerUnderscoreFormatter()
         self.assertEqual(formatter.send('gets_escaped, `no_escape`'),
                          r'gets\_escaped, `no_escape`')
 
