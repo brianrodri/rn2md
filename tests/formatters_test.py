@@ -4,16 +4,22 @@ import unittest
 from rn2md import formatters
 
 
-class RednotebookToMarkdownFormatterTest(unittest.TestCase):
+class FormatterTestBase(unittest.TestCase):
+    """Provides convenience methods to make tests more readable."""
+
+    def apply_formatter(f, lines):
+        return [f.send(line) for line in lines]
+
+
+class RednotebookToMarkdownFormatterTest(FormatterTestBase):
     """Test formatting RedNotebook-style data to markdown-style."""
 
     def test_constructor(self):
         """Basic test to ensure construction works."""
-        with self.subTest():
-            _ = formatters.format_rednotebook_as_markdown()
+        _ = formatters.format_rednotebook_as_markdown()
 
 
-class ItalicFormatterTest(unittest.TestCase):
+class ItalicFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style italics to markdown-style."""
 
     def test_common_format(self):
@@ -41,7 +47,7 @@ class ItalicFormatterTest(unittest.TestCase):
                          '_italic_, `//escaped italic//`')
 
 
-class LinkFormatterTest(unittest.TestCase):
+class LinkFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style links to markdown-style."""
 
     def test_common_format(self):
@@ -51,7 +57,7 @@ class LinkFormatterTest(unittest.TestCase):
                          '[sample text](go/somewhere)')
 
 
-class ImageFormatterTest(unittest.TestCase):
+class ImageFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style links to markdown-style."""
 
     def test_common_format(self):
@@ -61,7 +67,7 @@ class ImageFormatterTest(unittest.TestCase):
                          '![](http://www.site.com/image.jpg)')
 
 
-class StrikethroughFormatterTest(unittest.TestCase):
+class StrikethroughFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style strikethroughs to markdown-style."""
 
     def test_common_format(self):
@@ -101,7 +107,7 @@ class StrikethroughFormatterTest(unittest.TestCase):
         self.assertEqual(formatter.send('-----'), '-----')
 
 
-class HeaderFormatterTest(unittest.TestCase):
+class HeaderFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style header to markdown-style."""
 
     def test_common_format(self):
@@ -134,7 +140,7 @@ class HeaderFormatterTest(unittest.TestCase):
         self.assertEqual(formatter.send('==Unbalanced==='), '==Unbalanced===')
 
 
-class ListFormatterTest(unittest.TestCase):
+class ListFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style lists to markdown-style."""
 
     def test_unordered_list(self):
@@ -236,7 +242,7 @@ class ListFormatterTest(unittest.TestCase):
         ])
 
 
-class InnerUnderscoreFormatterTest(unittest.TestCase):
+class InnerUnderscoreFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style underscores to markdown-style."""
 
     def test_common_format(self):
@@ -265,7 +271,7 @@ class InnerUnderscoreFormatterTest(unittest.TestCase):
                          r'gets\_escaped, `no_escape`')
 
 
-class CodeBlockFormatterTest(unittest.TestCase):
+class CodeBlockFormatterTest(FormatterTestBase):
     """Test formatting Rednotebook-style code blocks to markdown-style."""
 
     def test_common_format(self):
