@@ -20,7 +20,7 @@ def main():
         # other. Subsequent headers are padded by 1 to render them as children.
         md_lines = [date.strftime('# %a %b %d, %Y')]
         formatter = formatters.RednotebookToMarkdownFormatter(header_padding=1)
-        md_lines.extend(formatter.fmt(rn_line.rstrip()) for rn_line in rn_lines)
+        md_lines.extend(formatter.send(line.rstrip()) for line in rn_lines)
         return '\n'.join(md_lines)
     print('\n\n\n'.join(rednotebook_to_markdown(d) for d in dates))
 

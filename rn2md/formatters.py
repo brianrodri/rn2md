@@ -13,177 +13,142 @@ Here is a summary of the currently implemented formatters:
     - Unordered item                  - Unordered item
     ``asdf``                          `asdf`
 """
+import functools
 import re
 
 import defaultlist
 
 
-class FormatterBase():
-    """Handles boilerplate required by all formatters.
-
-    Formatters are stateful objects. Pass in sequential RedNotebook-formatted
-    lines to the fmt method one-by-one to recreate the text in Markdown syntax.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self._formatter = self.format_generator(*args, **kwargs)
-        # Initialize generator coroutine by calling `next` once on it.
-        _ = next(self._formatter, None)
-
-    def fmt(self, line):
-        """Returns the given RedNotebook line in Markdown format."""
-        return self._formatter.send(line)
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Target method to override for subclasses which format rn lines."""
-        raise NotImplementedError
+def Formatter(format_generator):
+    @functools.wraps(format_generator)
+    def prepared_formatter(*args, **kwargs):
+        formatter = format_generator(*args, **kwargs)
+        _ = next(formatter, None)
+        return formatter
+    return prepared_formatter
 
 
-class RednotebookToMarkdownFormatter(FormatterBase):
-    """Master formatter for returning RedNotebook lines in Markdown format."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **kwargs):
-        """Sequences all other formatters to create markdown-formatted lines."""
-        ordered_formatters = [
-            InnerUnderscoreEscaper(),
-            LinkFormatter(),
-            HeaderFormatter(padding=kwargs.pop('header_padding', 0)),
-            CodeBlockFormatter(),
-            ItalicFormatter(),
-            StrikethroughFormatter(),
-            ListFormatter(),
-        ]
-        line = yield None
-        while True:
-            for formatter in ordered_formatters:
-                line = formatter.fmt(line)
-            line = yield line
-
-
-class LinkFormatter(FormatterBase):
-    """Transform links from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms '[[text ""url""]]' to '[text](url)'."""
-        line = ''
-        while True:
-            line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
+@Formatter
+def RednotebookToMarkdownFormatter(date_heading=None):
+    """Sequences all other formatters to create markdown-formatted lines."""
+    if date_heading is not None:
+        yield date_heading.strftime('# %a %b %d, %Y')
+        header_padding = 1
+    else:
+        header_padding = 0
+    ordered_formatters = [
+        InnerUnderscoreEscaper(),
+        LinkFormatter(),
+        HeaderFormatter(padding=header_padding),
+        CodeBlockFormatter(),
+        ItalicFormatter(),
+        StrikethroughFormatter(),
+        ListFormatter(),
+    ]
+    line = yield None
+    while True:
+        for formatter in ordered_formatters:
+            line = formatter.fmt(line)
+        line = yield line
 
 
-class ImageFormatter(FormatterBase):
-    """Transform images from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms '[[""image url""]]' to '![](image url)'."""
-        line = ''
-        while True:
-            line = yield re.sub(r'\[""(.*?)""\]', r'![](\1)', line)
+@Formatter
+def LinkFormatter():
+    """Transforms '[[text ""url""]]' to '[text](url)'."""
+    line = ''
+    while True:
+        line = yield re.sub(r'\[([^\]]*?) ""(.*?)""\]', r'[\1](\2)', line)
 
 
-class ItalicFormatter(FormatterBase):
-    """Transform italics from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms '//text//' to '_text_'."""
-        line = ''
-        while True:
-            line = yield _sub_balanced_delims('//', '_', line)
+@Formatter
+def ImageFormatter():
+    """Transforms '[[""image url""]]' to '![](image url)'."""
+    line = ''
+    while True:
+        line = yield re.sub(r'\[""(.*?)""\]', r'![](\1)', line)
 
 
-class StrikethroughFormatter(FormatterBase):
-    """Transform strikethroughs from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms '--text--' to '**OBSOLETE**(text)'."""
-        line = ''
-        while True:
-            line = yield (
-                line if set(line) == {'-'} else
-                _sub_balanced_delims('--', '~', line))
+@Formatter
+def ItalicFormatter():
+    """Transforms '//text//' to '_text_'."""
+    line = ''
+    while True:
+        line = yield _sub_balanced_delims('//', '_', line)
 
 
-class CodeBlockFormatter(FormatterBase):
-    """Transform code blocks from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms codeblocks into markdown-syntax."""
-        line = ''
-        while True:
-            line = yield _sub_balanced_delims('``', '`', line,
-                                              preds=[_not_in_link])
+@Formatter
+def StrikethroughFormatter():
+    """Transforms '--text--' to '**OBSOLETE**(text)'."""
+    line = ''
+    while True:
+        line = yield (
+            line if set(line) == {'-'} else
+            _sub_balanced_delims('--', '~', line))
 
 
-class HeaderFormatter(FormatterBase):
-    """Transform headers from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **kwargs):
-        """Transforms '=TEXT=' into '# TEXT'."""
-        padding = kwargs.pop('padding', 0)
-        line = ''
-        while True:
-            line = yield line
-            start_delim = re.search(r'^=+', line)
-            if not start_delim or start_delim.group() == line:
-                continue
-            end_delim = re.search(r'=+$', line)
-            if not end_delim or end_delim.group() != start_delim.group():
-                continue
-            lvl = len(start_delim.group())
-            line = f'{"#" * (padding + lvl)} {line[lvl:-lvl].lstrip()}'
+@Formatter
+def CodeBlockFormatter():
+    """Transforms codeblocks into markdown-syntax."""
+    line = ''
+    while True:
+        line = yield _sub_balanced_delims('``', '`', line,
+                                          preds=[_not_in_link])
 
 
-class ListFormatter(FormatterBase):
-    """Transform lists from RedNotebook-syntax to Markdown-syntax."""
+@Formatter
+def HeaderFormatter(padding=0):
+    """Transforms '=TEXT=' into '# TEXT'."""
+    line = ''
+    while True:
+        line = yield line
+        start_delim = re.search(r'^=+', line)
+        if not start_delim or start_delim.group() == line:
+            continue
+        end_delim = re.search(r'=+$', line)
+        if not end_delim or end_delim.group() != start_delim.group():
+            continue
+        lvl = len(start_delim.group())
+        line = f'{"#" * (padding + lvl)} {line[lvl:-lvl].lstrip()}'
 
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms ordered and unordered lists into markdown-syntax."""
-        line = None
-        ordered_list_history = defaultlist.defaultlist(lambda: 1)
-        sequential_empty_lines = 0
-        while True:
-            line = yield line
-            list_item_match = re.match(r'^\s*([-|\+])\s', line)
-            if list_item_match:
-                i = list_item_match.start(1)
-                if line[i] == '-':
-                    # Un-ordered lists have the same format in markdown.
-                    pass
-                else:
-                    # Ordered lists must change to the actual number.
-                    line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
-                    ordered_list_history[i] += 1
-                # Reset numbering of sub-items.
-                del ordered_list_history[i + 1:]
-            elif line.strip():
-                sequential_empty_lines = 0
-                ordered_list_history.clear()
+
+@Formatter
+def ListFormatter():
+    """Transforms ordered and unordered lists into markdown-syntax."""
+    line = ''
+    ordered_list_history = defaultlist.defaultlist(lambda: 1)
+    sequential_empty_lines = 0
+    while True:
+        line = yield line
+        list_item_match = re.match(r'^\s*([-|\+])\s', line)
+        if list_item_match:
+            i = list_item_match.start(1)
+            if line[i] == '-':
+                # Un-ordered lists have the same format in markdown.
+                pass
             else:
-                sequential_empty_lines += 1
-                if sequential_empty_lines >= 2:
-                    ordered_list_history.clear()
+                # Ordered lists must change to the actual number.
+                line = f'{line[:i]}{ordered_list_history[i]}.{line[i + 1:]}'
+                ordered_list_history[i] += 1
+            # Reset numbering of sub-items.
+            del ordered_list_history[i + 1:]
+        elif line.strip():
+            sequential_empty_lines = 0
+            ordered_list_history.clear()
+        else:
+            sequential_empty_lines += 1
+            if sequential_empty_lines >= 2:
+                ordered_list_history.clear()
 
 
-class InnerUnderscoreEscaper(FormatterBase):
-    """Transform underscores from RedNotebook-syntax to Markdown-syntax."""
-
-    @classmethod
-    def format_generator(cls, *unused_args, **unused_kwargs):
-        """Transforms underscores which need to be escaped."""
-        line = ''
-        while True:
-            line = yield line
-            inner_underscores = list(_filter_matches(r'(?<=\w)_(?=\w)', line))
-            for match in reversed(inner_underscores):
-                line = f'{line[:match.start()]}\\_{line[match.end():]}'
+@Formatter
+def InnerUnderscoreEscaper():
+    """Transforms underscores which need to be escaped."""
+    line = ''
+    while True:
+        line = yield line
+        inner_underscores = list(_filter_matches(r'(?<=\w)_(?=\w)', line))
+        for match in reversed(inner_underscores):
+            line = f'{line[:match.start()]}\\_{line[match.end():]}'
 
 
 def _sub_balanced_delims(delim_pattern, sub, string, **kwargs):
