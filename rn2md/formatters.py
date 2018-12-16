@@ -20,7 +20,7 @@ import defaultlist
 
 
 def prime_coroutine_generator(coroutine_generator):
-    """Makes initial call to `next()` so coroutine is ready to receive input."""
+    """Call `next()` on the coroutine generator so it can accept `send()`."""
     @functools.wraps(coroutine_generator)
     def primed_coroutine_generator(*args, **kwargs):
         gen = coroutine_generator(*args, **kwargs)
