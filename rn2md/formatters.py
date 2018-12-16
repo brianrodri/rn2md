@@ -33,11 +33,11 @@ def format_rednotebook_as_markdown(header_padding=0):
         format_strikethrough_text(),
         format_lists(),
     ]
-    line = yield None
+    line = ''
     while True:
+        line = yield line
         for formatter in ordered_formatters:
             line = formatter.send(line)
-        line = yield line
 
 
 @util.prime_coroutine_generator
@@ -69,9 +69,9 @@ def format_strikethrough_text():
     """Transforms '--text--' to '**OBSOLETE**(text)'."""
     line = ''
     while True:
+        line = yield line
         if line != ('-' * len(line)):
             line = _sub_balanced_delims('--', '~', line)
-        line = yield line
 
 
 @util.prime_coroutine_generator
@@ -101,9 +101,9 @@ def format_headers(padding=0):
 @util.prime_coroutine_generator
 def format_lists():
     """Transforms ordered and unordered lists into markdown-syntax."""
-    line = ''
     ordered_list_history = defaultlist.defaultlist(lambda: 1)
     sequential_empty_lines = 0
+    line = ''
     while True:
         line = yield line
         list_item_match = re.match(r'^\s*([-|\+])\s', line)
