@@ -29,14 +29,8 @@ def make_formatter(format_generator):
 
 
 @make_formatter
-def RednotebookToMarkdownFormatter(date_heading=None):
+def RednotebookToMarkdownFormatter(header_padding=0):
     """Sequences all other formatters to create markdown-formatted lines."""
-    line = yield None
-    if date_heading is not None:
-        yield date_heading.strftime('# %a %b %d, %Y')
-        header_padding = 1
-    else:
-        header_padding = 0
     ordered_formatters = [
         InnerUnderscoreEscaper(),
         LinkFormatter(),
@@ -46,6 +40,7 @@ def RednotebookToMarkdownFormatter(date_heading=None):
         StrikethroughFormatter(),
         ListFormatter(),
     ]
+    line = yield None
     while True:
         for formatter in ordered_formatters:
             line = formatter.send(line)
