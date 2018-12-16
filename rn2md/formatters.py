@@ -22,11 +22,11 @@ import defaultlist
 def make_formatter(format_generator):
     """Adds boilerplate preparation steps for transformers to accept lines."""
     @functools.wraps(format_generator)
-    def prepared_formatter(*args, **kwargs):
+    def proper_formatter(*args, **kwargs):
         gen = format_generator(*args, **kwargs)
         _ = next(gen, None)
         return gen
-    return prepared_formatter
+    return proper_formatter
 
 
 @make_formatter
