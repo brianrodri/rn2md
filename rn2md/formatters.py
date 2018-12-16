@@ -20,7 +20,7 @@ import defaultlist
 
 
 def make_formatter(format_generator):
-    """Adds boilerplate preparation steps for transformers to accept lines."""
+    """Wraps with necessary boilerplate for transformers to accept lines."""
     @functools.wraps(format_generator)
     def proper_formatter(*args, **kwargs):
         gen = format_generator(*args, **kwargs)
