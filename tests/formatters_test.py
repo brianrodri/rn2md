@@ -272,14 +272,14 @@ class InnerUnderscoreFormatterTest(FormatterTestBase):
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
             self.apply_formatter(formatter, ['underscore_delimited_word']),
-            ['underscore\_delimited\_word'])
+            [r'underscore\_delimited\_word'])
 
     def test_trailing_underscores_ignored(self):
         """Tests trailing underscores are left alone."""
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
-            self.apply_formatter(formatter, ['_with_trailing_underscores_']),
-            ['_with\_trailing\_underscores_'])
+            self.apply_formatter(formatter, [r'_with_trailing_underscores_']),
+            [r'_with\_trailing\_underscores_'])
 
     def test_ignores_urls(self):
         """Tests that underscores in urls are left alone."""
