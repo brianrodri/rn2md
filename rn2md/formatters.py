@@ -48,7 +48,7 @@ def RednotebookToMarkdownFormatter(date_heading=None):
     line = yield None
     while True:
         for formatter in ordered_formatters:
-            line = formatter.fmt(line)
+            line = formatter.send(line)
         line = yield line
 
 
