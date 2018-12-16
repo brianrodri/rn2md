@@ -1,4 +1,4 @@
-"""Helpers to tranform data in RedNotebook-syntax to Markdown-syntax.
+"""Helpers to transform data in RedNotebook-syntax to Markdown-syntax.
 
 Here is a summary of the currently implemented formatters:
 
