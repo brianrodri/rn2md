@@ -123,5 +123,5 @@ def _get_single_day(date, workdays_only):
         else:
             daydelta = dt.timedelta(days=4 - date.weekday())  # since last Fri
     else:
-        daydelta = dt.timedelta()
+        daydelta = dt.timedelta(days=0)
     return [date + daydelta]
