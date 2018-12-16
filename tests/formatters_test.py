@@ -4,15 +4,12 @@ import unittest
 from rn2md import formatters
 
 
-class FormatterTestBase(unittest.TestCase):
-    """Provides convenience methods to make tests more readable."""
-
-    def apply_formatter(self, formatter, lines):
-        """Returns given formatter's application on the given lines."""
-        return [formatter.send(line) for line in lines]
+def apply_formatter(formatter, lines):
+    """Returns given formatter's application on the given lines."""
+    return [formatter.send(line) for line in lines]
 
 
-class RednotebookToMarkdownFormatterTest(FormatterTestBase):
+class RednotebookToMarkdownFormatterTest(unittest.TestCase):
     """Test formatting RedNotebook-style data to markdown-style."""
 
     def test_constructor(self):
@@ -20,14 +17,14 @@ class RednotebookToMarkdownFormatterTest(FormatterTestBase):
         _ = formatters.format_rednotebook_as_markdown()
 
 
-class ItalicFormatterTest(FormatterTestBase):
+class ItalicFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style italics to markdown-style."""
 
     def test_common_format(self):
         """Test expected usage"""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(
+            apply_formatter(
                 formatter, ['Text with //italicized// content.']),
             ['Text with _italicized_ content.'])
 
@@ -35,7 +32,7 @@ class ItalicFormatterTest(FormatterTestBase):
         """Tests solitary markers are left alone."""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(
+            apply_formatter(
                 formatter, ['//italic1//, //italic2//, unused //']),
             ['_italic1_, _italic2_, unused //'])
 
@@ -43,62 +40,62 @@ class ItalicFormatterTest(FormatterTestBase):
         """Tests that URL strings do not have their dashes changed."""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(formatter, ['http://github.com/brianrodri']),
+            apply_formatter(formatter, ['http://github.com/brianrodri']),
             ['http://github.com/brianrodri'])
 
     def test_ignores_backticked_data(self):
         """Tests that back-ticked data do not get changed."""
         formatter = formatters.format_italic_text()
         self.assertEqual(
-            self.apply_formatter(
+            apply_formatter(
                 formatter, ['//italic//, `//escaped italic//`']),
             ['_italic_, `//escaped italic//`'])
 
 
-class LinkFormatterTest(FormatterTestBase):
+class LinkFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style links to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.format_links()
         self.assertEqual(
-            self.apply_formatter(formatter, ['[sample text ""go/somewhere""]']),
+            apply_formatter(formatter, ['[sample text ""go/somewhere""]']),
             ['[sample text](go/somewhere)'])
 
 
-class ImageFormatterTest(FormatterTestBase):
+class ImageFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style links to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.format_images()
         self.assertEqual(
-            self.apply_formatter(
+            apply_formatter(
                 formatter, ['[""http://www.site.com/image.jpg""]']),
             ['![](http://www.site.com/image.jpg)'])
 
 
-class StrikethroughFormatterTest(FormatterTestBase):
+class StrikethroughFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style strikethroughs to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.format_strikethrough_text()
-        self.assertEqual(self.apply_formatter(formatter, ['--text--']),
+        self.assertEqual(apply_formatter(formatter, ['--text--']),
                          ['~text~'])
 
     def test_punctuation_gets_stripped(self):
         """Tests punctuation is removed from parenthesized text."""
         formatter = formatters.format_strikethrough_text()
         self.assertEqual(
-            self.apply_formatter(formatter, ['--a complete sentence.--']),
+            apply_formatter(formatter, ['--a complete sentence.--']),
             ['~a complete sentence.~'])
 
     def test_ignores_non_paired_markers(self):
         """Tests solitary markers are left alone."""
         formatter = formatters.format_strikethrough_text()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '--changed--, --this too--, not here--or here.',
             ]), [
                 '~changed~, ~this too~, not here--or here.'
@@ -108,7 +105,7 @@ class StrikethroughFormatterTest(FormatterTestBase):
         """Tests urls are not changed."""
         formatter = formatters.format_strikethrough_text()
         self.assertEqual(
-            self.apply_formatter(
+            apply_formatter(
                 formatter, ['[x ""http://do/kinda--weird--thing""]']),
             ['[x ""http://do/kinda--weird--thing""]'])
 
@@ -116,60 +113,60 @@ class StrikethroughFormatterTest(FormatterTestBase):
         """Tests backticked data is left alone."""
         formatter = formatters.format_strikethrough_text()
         self.assertEqual(
-            self.apply_formatter(formatter, ['--hit--, `--not hit--`']),
+            apply_formatter(formatter, ['--hit--, `--not hit--`']),
             ['~hit~, `--not hit--`'])
 
     def test_ignores_lines_with_only_backticks(self):
         """Tests that data with only backticks are not changed."""
         formatter = formatters.format_strikethrough_text()
-        self.assertEqual(self.apply_formatter(formatter, ['-----']), ['-----'])
+        self.assertEqual(apply_formatter(formatter, ['-----']), ['-----'])
 
 
-class HeaderFormatterTest(FormatterTestBase):
+class HeaderFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style header to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.format_headers()
         self.assertEqual(
-            self.apply_formatter(
+            apply_formatter(
                 formatter, ['=Level One=', '===Level Three===']),
             ['# Level One', '### Level Three'])
 
     def test_base_level_is_respected(self):
         """Tests changes to init level."""
         formatter = formatters.format_headers(padding=2)
-        self.assertEqual(self.apply_formatter(formatter, ['===Only 3===']),
+        self.assertEqual(apply_formatter(formatter, ['===Only 3===']),
                          ['##### Only 3'])
 
     def test_inner_markers_are_ignored(self):
         """Tests header markings are only interpreted when surrounding line."""
         formatter = formatters.format_headers()
         self.assertEqual(
-            self.apply_formatter(formatter, ['Not at =start= of text']),
+            apply_formatter(formatter, ['Not at =start= of text']),
             ['Not at =start= of text'])
 
     def test_only_markers_are_ignored(self):
         """Tests lines with only markers aren't affected."""
         formatter = formatters.format_headers()
-        self.assertEqual(self.apply_formatter(formatter, ['=' * 6]), ['=' * 6])
-        self.assertEqual(self.apply_formatter(formatter, ['=' * 7]), ['=' * 7])
+        self.assertEqual(apply_formatter(formatter, ['=' * 6]), ['=' * 6])
+        self.assertEqual(apply_formatter(formatter, ['=' * 7]), ['=' * 7])
 
     def test_un_balanced_markers_are_ignored(self):
         """Tests that lines must use balanced markers."""
         formatter = formatters.format_headers()
-        self.assertEqual(self.apply_formatter(formatter, ['==Unbalanced===']),
+        self.assertEqual(apply_formatter(formatter, ['==Unbalanced===']),
                          ['==Unbalanced==='])
 
 
-class ListFormatterTest(FormatterTestBase):
+class ListFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style lists to markdown-style."""
 
     def test_unordered_list(self):
         """Tests expected usage for unordered lists."""
         formatter = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '- A',
                 ' - B',
                 '- A',
@@ -183,7 +180,7 @@ class ListFormatterTest(FormatterTestBase):
         """Tests expected usage for ordered lists."""
         formatter = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '+ A',
                 ' + B',
                 '+ A',
@@ -197,7 +194,7 @@ class ListFormatterTest(FormatterTestBase):
         """Tests two blank lines starts separate ordered lists."""
         formatter = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '+ A',
                 '+ B',
                 '',
@@ -215,7 +212,7 @@ class ListFormatterTest(FormatterTestBase):
         """Tests content between ordered lists restarts numbering."""
         formatter = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '+ A',
                 '+ B',
                 'Content',
@@ -231,7 +228,7 @@ class ListFormatterTest(FormatterTestBase):
         """Tests that nested levels are respected."""
         formatter = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '+ A',
                 ' + B',
                 ' + C',
@@ -253,7 +250,7 @@ class ListFormatterTest(FormatterTestBase):
         """Tests that unordered lists do not restart ordered list numbering."""
         formatter = formatters.format_lists()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '+ A',
                 ' - B',
                 '+ C',
@@ -264,28 +261,28 @@ class ListFormatterTest(FormatterTestBase):
             ])
 
 
-class InnerUnderscoreFormatterTest(FormatterTestBase):
+class InnerUnderscoreFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style underscores to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
-            self.apply_formatter(formatter, ['underscore_delimited_word']),
+            apply_formatter(formatter, ['underscore_delimited_word']),
             [r'underscore\_delimited\_word'])
 
     def test_trailing_underscores_ignored(self):
         """Tests trailing underscores are left alone."""
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
-            self.apply_formatter(formatter, [r'_with_trailing_underscores_']),
+            apply_formatter(formatter, [r'_with_trailing_underscores_']),
             [r'_with\_trailing\_underscores_'])
 
     def test_ignores_urls(self):
         """Tests that underscores in urls are left alone."""
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '[test_thing ""http://github.com/test_thing""]',
             ]), [
                 r'[test\_thing ""http://github.com/test_thing""]'
@@ -295,25 +292,25 @@ class InnerUnderscoreFormatterTest(FormatterTestBase):
         """Tests that underscores between backticks are left alone."""
         formatter = formatters.format_inner_underscores()
         self.assertEqual(
-            self.apply_formatter(formatter, ['gets_escaped, `no_escape`']),
+            apply_formatter(formatter, ['gets_escaped, `no_escape`']),
             [r'gets\_escaped, `no_escape`'])
 
 
-class CodeBlockFormatterTest(FormatterTestBase):
+class CodeBlockFormatterTest(unittest.TestCase):
     """Test formatting Rednotebook-style code blocks to markdown-style."""
 
     def test_common_format(self):
         """Tests expected usage."""
         formatter = formatters.format_code_blocks()
         self.assertEqual(
-            self.apply_formatter(formatter, ['``code encoded stuff``']),
+            apply_formatter(formatter, ['``code encoded stuff``']),
             ['`code encoded stuff`'])
 
     def test_only_two_backticks_are_formated(self):
         """Tests that multi-line code blocks are left alone."""
         formatter = formatters.format_code_blocks()
         self.assertEqual(
-            self.apply_formatter(formatter, [
+            apply_formatter(formatter, [
                 '```py',
                 '# Python code',
                 '```',
