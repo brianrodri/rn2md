@@ -6,6 +6,8 @@ from . import formatters
 from . import storage
 from . import util
 
+ENTRY_SEP = '\n\n\n'
+
 
 def main():
     """Prints RedNotebook entries in markdown syntax."""
@@ -19,7 +21,7 @@ def main():
         formatter = formatters.format_rednotebook_as_markdown()
         md_lines = [formatter.send(line.rstrip()) for line in rn_lines]
         return '\n'.join(md_lines)
-    print('\n\n\n'.join(rednotebook_to_markdown(d) for d in dates))
+    print(ENTRY_SEP.join(rednotebook_to_markdown(d) for d in dates))
 
 
 if __name__ == '__main__':
