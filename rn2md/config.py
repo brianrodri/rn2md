@@ -24,7 +24,7 @@ class Options():
         self._config.read(os.path.expanduser('~/.rn2mdrc'))
         self._section = section
         self._default_date_range = (
-            util.parse_dates(self._config[section].get('default date range')))
+            util.parse_date_range(self._config[section].get('default date range')))
 
     @property
     def workdays_only(self):

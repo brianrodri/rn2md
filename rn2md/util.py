@@ -21,7 +21,7 @@ _Weekdays = (  # pylint: disable=invalid-name
     enum.Enum('_Weekdays', 'Mon Tue Wed Thu Fri Sat Sun', start=0))
 
 
-def parse_dates(date_str, workdays_only=False):
+def parse_date_range(date_str, workdays_only=False):
     """Returns the dates interpreted from the given string.
 
     Args:
