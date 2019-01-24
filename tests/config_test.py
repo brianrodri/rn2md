@@ -23,9 +23,8 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
         self.assertFalse(options.workdays_only)
         self.assertEqual(options.data_path,
                          os.path.expanduser('~/.rednotebook/data'))
-        self.assertEqual(options.default_date_range, [
-            util.strict_parse_date('Mon Mar 26, 2018'),
-        ])
+        self.assertEqual(options.default_date_range,
+                         [util.strict_parse_date('Mon Mar 26, 2018')])
         self.assertEqual(remaining_argv, ['command', 'line', 'args'])
 
     def test_change_work_options(self):
