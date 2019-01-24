@@ -86,41 +86,46 @@ class ParseDatesTest(unittest.TestCase):
     @freezegun.freeze_time(util.strict_parse_date('Sat Mar 24, 2018'))
     def test_work_week_returned_in_workday_only_mode(self):
         """Tests only workdays are returned in workday-mode."""
-        self.assertEqual(util.parse_date_range('this week', workdays_only=True), [
-            util.strict_parse_date('Mon Mar 19, 2018'),
-            util.strict_parse_date('Tue Mar 20, 2018'),
-            util.strict_parse_date('Wed Mar 21, 2018'),
-            util.strict_parse_date('Thu Mar 22, 2018'),
-            util.strict_parse_date('Fri Mar 23, 2018'),
-        ])
+        self.assertEqual(
+            util.parse_date_range('this week', workdays_only=True), [
+                util.strict_parse_date('Mon Mar 19, 2018'),
+                util.strict_parse_date('Tue Mar 20, 2018'),
+                util.strict_parse_date('Wed Mar 21, 2018'),
+                util.strict_parse_date('Thu Mar 22, 2018'),
+                util.strict_parse_date('Fri Mar 23, 2018'),
+            ])
 
     @freezegun.freeze_time(util.strict_parse_date('Sun Mar 25, 2018'))
     def test_yesterday_on_sunday_returns_friday_in_workdays_only_mode(self):
         """Tests yesterday on sunday is friday for workday-mode."""
-        self.assertEqual(util.parse_date_range('yesterday', workdays_only=True), [
-            util.strict_parse_date('Fri Mar 23, 2018'),
-        ])
+        self.assertEqual(
+            util.parse_date_range('yesterday', workdays_only=True), [
+                util.strict_parse_date('Fri Mar 23, 2018'),
+            ])
 
     @freezegun.freeze_time(util.strict_parse_date('Mon Mar 26, 2018'))
     def test_yesterday_on_monday_returns_friday_in_workdays_only_mode(self):
         """Tests yesterday on monday is friday for workday-mode."""
-        self.assertEqual(util.parse_date_range('yesterday', workdays_only=True), [
-            util.strict_parse_date('Fri Mar 23, 2018'),
-        ])
+        self.assertEqual(
+            util.parse_date_range('yesterday', workdays_only=True), [
+                util.strict_parse_date('Fri Mar 23, 2018'),
+            ])
 
     @freezegun.freeze_time(util.strict_parse_date('Fri Mar 23, 2018'))
     def test_tomorrow_on_friday_returns_monday_in_workdays_only_mode(self):
         """Tests tomorrow on friday is monday for workday-only mode."""
-        self.assertEqual(util.parse_date_range('tomorrow', workdays_only=True), [
-            util.strict_parse_date('Mon Mar 26, 2018'),
-        ])
+        self.assertEqual(
+            util.parse_date_range('tomorrow', workdays_only=True), [
+                util.strict_parse_date('Mon Mar 26, 2018'),
+            ])
 
     @freezegun.freeze_time(util.strict_parse_date('Sat Mar 24, 2018'))
     def test_tomorrow_on_saturday_returns_monday_in_workdays_only_mode(self):
         """Tests tomorrow on saturday is monday for workday-only mode."""
-        self.assertEqual(util.parse_date_range('tomorrow', workdays_only=True), [
-            util.strict_parse_date('Mon Mar 26, 2018'),
-        ])
+        self.assertEqual(
+            util.parse_date_range('tomorrow', workdays_only=True), [
+                util.strict_parse_date('Mon Mar 26, 2018'),
+            ])
 
 
 if __name__ == '__main__':

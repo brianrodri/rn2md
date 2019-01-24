@@ -23,8 +23,8 @@ class Options():
         self._config = configparser.ConfigParser(self.DEFAULT_CONFIG_VALUES)
         self._config.read(os.path.expanduser('~/.rn2mdrc'))
         self._section = section
-        self._default_date_range = (
-            util.parse_date_range(self._config[section].get('default date range')))
+        self._default_date_range = util.parse_date_range(
+            self._config[section].get('default date range'))
 
     @property
     def workdays_only(self):

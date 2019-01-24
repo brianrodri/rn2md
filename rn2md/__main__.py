@@ -12,8 +12,8 @@ def main():
     options, remaining_argv = config.Options.from_argv(sys.argv)
     rednotebook = storage.load_rednotebook_entries(options.data_path)
     if remaining_argv:
-        date_range = (
-            util.parse_date_range(' '.join(remaining_argv), options.workdays_only))
+        date_range = util.parse_date_range(
+            ' '.join(remaining_argv), options.workdays_only)
     else:
         date_range = options.default_date_range
     def rednotebook_to_markdown(date):
