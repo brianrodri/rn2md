@@ -2,6 +2,8 @@
 import configparser
 import os
 
+from . import util
+
 
 class Options():
     """Encapsulates rn2md options which are configurable through ~/.rn2mdrc."""
@@ -10,6 +12,7 @@ class Options():
     DEFAULT_CONFIG_VALUES = {
         'data path': DEFAULT_DATA_PATH,
         'workday mode': 'off',
+        'default date range': 'today',
     }
 
     @classmethod
@@ -20,6 +23,8 @@ class Options():
         self._config = configparser.ConfigParser(self.DEFAULT_CONFIG_VALUES)
         self._config.read(os.path.expanduser('~/.rn2mdrc'))
         self._section = section
+        self._default_date_range = (
+            util.parse_dates(self._config[section].get('default date range')))
 
     @property
     def workdays_only(self):
@@ -30,3 +35,7 @@ class Options():
     def data_path(self):
         """Read-only accessor for data path"""
         return self._config[self._section].get('data path')
+
+    @property
+    def default_date_range(self):
+        return self._default_date_range
