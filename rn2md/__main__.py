@@ -9,10 +9,10 @@ from . import util
 
 def main():
     """Prints RedNotebook entries in markdown syntax."""
-    config, remaining_argv = config.Config.from_argv(sys.argv)
-    rednotebook = storage.load_rednotebook_entries(config.data_path)
+    options, remaining_argv = config.Options.from_argv(sys.argv)
+    rednotebook = storage.load_rednotebook_entries(options.data_path)
     date_arg = ' '.join(remaining_argv) if remaining_argv else 'today'
-    dates = util.parse_dates(date_arg, config.workdays_only)
+    dates = util.parse_dates(date_arg, options.workdays_only)
     def rednotebook_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""
         rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
