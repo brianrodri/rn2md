@@ -8,7 +8,7 @@ from rn2md import config
 
 
 class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
-    """Tests for the ConfigOptions class"""
+    """Tests for the Config class"""
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -16,7 +16,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
     def test_default_behavior(self):
         """Tests nothing special happens when arbitrary args are passed."""
         argv = ['config_test.py', 'command', 'line', 'args']
-        options, remaining_argv = config.ConfigOptions.from_argv(argv)
+        options, remaining_argv = config.Config.from_argv(argv)
         self.assertFalse(options.workdays_only)
         self.assertEqual(options.data_path,
                          os.path.expanduser('~/.rednotebook/data'))
@@ -28,7 +28,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         [DEFAULT]
         workday mode=on
         """)
-        options, unused_remaining_argv = config.ConfigOptions.from_argv([])
+        options, unused_remaining_argv = config.Config.from_argv([])
         self.assertTrue(options.workdays_only)
 
     def test_change_data_path(self):
@@ -37,7 +37,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         [DEFAULT]
         data path=/test
         """)
-        options, unused_remaining_argv = config.ConfigOptions.from_argv([])
+        options, unused_remaining_argv = config.Config.from_argv([])
         self.assertEqual(options.data_path, '/test')
 
 

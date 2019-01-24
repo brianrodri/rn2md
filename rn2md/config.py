@@ -3,7 +3,7 @@ import configparser
 import os
 
 
-class ConfigOptions():
+class Config():
     """Encapsulates rn2md options which are configurable through ~/.rn2mdrc."""
 
     DEFAULT_DATA_PATH = os.path.expanduser('~/.rednotebook/data')
