@@ -12,6 +12,10 @@ class ConfigOptions():
         'workday mode': 'off',
     }
 
+    @classmethod
+    def from_argv(cls, argv):
+        return cls(), argv[1:]
+
     def __init__(self, section='DEFAULT'):
         self._config = configparser.ConfigParser(self.DEFAULT_CONFIG_VALUES)
         self._config.read(os.path.expanduser('~/.rn2mdrc'))
@@ -26,10 +30,3 @@ class ConfigOptions():
     def data_path(self):
         """Read-only accessor for data path"""
         return self._config[self._section].get('data path')
-
-
-def build_config_options(argv=None):
-    """Parses argv for any extra configuration requested via stdin."""
-    if argv is None:
-        argv = []
-    return ConfigOptions(), argv[1:]
