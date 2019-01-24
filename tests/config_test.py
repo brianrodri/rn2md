@@ -60,7 +60,7 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
             util.strict_parse_date('Fri Mar 23, 2018'),
             util.strict_parse_date('Sat Mar 24, 2018'),
             util.strict_parse_date('Sun Mar 25, 2018'),
-        ])
+                ])
 
 
 if __name__ == '__main__':
