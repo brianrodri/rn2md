@@ -27,7 +27,7 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
         self.assertEqual(remaining_argv, ['command', 'line', 'args'])
 
     def test_change_work_options(self):
-        """Tests workday changes made in the config_options file."""
+        """Tests workday mode changes made in the config_options file."""
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         workday mode=on
@@ -36,7 +36,7 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
         self.assertTrue(options.workdays_only)
 
     def test_change_data_path(self):
-        """Test data changes made in the config file."""
+        """Test data path changes made in the config file."""
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         data path=/test
@@ -46,6 +46,7 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
 
     @freezegun.freeze_time(util.strict_parse_date('Mon Mar 26, 2018'))
     def test_change_default_date_range(self):
+        """Test default date range changes made in the config file."""
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         default date range=last week
