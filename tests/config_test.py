@@ -20,7 +20,7 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
         self.assertFalse(options.workdays_only)
         self.assertEqual(options.data_path,
                          os.path.expanduser('~/.rednotebook/data'))
-        self.assertListEqual(remaining_argv, ['command', 'line', 'args'])
+        self.assertEqual(remaining_argv, ['command', 'line', 'args'])
 
     def test_change_work_options(self):
         """Tests workday changes made in the config_options file."""
