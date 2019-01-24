@@ -18,8 +18,12 @@ def main():
         md_lines = [formatter.send(line.rstrip()) for line in rn_lines]
         return '\n'.join(md_lines)
     if remaining_argv:
-        date_range = util.parse_date_range(
-            ' '.join(remaining_argv), options.workdays_only)
+        try:
+            date_range = util.parse_date_range(
+                ' '.join(remaining_argv), options.workdays_only)
+        except ValueError as e:
+            print(f'Error: {e}')
+            sys.exit(1)
     else:
         date_range = options.default_date_range
     print('\n\n\n'.join(rednotebook_to_markdown(d) for d in date_range))
