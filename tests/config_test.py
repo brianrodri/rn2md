@@ -46,7 +46,6 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
 
     @freezegun.freeze_time(util.strict_parse_date('Mon Mar 26, 2018'))
     def test_change_default_date_range(self):
-        """Test date range changes made in the config file."""
         self.fs.create_file(os.path.expanduser('~/.rn2mdrc'), contents="""
         [DEFAULT]
         default date range=last week
@@ -60,7 +59,7 @@ class OptionsTest(fake_filesystem_unittest.TestCase):
             util.strict_parse_date('Fri Mar 23, 2018'),
             util.strict_parse_date('Sat Mar 24, 2018'),
             util.strict_parse_date('Sun Mar 25, 2018'),
-                ])
+        ])
 
 
 if __name__ == '__main__':
