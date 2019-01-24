@@ -17,6 +17,7 @@ class Options():
 
     @classmethod
     def from_argv(cls, argv):
+        """Make changes to the default options based on argv input."""
         return cls(), argv[1:]
 
     def __init__(self, section='DEFAULT'):
@@ -28,14 +29,15 @@ class Options():
 
     @property
     def workdays_only(self):
-        """Read-only accessor for workday mode"""
+        """Read-only accessor for workday mode."""
         return self._config[self._section].getboolean('workday mode')
 
     @property
     def data_path(self):
-        """Read-only accessor for data path"""
+        """Read-only accessor for data path."""
         return self._config[self._section].get('data path')
 
     @property
     def default_date_range(self):
+        """Read-only accessor for default date range."""
         return self._default_date_range
