@@ -28,7 +28,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         [DEFAULT]
         workday mode=on
         """)
-        options, unused_remaining_argv = config.ConfigOptions.from_argv()
+        options, unused_remaining_argv = config.ConfigOptions.from_argv([])
         self.assertTrue(options.workdays_only)
 
     def test_change_data_path(self):
@@ -37,7 +37,7 @@ class ConfigOptionsTest(fake_filesystem_unittest.TestCase):
         [DEFAULT]
         data path=/test
         """)
-        options, unused_remaining_argv = config.ConfigOptions.from_argv()
+        options, unused_remaining_argv = config.ConfigOptions.from_argv([])
         self.assertEqual(options.data_path, '/test')
 
 
