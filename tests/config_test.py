@@ -1,5 +1,4 @@
 """Test cases for the rn2md.config module."""
-import datetime
 import os
 import unittest
 
