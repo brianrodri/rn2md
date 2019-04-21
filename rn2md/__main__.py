@@ -11,17 +11,24 @@ ENTRY_SEP = '\n\n\n'
 
 def main():
     """Prints RedNotebook entries in markdown syntax."""
-    config_options, remaining_argv = config.build_config_options(sys.argv)
-    rednotebook = storage.load_rednotebook_entries(config_options.data_path)
-    date_arg = ' '.join(remaining_argv) if remaining_argv else 'today'
-    dates = util.parse_dates(date_arg, config_options.workdays_only)
+    opt, remaining_argv = config.Options.from_argv(sys.argv)
+    rednotebook = storage.load_rednotebook_entries(opt.data_path)
     def rednotebook_to_markdown(date):
         """Returns the given date's RedNotebook entry in Markdown format."""
         rn_lines = rednotebook[date].split('\n') if date in rednotebook else []
         formatter = formatters.format_rednotebook_as_markdown()
         md_lines = [formatter.send(line.rstrip()) for line in rn_lines]
         return '\n'.join(md_lines)
+<<<<<<< HEAD
     print(ENTRY_SEP.join(rednotebook_to_markdown(d) for d in dates))
+=======
+    if remaining_argv:
+        date_range = (
+            util.parse_date_range(' '.join(remaining_argv), opt.workdays_only))
+    else:
+        date_range = opt.default_date_range
+    print('\n\n\n'.join(rednotebook_to_markdown(d) for d in date_range))
+>>>>>>> 164c4fbd55db7214ad8a0cf7585a6d4527b31d69
 
 
 if __name__ == '__main__':

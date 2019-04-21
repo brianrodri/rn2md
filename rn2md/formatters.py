@@ -192,5 +192,5 @@ def _not_in_backticks(match):
 
 
 def _spans_intersect(span1, span2):
-    (lo1, hi1), (lo2, hi2) = span1, span2
+    (lo1, hi1), (lo2, hi2) = sorted(span1), sorted(span2)
     return hi1 >= lo2 and hi2 >= lo1
