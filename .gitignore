@@ -95,3 +95,7 @@ Icon
 # vim settings
 *.swp
 .tags*
+
+# direnv settings
+.direnv/
+.envrc
