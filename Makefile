@@ -1,11 +1,8 @@
-init:
-	python -m pip install -r requirements.txt
-
 test:
 	nosetests tests
 
-install:
-	python -m pip install . --user
+init:
+	pipenv install
 
 clean:
 	find . -name '*.pyc' -exec rm -f {} +

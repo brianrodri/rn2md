@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+defaultlist = "*"
+isoweek = "*"
+parsedatetime = "*"
+python-dateutil = "*"
+PyYAML = "*"
+
+[dev-packages]
+freezegun = "*"
+isort = "*"
+jedi = "*"
+nose = "*"
+pyfakefs = "*"
+pylint = "*"
+
+[requires]
+python_version = "3.9"

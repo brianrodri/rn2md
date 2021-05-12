@@ -1,8 +1,0 @@
-defaultlist
-freezegun
-isoweek
-nose
-parsedatetime
-pyfakefs
-python-dateutil
-pyyaml
