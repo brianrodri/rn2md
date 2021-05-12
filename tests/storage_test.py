@@ -55,15 +55,7 @@ class LoadDailyEntriesTest(fake_filesystem_unittest.TestCase):
     def test_non_yaml_data_is_ignored(self):
         """Tests that files with non-yaml data are ignored."""
         self.fs.create_file(
-            '2018-03.txt', contents='I AM }NOT{ YAML!', encoding='utf-8')
-
-        self.assertFalse(storage.load_rednotebook_entries('/data'))
-
-    def test_non_utf8_data_is_ignored(self):
-        """Tests that files without utf8-encoding are ignored."""
-        self.fs.create_file(
-            '2018-03.txt', contents=yaml.dump({24: {'text': '😂'}}),
-            encoding='ascii')
+            '/data/2018-03.txt', contents='I AM }}NOT{ YAML!', encoding='utf-8')
 
         self.assertFalse(storage.load_rednotebook_entries('/data'))
 

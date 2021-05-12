@@ -16,28 +16,25 @@ def load_rednotebook_entries(data_path):
 
 def _load_month_paths(data_path):
     """Returns files from the data_path which contain RedNotebook data."""
-    for dir_entry in os.scandir(data_path):
-        if not dir_entry.is_file():
-            pass
-        file_root, unused_ext = os.path.splitext(dir_entry.name)
+    for item in os.scandir(data_path):
+        if not item.is_file():
+            continue
+        file_root, unused_ext = os.path.splitext(item.name)
         try:
             month_date = dt.datetime.strptime(file_root, '%Y-%m').date()
         except ValueError:
             continue
         else:
-            yield (month_date, dir_entry.path)
+            yield (month_date, item.path)
 
 
 def _load_daily_entries(month_date, month_file):
     """Returns mapping of the month file's daily entries as strings."""
-    try:
-        month_file_content = yaml.safe_load(month_file)
-    except yaml.YAMLError:
+    month_file_content = yaml.safe_load(month_file)
+    if not isinstance(month_file_content, dict):
         return {}
-    daily_entries = {}
-    for day_of_month, content in month_file_content.items():
-        day_date = month_date.replace(day=day_of_month)
-        entry = content['text'].rstrip()
-        if entry:
-            daily_entries[day_date] = entry
-    return daily_entries
+    return {
+        month_date.replace(day=day): entry
+        for day, day_content in month_file_content.items()
+        if (entry := day_content['text'].rstrip())
+    }
